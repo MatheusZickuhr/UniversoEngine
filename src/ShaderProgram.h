@@ -11,11 +11,13 @@ public:
 		this->id = glCreateProgram();
 	}
 
-	void link() {
-		glLinkProgram(this->id);
+	void unbind() {
+		glUseProgram(0);
 	}
 
-	void use() {
+	void bind() {
+		glLinkProgram(this->id);
+
 		glUseProgram(this->id);
 
 		int  success;
@@ -30,5 +32,11 @@ public:
 
 	void attachShader(unsigned int shaderId) {
 		glAttachShader(this->id, shaderId);
+	}
+
+	void setUniform4f(const char* uniformName, float float1, float float2, float float3, float float4) {
+		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
+		glUseProgram(this->id);
+		glUniform4f(uniformLocation, float1, float2, float3, float4);
 	}
 };

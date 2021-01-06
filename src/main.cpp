@@ -57,11 +57,17 @@ int main() {
     auto shaderProgram = ShaderProgram();
     shaderProgram.attachShader(vertexShader.getId());
     shaderProgram.attachShader(fragShader.getId());
-    shaderProgram.link();
-    shaderProgram.use();
+    shaderProgram.bind();
 
+    shaderProgram.setUniform4f("Color", 0.0f, 1.0f, 0.0f, 1.0f);
+    
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
+
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        shaderProgram.setUniform4f("Color", 0.0f, greenValue, 0.0f, 1.0f);
+
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwPollEvents();
     }
