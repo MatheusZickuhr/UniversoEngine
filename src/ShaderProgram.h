@@ -39,4 +39,9 @@ public:
 		glUseProgram(this->id);
 		glUniform4f(uniformLocation, float1, float2, float3, float4);
 	}
+
+	void setUniformMat4f(const char* uniformName, const glm::mat4& matrix) {
+		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
+		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix[0][0]);
+	}
 };
