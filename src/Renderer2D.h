@@ -18,6 +18,9 @@ private:
 	Shader* fragShader;
 	ShaderProgram* shaderProgram;
 	Drawer* drawer;
+    glm::mat4 proj;
+    glm::mat4 view;
+    glm::mat4 model;
 
 public:
     ~Renderer2D() {
@@ -60,16 +63,19 @@ public:
         shaderProgram->bind();
 
         this->drawer = new Drawer();
+
+        this->proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+        this->view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.0f, 0.0f, 0.0f));
 	}
 
 	void drawQuad(float scale, glm::vec2 position, glm::vec4 color) {
 
-        glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.0f, 0.0f, 0.0f));
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f));
-        glm::mat4 mvp = proj * view * model;
-   
-        this->shaderProgram->setUniformMat4f("Mvp", mvp);
+        this->model = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f));
+        
+        this->shaderProgram->setUniformMat4f("Model", this->model);
+        this->shaderProgram->setUniformMat4f("View", this->view);
+        this->shaderProgram->setUniformMat4f("Projection", this->proj);
+        
         shaderProgram->setUniform1f("Scale", scale);
         shaderProgram->setUniform4f("Color", color.x, color.y, color.z, color.w);
 
