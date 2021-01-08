@@ -13,7 +13,9 @@ public:
 		// add the data to the vertex buffer
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	}
-
+	~VertexBuffer() {
+		glDeleteBuffers(1, &this->id);
+	}
 	void bind() {
 		glBindBuffer(GL_ARRAY_BUFFER, this->id);
 	}

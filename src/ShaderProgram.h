@@ -43,5 +43,11 @@ public:
 	void setUniformMat4f(const char* uniformName, const glm::mat4& matrix) {
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
 		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix[0][0]);
+		
+	}
+
+	void setUniform1f(const char* uniformName, const float value) {
+		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
+		glUniform1f(uniformLocation, value);
 	}
 };

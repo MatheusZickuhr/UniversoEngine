@@ -2,8 +2,10 @@
 layout (location = 0) in vec3 aPos;
 
 uniform mat4 Mvp;
+uniform float Scale;
 
 void main()
 {
-    gl_Position = Mvp * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    vec3 newPos = aPos * Scale;
+    gl_Position = Mvp * vec4(newPos, 1.0);
 }

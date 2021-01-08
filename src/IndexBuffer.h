@@ -13,6 +13,10 @@ public:
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
 	}
 
+	~IndexBuffer() {
+		glDeleteBuffers(1, &this->id);
+	}
+
 	void bind() {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
 	}

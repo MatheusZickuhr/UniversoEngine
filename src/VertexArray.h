@@ -10,6 +10,9 @@ public:
 		glGenVertexArrays(1, &this->id);
 		glBindVertexArray(this->id);
 	}
+	~VertexArray() {
+		glDeleteVertexArrays(1, &this->id);
+	}
 
 	void bind() {
 		glBindVertexArray(this->id);
