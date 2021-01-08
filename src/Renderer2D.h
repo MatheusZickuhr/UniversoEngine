@@ -1,5 +1,11 @@
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
+#include "ShaderProgram.h"
 #include "Drawer.h"
-#include "engine.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 
 class Renderer2D {
@@ -25,10 +31,10 @@ public:
 
 	Renderer2D() {
         float vertices[] = {
-         -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.5f, 0.5f, 0.0f,
-         -0.5f, 0.5f, 0.0f
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.5f, 0.5f, 0.0f,
+            -0.5f, 0.5f, 0.0f
         };
 
         unsigned int indices[] = {
@@ -53,26 +59,19 @@ public:
         shaderProgram->attachShader(fragShader->getId());
         shaderProgram->bind();
 
-        shaderProgram->setUniform4f("Color", 0.0f, 1.0f, 0.0f, 1.0f);
-
-        glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.0f, 0.0f, 0.0f));
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.0f, 0.0f, 0.0f));
-
-        // model view projection matrix
-        glm::mat4 mvp = proj * view * model;
-
-        shaderProgram->setUniformMat4f("Mvp", mvp);
-
-        shaderProgram->setUniform1f("Scale", 0.3);
-
         this->drawer = new Drawer();
 	}
 
-	void drawQuad() {
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        this->shaderProgram->setUniform4f("Color", 0.0f, greenValue, 0.0f, 1.0f);
+	void drawQuad(float scale, glm::vec2 position, glm::vec4 color) {
+
+        glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.0f, 0.0f, 0.0f));
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f));
+        glm::mat4 mvp = proj * view * model;
+   
+        this->shaderProgram->setUniformMat4f("Mvp", mvp);
+        shaderProgram->setUniform1f("Scale", scale);
+        shaderProgram->setUniform4f("Color", color.x, color.y, color.z, color.w);
 
         this->drawer->drawWithIdexes(this->vertexArray, this->indexBuffer);
 	}

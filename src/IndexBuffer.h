@@ -1,4 +1,3 @@
-#include "engine.h"
 
 class IndexBuffer {
 private:
