@@ -50,4 +50,9 @@ public:
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
 		glUniform1f(uniformLocation, value);
 	}
+
+	void setUniform1i(const char* uniformName, const int value) {
+		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
+		glUniform1i(uniformLocation, value);
+	}
 };

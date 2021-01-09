@@ -3,6 +3,7 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 #include "ShaderProgram.h"
+#include "Texture.h"
 #include "Drawer.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -17,6 +18,7 @@ private:
 	Shader* vertexShader;
 	Shader* fragShader;
 	ShaderProgram* shaderProgram;
+    Texture* texture;
 	Drawer* drawer;
     glm::mat4 proj;
     glm::mat4 view;
@@ -29,30 +31,37 @@ public:
         delete this->indexBuffer;
         delete this->vertexShader;
         delete this->fragShader;
+        delete this->texture;
         delete this->drawer;
     }
 
 	Renderer2D() {
+
         float vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.5f, 0.5f, 0.0f,
-            -0.5f, 0.5f, 0.0f
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
         };
+
 
         unsigned int indices[] = {
             0, 1, 2,
             2, 3, 0
         };
+
         // vertex array object
         this->vertexArray = new VertexArray();
 
         // vertex buffer object
         this->vertexBuffer = new VertexBuffer(sizeof(vertices), vertices);
-        this->vertexBuffer->addLayout(0, 3, 3 * sizeof(float), 0);
+        this->vertexBuffer->addLayout(0, 3, 5 * sizeof(float), 0);
+        // texture coords layout
+        this->vertexBuffer->addLayout(1, 2, 5 * sizeof(float), 3 * sizeof(float));
 
         this->indexBuffer = new IndexBuffer(indices, 6);
 
+  
         // shaders
         this->vertexShader = new Shader(VertexShader, "res/vert.glsl");
         this->fragShader = new Shader(FragmentShader, "res/frag.glsl");
@@ -61,6 +70,12 @@ public:
         shaderProgram->attachShader(vertexShader->getId());
         shaderProgram->attachShader(fragShader->getId());
         shaderProgram->bind();
+
+        //texture
+        this->texture = new Texture("res/textures/eye.png");
+        this->texture->bind();
+
+        shaderProgram->setUniform1i("TextureSlot", 0);
 
         this->drawer = new Drawer();
 
