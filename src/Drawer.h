@@ -9,9 +9,8 @@ public:
 		
 	}
 
-	void drawWithIdexes(VertexArray* vertexArray, IndexBuffer* indexBuffer) {
+	void drawWithIdexes(VertexArray* vertexArray, unsigned int IndexCount) {
 		vertexArray->bind();
-		indexBuffer->bind();
-		glDrawElements(GL_TRIANGLES, indexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 };

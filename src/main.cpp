@@ -32,23 +32,24 @@ int main() {
     Renderer2D renderer2d = Renderer2D();
 
     renderer2d.createTexture("res/textures/eye.png", "eye");
-    renderer2d.createTexture("res/textures/ray.png", "ray");
 
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
+        renderer2d.start();
 
         renderer2d.drawQuad(
             .3f,
-            glm::vec2(0.0f, 0),
+            glm::vec2(1.0f, 0.3f),
             "eye"
         );
 
         renderer2d.drawQuad(
-            .3f,
-            glm::vec2(0.5f, 0),
-            "ray"
+            .5f,
+            glm::vec2(-1.0f, 0.3f),
+            "eye"
         );
 
+        renderer2d.end();
 
         glfwPollEvents();
     }

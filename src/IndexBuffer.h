@@ -5,6 +5,7 @@ private:
 	unsigned int count;
 
 public:
+
 	IndexBuffer(unsigned int *data, unsigned int count) {
 		this->count = count;
 		glGenBuffers(1, &this->id);
