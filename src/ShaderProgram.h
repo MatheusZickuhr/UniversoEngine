@@ -55,4 +55,9 @@ public:
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
 		glUniform1i(uniformLocation, value);
 	}
+
+	void setUniform1iv(const char* uniformName, int size, int data[]) {
+		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
+		glUniform1iv(uniformLocation, size , data);
+	}
 };

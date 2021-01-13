@@ -19,6 +19,7 @@ const unsigned int maxIndices = maxQuads * 6;
 struct Vertex {
     glm::vec3 position;
     glm::vec2 textureCoords;
+    float textureSlot;
 };
 
 class Renderer2D {
@@ -35,6 +36,7 @@ private:
     Vertex* renderDataBuffer;
     unsigned int vertexCount;
     unsigned int IndexCount;
+    unsigned int currentTextureSlot;
     std::map<const char*, Texture*> textures;
     glm::mat4 proj;
     glm::mat4 view;
@@ -62,6 +64,8 @@ public:
 
 	Renderer2D() {
 
+        this->currentTextureSlot = 0;
+
         this->renderDataBufferStart = new Vertex[maxVertices];
         this->renderDataBuffer = this->renderDataBufferStart;
 
@@ -72,6 +76,7 @@ public:
         this->vertexBuffer = new VertexBuffer(sizeof(Vertex) * maxVertices);
         this->vertexBuffer->addLayout(0, 3, sizeof(Vertex), offsetof(Vertex, position));
         this->vertexBuffer->addLayout(1, 2, sizeof(Vertex), offsetof(Vertex, textureCoords));
+        this->vertexBuffer->addLayout(2, 1, sizeof(Vertex), offsetof(Vertex, textureSlot));
 
         unsigned int indices[maxIndices];
         unsigned int offset = 0;
@@ -97,6 +102,16 @@ public:
         shaderProgram->bind();
 
         shaderProgram->setUniform1i("TextureSlot", 0);
+
+        const int maxTextures = 32;
+
+        int textureSlots[maxTextures];
+
+        for (int i = 0; i < sizeof(textureSlots) / sizeof(int); i++) {
+            textureSlots[i] = i;
+        }
+
+        shaderProgram->setUniform1iv("TextureSlots", maxTextures, textureSlots);
 
         this->drawer = new Drawer();
 
@@ -124,20 +139,28 @@ public:
 
     void drawQuad(float scale, glm::vec2 position, const char* textureName) {
 
+        Texture* texture = this->textures[textureName];
+
+        float textureSlot = (float) texture->getSlot();
+
         this->renderDataBuffer->position = { -scale + position.x, -scale + position.y, 0.0f };
         this->renderDataBuffer->textureCoords = { 0.0f, 0.0f };
+        this->renderDataBuffer->textureSlot = textureSlot;
         this->renderDataBuffer++;
 
         this->renderDataBuffer->position = { scale + position.x, -scale + position.y, 0.0f };
         this->renderDataBuffer->textureCoords = { 1.0f, 0.0f };
+        this->renderDataBuffer->textureSlot = textureSlot;
         this->renderDataBuffer++;
 
         this->renderDataBuffer->position = { scale + position.x, scale + position.y, 0.0f };
         this->renderDataBuffer->textureCoords = { 1.0f, 1.0f };
+        this->renderDataBuffer->textureSlot = textureSlot;
         this->renderDataBuffer++;
 
         this->renderDataBuffer->position = { -scale + position.x,  scale + position.y, 0.0f };
         this->renderDataBuffer->textureCoords = { 0.0f, 1.0f };
+        this->renderDataBuffer->textureSlot = textureSlot;
         this->renderDataBuffer++;
         
         this->vertexCount += 4;
@@ -145,7 +168,9 @@ public:
     }
 
     void createTexture(const char* filepath, const char* textureName) {
-        this->textures[textureName] = new Texture(filepath);
-        this->textures[textureName]->bind();
+        Texture* texture = new Texture(filepath, this->currentTextureSlot);
+        texture->bind();
+        this->textures[textureName] = texture;
+        this->currentTextureSlot++;
     }
 };
