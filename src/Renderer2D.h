@@ -143,8 +143,8 @@ private:
     }
 
     void loadShaders() {
-        this->vertexShader = std::make_unique<Shader>(VertexShader, "res/vert.glsl");
-        this->fragShader = std::make_unique<Shader>(FragmentShader, "res/frag.glsl");
+        this->vertexShader = std::make_unique<Shader>(VertexShader, "res/shaders/2d/vert.glsl");
+        this->fragShader = std::make_unique<Shader>(FragmentShader, "res/shaders/2d/frag.glsl");
         this->shaderProgram = std::make_unique<ShaderProgram>();
         shaderProgram->attachShader(vertexShader->getId());
         shaderProgram->attachShader(fragShader->getId());

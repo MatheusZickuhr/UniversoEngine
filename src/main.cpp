@@ -2,7 +2,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "Renderer2D.h"
+#include "Renderer3D.h"
 
 
 int main() {
@@ -29,22 +29,14 @@ int main() {
 
     glViewport(0, 0, 800, 600);
 
-    Renderer2D renderer2d = Renderer2D();
-
-    renderer2d.createTexture("res/textures/eye.png", "eye");
-    renderer2d.createTexture("res/textures/star.png", "star");
-    renderer2d.createTexture("res/textures/ray.png", "ray");
+    Renderer3D render = Renderer3D();
 
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
-        renderer2d.start();
-
-        renderer2d.drawQuad(.3f, glm::vec2(1.0f, 0.3f), "eye");
-        renderer2d.drawQuad(.3f, glm::vec2(1.0f, -0.5f), "star");
-        renderer2d.drawQuad(.5f, glm::vec2(-1.0f, 0.3f), "ray");
-
-        renderer2d.end();
-
+        render.start();
+        render.drawCube(.5f, glm::vec3(3.0f, 3.0f, 0.0f));
+        render.drawCube(.5f, glm::vec3(-3.0f, -3.0f, 0.0f));
+        render.end();
         glfwPollEvents();
     }
 
