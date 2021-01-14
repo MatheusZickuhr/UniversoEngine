@@ -10,11 +10,10 @@
 #include <map>
 #include <array>
 
-
 const unsigned int maxQuads = 100;
 const unsigned int maxVertices = maxQuads * 4;
 const unsigned int maxIndices = maxQuads * 6;
-
+const unsigned int maxTextures = 32;
 
 struct Vertex {
     glm::vec3 position;
@@ -25,106 +24,50 @@ struct Vertex {
 class Renderer2D {
 
 private:
-	VertexArray* vertexArray;
-	VertexBuffer* vertexBuffer;
-	IndexBuffer* indexBuffer;
-	Shader* vertexShader;
-	Shader* fragShader;
-	ShaderProgram* shaderProgram;
-	Drawer* drawer;
+	std::shared_ptr<VertexArray> vertexArray;
+	std::unique_ptr<VertexBuffer> vertexBuffer;
+	std::unique_ptr<IndexBuffer> indexBuffer;
+	std::unique_ptr<Shader> vertexShader;
+	std::unique_ptr<Shader> fragShader;
+	std::unique_ptr<ShaderProgram> shaderProgram;
+	std::unique_ptr<Drawer> drawer;
+    std::map<const char*, std::shared_ptr<Texture>> textures;
     Vertex* renderDataBufferStart;
     Vertex* renderDataBuffer;
     unsigned int vertexCount;
     unsigned int IndexCount;
     unsigned int currentTextureSlot;
-    std::map<const char*, Texture*> textures;
     glm::mat4 proj;
     glm::mat4 view;
     glm::mat4 model;
 
 public:
-    ~Renderer2D() {
-        delete this->vertexArray;
-        delete this->vertexBuffer;
-        delete this->indexBuffer;
-        delete this->vertexShader;
-        delete this->fragShader;
-        delete this->drawer;
-
-        auto it = this->textures.end();
-        while (it != this->textures.end()) {
-            Texture* tex = it->second;
-            delete tex;
-        }
-
-        this->textures.clear();
-
-        delete[] this->renderDataBufferStart;
-    }
-
-	Renderer2D() {
-
-        this->currentTextureSlot = 0;
-
-        this->renderDataBufferStart = new Vertex[maxVertices];
-        this->renderDataBuffer = this->renderDataBufferStart;
-
-        // vertex array object
-        this->vertexArray = new VertexArray();
-
-        // vertex buffer object
-        this->vertexBuffer = new VertexBuffer(sizeof(Vertex) * maxVertices);
-        this->vertexBuffer->addLayout(0, 3, sizeof(Vertex), offsetof(Vertex, position));
-        this->vertexBuffer->addLayout(1, 2, sizeof(Vertex), offsetof(Vertex, textureCoords));
-        this->vertexBuffer->addLayout(2, 1, sizeof(Vertex), offsetof(Vertex, textureSlot));
-
-        unsigned int indices[maxIndices];
-        unsigned int offset = 0;
-        for (int i = 0; i < maxIndices; i += 6) {
-            indices[i + 0] = offset + 0;
-            indices[i + 1] = offset + 1;
-            indices[i + 2] = offset + 2;
-            indices[i + 3] = offset + 2;
-            indices[i + 4] = offset + 3;
-            indices[i + 5] = offset + 0;
-            offset += 4;
-        }
-
-        this->indexBuffer = new IndexBuffer(indices, maxIndices);
  
-        // shaders
-        this->vertexShader = new Shader(VertexShader, "res/vert.glsl");
-        this->fragShader = new Shader(FragmentShader, "res/frag.glsl");
-
-        this->shaderProgram = new ShaderProgram();
-        shaderProgram->attachShader(vertexShader->getId());
-        shaderProgram->attachShader(fragShader->getId());
-        shaderProgram->bind();
-
-        shaderProgram->setUniform1i("TextureSlot", 0);
-
-        const int maxTextures = 32;
-
-        int textureSlots[maxTextures];
-
-        for (int i = 0; i < sizeof(textureSlots) / sizeof(int); i++) {
-            textureSlots[i] = i;
-        }
-
-        shaderProgram->setUniform1iv("TextureSlots", maxTextures, textureSlots);
-
-        this->drawer = new Drawer();
+	Renderer2D() {
+        this->vertexCount = 0;
+        this->IndexCount = 0;
+        this->currentTextureSlot = 0;
 
         this->model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
         this->proj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
         this->view = glm::translate(glm::mat4(1.0f), glm::vec3(-0.0f, 0.0f, 0.0f));
+        
+        this->renderDataBufferStart = new Vertex[maxVertices];
+        this->renderDataBuffer = this->renderDataBufferStart;
 
-        this->shaderProgram->setUniformMat4f("Model", this->model);
-        this->shaderProgram->setUniformMat4f("View", this->view);
-        this->shaderProgram->setUniformMat4f("Projection", this->proj);
-        //shaderProgram->setUniform4f("Color", color.x, color.y, color.z, color.w);
-        shaderProgram->setUniform1f("Scale", 0.5f);
+        this->vertexArray = std::make_shared<VertexArray>();
+        this->createVetexBuffer();
+        this->createIndexBuffer();
+ 
+        this->loadShaders();
+        this->setupShaderUniforms();
+
+        this->drawer = std::make_unique<Drawer>();
 	}
+
+    ~Renderer2D() {
+        delete[] this->renderDataBufferStart;
+    }
 
     void start() {
         this->renderDataBuffer = this->renderDataBufferStart;
@@ -139,7 +82,7 @@ public:
 
     void drawQuad(float scale, glm::vec2 position, const char* textureName) {
 
-        Texture* texture = this->textures[textureName];
+        auto texture = this->textures[textureName];
 
         float textureSlot = (float) texture->getSlot();
 
@@ -168,9 +111,56 @@ public:
     }
 
     void createTexture(const char* filepath, const char* textureName) {
-        Texture* texture = new Texture(filepath, this->currentTextureSlot);
+        auto texture = std::make_shared<Texture>(filepath, this->currentTextureSlot);
         texture->bind();
         this->textures[textureName] = texture;
         this->currentTextureSlot++;
     }
+
+private:
+
+    void createVetexBuffer() {
+        this->vertexBuffer = std::make_unique<VertexBuffer>(sizeof(Vertex) * maxVertices);
+        this->vertexBuffer->addLayout(0, 3, sizeof(Vertex), offsetof(Vertex, position));
+        this->vertexBuffer->addLayout(1, 2, sizeof(Vertex), offsetof(Vertex, textureCoords));
+        this->vertexBuffer->addLayout(2, 1, sizeof(Vertex), offsetof(Vertex, textureSlot));
+    }
+
+    void createIndexBuffer() {
+        unsigned int indices[maxIndices];
+        unsigned int offset = 0;
+        for (int i = 0; i < maxIndices; i += 6) {
+            indices[i + 0] = offset + 0;
+            indices[i + 1] = offset + 1;
+            indices[i + 2] = offset + 2;
+            indices[i + 3] = offset + 2;
+            indices[i + 4] = offset + 3;
+            indices[i + 5] = offset + 0;
+            offset += 4;
+        }
+
+        this->indexBuffer = std::make_unique<IndexBuffer>(indices, maxIndices);
+    }
+
+    void loadShaders() {
+        this->vertexShader = std::make_unique<Shader>(VertexShader, "res/vert.glsl");
+        this->fragShader = std::make_unique<Shader>(FragmentShader, "res/frag.glsl");
+        this->shaderProgram = std::make_unique<ShaderProgram>();
+        shaderProgram->attachShader(vertexShader->getId());
+        shaderProgram->attachShader(fragShader->getId());
+        shaderProgram->bind();
+    }
+
+    void setupShaderUniforms() {
+        int textureSlots[maxTextures];
+        for (int i = 0; i < maxTextures; i++) textureSlots[i] = i;
+        this->shaderProgram->setUniform1iv("TextureSlots", maxTextures, textureSlots);
+
+        shaderProgram->setUniform1i("TextureSlot", 0);
+        this->shaderProgram->setUniformMat4f("Model", this->model);
+        this->shaderProgram->setUniformMat4f("View", this->view);
+        this->shaderProgram->setUniformMat4f("Projection", this->proj);
+        shaderProgram->setUniform1f("Scale", 0.5f);
+    }
+
 };
