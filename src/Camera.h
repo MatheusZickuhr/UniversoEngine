@@ -56,44 +56,4 @@ public:
         return glm::lookAt(this->position, this->position + this->front, this->up);
     }
 
-    float getZoom() {
-        return this->zoom;
-    }
-
-    void setZoom(float zoom ) {
-        this->zoom = zoom;
-    }
-
-    float getPitch() {
-        return this->pitch;
-    }
-
-    void setPitch(float pitch) {
-        this->pitch = pitch;
-    }
-
-    float getYaw() {
-        return this->yaw;
-    }
-
-    void setYaw(float yaw) {
-        this->yaw = yaw;
-    }
-
-    glm::vec3 getFront() {
-        return this->front;
-    }
-
-    glm::vec3 getRight() {
-        return this->right;
-    }
-
-    glm::vec3 getPosition() {
-        return this->position;
-    }
-
-    void setPosition(glm::vec3 position) {
-        this->position = position;
-    }
-
 };
