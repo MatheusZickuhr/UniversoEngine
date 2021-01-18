@@ -87,14 +87,13 @@ private:
         this->camera->yaw += xoffset;
         this->camera->pitch += yoffset;
         
-        if (constrainPitch)
-        {
+        if (constrainPitch) {
             if (this->camera->pitch > 89.0f)
                 this->camera->pitch = 89.0f;
             if (this->camera->pitch  < -89.0f)
                 this->camera->pitch = -89.0f;
         }
 
-        this->camera->updateCameraVectors();
+        this->camera->updateVectors();
     }
 };

@@ -110,6 +110,10 @@ public:
         this->IndexCount += 6;
     }
 
+    void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
+        this->drawer->clear(r, g, b, a);
+    }
+
     void createTexture(const char* filepath, const char* textureName) {
         auto texture = std::make_shared<Texture>(filepath, this->currentTextureSlot);
         texture->bind();

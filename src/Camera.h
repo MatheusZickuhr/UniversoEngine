@@ -38,10 +38,10 @@ public:
         this->yaw = yaw;
         this->pitch = pitch;
 
-        this->updateCameraVectors();
+        this->updateVectors();
     }
 
-    void updateCameraVectors() {
+    void updateVectors() {
         glm::vec3 newFront;
         newFront.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
         newFront.y = sin(glm::radians(this->pitch));
@@ -56,4 +56,11 @@ public:
         return glm::lookAt(this->position, this->position + this->front, this->up);
     }
 
+    glm::mat4 getModelViewProjectionMatrix(float width, float height) {
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(this->zoom), width / height, 0.1f, 100.0f);
+        glm::mat4 view = this->getViewMatrix();
+
+        return projection * view * model;
+    }
 };

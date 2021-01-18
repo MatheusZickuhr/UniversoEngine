@@ -35,9 +35,7 @@ private:
     unsigned int vertexCount;
     unsigned int IndexCount;
     unsigned int currentTextureSlot;
-    glm::mat4 proj;
-    glm::mat4 view;
-    glm::mat4 model;
+
 
 public:
 
@@ -45,10 +43,6 @@ public:
         this->vertexCount = 0;
         this->IndexCount = 0;
         this->currentTextureSlot = 0;
-
-        this->model = glm::mat4(1.0f);
-        this->proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);;
-        this->view = glm::lookAt(glm::vec3(4, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)  );;
 
         this->renderDataBufferStart = new Vertex[maxVertices];
         this->renderDataBuffer = this->renderDataBufferStart;
@@ -58,7 +52,6 @@ public:
         this->createIndexBuffer();
 
         this->loadShaders();
-        this->setupShaderUniforms();
 
         this->drawer = std::make_unique<Drawer>();
     }
@@ -156,6 +149,10 @@ public:
         this->IndexCount += 36;
     }
 
+    void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
+        this->drawer->clear(r, g, b, a);
+    }
+
     void createTexture(const char* filepath, const char* textureName) {
         auto texture = std::make_shared<Texture>(filepath, this->currentTextureSlot);
         texture->bind();
@@ -163,7 +160,7 @@ public:
         this->currentTextureSlot++;
     }
 
-    void setMatrixViewProjection(glm::mat4 mvp) {
+    void setModelViewProjectionMatrix(glm::mat4 mvp) {
         this->shaderProgram->setUniformMat4f("Mvp", mvp);
     }
 
@@ -187,10 +184,6 @@ private:
         shaderProgram->attachShader(vertexShader->getId());
         shaderProgram->attachShader(fragShader->getId());
         shaderProgram->bind();
-    }
-
-    void setupShaderUniforms() {
-        this->shaderProgram->setUniformMat4f("Mvp", proj * view * model);
     }
 
 };
