@@ -163,6 +163,10 @@ public:
         this->currentTextureSlot++;
     }
 
+    void setMatrixViewProjection(glm::mat4 mvp) {
+        this->shaderProgram->setUniformMat4f("Mvp", mvp);
+    }
+
 private:
 
     void createVetexBuffer() {
@@ -186,9 +190,7 @@ private:
     }
 
     void setupShaderUniforms() {
-        this->shaderProgram->setUniformMat4f("Model", this->model);
-        this->shaderProgram->setUniformMat4f("View", this->view);
-        this->shaderProgram->setUniformMat4f("Projection", this->proj);
+        this->shaderProgram->setUniformMat4f("Mvp", proj * view * model);
     }
 
 };

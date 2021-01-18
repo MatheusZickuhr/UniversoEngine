@@ -1,12 +1,9 @@
 #version 440 core
 layout (location = 0) in vec3 aPos;
 
-uniform mat4 Model;
-uniform mat4 View;
-uniform mat4 Projection;
+uniform mat4 Mvp;
 
 void main()
 {
-    mat4 Mvp = Projection * View * Model;
     gl_Position = Mvp * vec4(aPos, 1.0);
 }
