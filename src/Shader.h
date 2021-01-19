@@ -16,8 +16,6 @@ public:
 		auto shaderSource = this->readFile(shaderPath);
 		auto shaderSourceCharPtr = shaderSource.c_str();
 
-		std::cout << shaderSourceCharPtr << std::endl;
-
 		//crete shader 
 		switch (shaderType) {
 		case FragmentShader:

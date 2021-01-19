@@ -5,8 +5,8 @@ class Drawer {
 public:
 
 	Drawer() {
-	
-		
+
+
 	}
 
 	void drawWithIdexes(std::shared_ptr<VertexArray> vertexArray, unsigned int IndexCount) {
