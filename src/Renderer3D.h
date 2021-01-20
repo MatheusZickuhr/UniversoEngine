@@ -12,32 +12,31 @@
 #include "Vertex.h"
 #include "Mesh.h"
 
-const unsigned int cubeVertexCount = 36;
-const unsigned int maxCubes = 100;
-const unsigned int maxVertices = maxCubes * cubeVertexCount;
-const unsigned int maxIndices = maxCubes * cubeVertexCount;
-const unsigned int maxTextures = 32;
-
+// arbitrary values for now
+const unsigned int maxVertices = 10000;
+const unsigned int maxIndices =  10000;
 
 class Renderer3D {
 
 private:
-    std::shared_ptr<VertexArray> vertexArray;
-    std::unique_ptr<VertexBuffer> vertexBuffer;
-    std::unique_ptr<IndexBuffer> indexBuffer;
-    std::unique_ptr<Shader> vertexShader;
-    std::unique_ptr<Shader> fragShader;
-    std::unique_ptr<ShaderProgram> shaderProgram;
-    std::unique_ptr<Drawer> drawer;
-    std::map<const char*, std::shared_ptr<Texture>> textures;
-    Vertex* renderDataBufferStart;
-    Vertex* renderDataBuffer;
-    std::unique_ptr<Mesh> cubeMesh;
     unsigned int vertexCount;
     unsigned int IndexCount;
     unsigned int currentTextureSlot;
 
+    Vertex* verticesPtrStart;
+    Vertex* vertices;
+    unsigned int* indices;
 
+    std::shared_ptr<VertexArray> vertexArray;
+    std::unique_ptr<VertexBuffer> vertexBuffer;
+    std::unique_ptr<IndexBuffer> indexBuffer;
+
+    std::unique_ptr<Shader> vertexShader;
+    std::unique_ptr<Shader> fragShader;
+    std::unique_ptr<ShaderProgram> shaderProgram;
+
+    std::unique_ptr<Drawer> drawer;
+ 
 public:
 
     Renderer3D() {
@@ -45,8 +44,9 @@ public:
         this->IndexCount = 0;
         this->currentTextureSlot = 0;
 
-        this->renderDataBufferStart = new Vertex[maxVertices];
-        this->renderDataBuffer = this->renderDataBufferStart;
+        this->verticesPtrStart = new Vertex[maxVertices];
+        this->vertices = this->verticesPtrStart;
+        this->indices = new unsigned int[maxIndices];
 
         this->vertexArray = std::make_shared<VertexArray>();
         this->createVetexBuffer();
@@ -55,44 +55,41 @@ public:
         this->loadShaders();
 
         this->drawer = std::make_unique<Drawer>();
-
-        this->cubeMesh = std::make_unique<Mesh>("res/models/cube/cube.obj");
     }
 
     ~Renderer3D() {
-        delete[] this->renderDataBufferStart;
+        delete[] this->verticesPtrStart;
+        delete[] this->indices;
     }
 
-    void start() {
-        this->renderDataBuffer = this->renderDataBufferStart;
+    void startDrawing() {
+        this->vertices = this->verticesPtrStart;
         this->vertexCount = 0;
         this->IndexCount = 0;
     }
 
-    void end() {
-        this->vertexBuffer->pushData(this->renderDataBufferStart, sizeof(Vertex) * this->vertexCount);
+    void endDrawing() {
+        this->vertexBuffer->pushData(this->verticesPtrStart, sizeof(Vertex) * this->vertexCount);
+        this->indexBuffer->pushData(this->indices, sizeof(unsigned int) * IndexCount);
         this->drawer->drawWithIdexes(this->vertexArray, IndexCount);
     }
 
-    void drawCube(float scale, glm::vec3 position) {
-        for (const Vertex vertex : this->cubeMesh->vertices) {
-            this->renderDataBuffer->position = (vertex.position + position) * scale;
-            this->renderDataBuffer++;
+    void drawMesh(Mesh* mesh, float scale, glm::vec3 position) {
+        for (const Vertex vertex : mesh->vertices) {
+            this->vertices->position = (vertex.position + position) * scale;
+            this->vertices++;
+        }
+
+        for (int i = this->IndexCount; i < mesh->vertices.size() + this->IndexCount; i++) {
+            this->indices[i] = i;
         }
         
-        this->vertexCount += cubeVertexCount;
-        this->IndexCount += cubeVertexCount;
+        this->vertexCount += mesh->vertices.size();
+        this->IndexCount += mesh->vertices.size();
     }
 
     void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
         this->drawer->clear(r, g, b, a);
-    }
-
-    void createTexture(const char* filepath, const char* textureName) {
-        auto texture = std::make_shared<Texture>(filepath, this->currentTextureSlot);
-        texture->bind();
-        this->textures[textureName] = texture;
-        this->currentTextureSlot++;
     }
 
     void setModelViewProjectionMatrix(glm::mat4 mvp) {
@@ -107,9 +104,7 @@ private:
     }
 
     void createIndexBuffer() {
-        unsigned int indices[maxIndices];
-        for (int i = 0; i < maxIndices; i++) indices[i] = i;
-        this->indexBuffer = std::make_unique<IndexBuffer>(indices, maxIndices);
+        this->indexBuffer = std::make_unique<IndexBuffer>(maxIndices);
     }
 
     void loadShaders() {

@@ -155,6 +155,9 @@ int main() {
 
     Renderer3D render = Renderer3D();
 
+    Mesh rockMesh("res/models/rock/rock.obj");
+    Mesh cubeMesh("res/models/cube/cube.obj");
+
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     CameraKeybordAndMouseInput cameraInput(&camera);
 
@@ -170,10 +173,10 @@ int main() {
         
         render.clear(0.2f, 0.3f, 0.3f, 1.0f);
         render.setModelViewProjectionMatrix(camera.getModelViewProjectionMatrix(WIDTH, HEIGHT));
-        render.start();
-        render.drawCube(.5f, glm::vec3(3.0f, 3.0f, 0.0f));
-        render.drawCube(.5f, glm::vec3(-3.0f, -3.0f, 0.0f));
-        render.end();
+        render.startDrawing();
+        render.drawMesh(&rockMesh, .5f, glm::vec3(3.0f, 3.0f, 0.0f));
+        render.drawMesh(&cubeMesh, .5f, glm::vec3(-3.0f, -3.0f, 0.0f));
+        render.endDrawing();
         
         glfwSwapBuffers(window);
         glfwPollEvents();
