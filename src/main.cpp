@@ -151,7 +151,7 @@ int main() {
 
     glViewport(0, 0, WIDTH, HEIGHT);
 
-    printf("Using OpenGL version: %s", glGetString(GL_VERSION));
+    printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
 
     Renderer3D render = Renderer3D();
 

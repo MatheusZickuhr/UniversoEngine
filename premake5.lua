@@ -23,7 +23,7 @@ project "UniversoEngine"
     objdir "obj/%{cfg.buildcfg}"
 
     includedirs { "include/", "libs/glad/include/", "libs/glfw/include/", "libs/glm/", "libs/imgui/", "libs/imgui/examples"
-					, "libs/stb_image/include/" }
+					, "libs/stb_image/include/", "libs/OBJ_Loader/include/" }
     
     files { "src/*.cpp" }
 
@@ -42,3 +42,4 @@ include "libs/glad.lua"
 include "libs/glm.lua"
 include "libs/imgui.lua"
 include "libs/stb_image.lua"
+include "libs/OBJ_Loader.lua"

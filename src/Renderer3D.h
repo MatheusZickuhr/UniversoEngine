@@ -9,15 +9,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <map>
 #include <array>
+#include "Vertex.h"
+#include "Mesh.h"
 
+const unsigned int cubeVertexCount = 36;
 const unsigned int maxCubes = 100;
-const unsigned int maxVertices = maxCubes * 36;
-const unsigned int maxIndices = maxCubes * 36;
+const unsigned int maxVertices = maxCubes * cubeVertexCount;
+const unsigned int maxIndices = maxCubes * cubeVertexCount;
 const unsigned int maxTextures = 32;
 
-struct Vertex {
-    glm::vec3 position;
-};
 
 class Renderer3D {
 
@@ -32,6 +32,7 @@ private:
     std::map<const char*, std::shared_ptr<Texture>> textures;
     Vertex* renderDataBufferStart;
     Vertex* renderDataBuffer;
+    std::unique_ptr<Mesh> cubeMesh;
     unsigned int vertexCount;
     unsigned int IndexCount;
     unsigned int currentTextureSlot;
@@ -54,6 +55,8 @@ public:
         this->loadShaders();
 
         this->drawer = std::make_unique<Drawer>();
+
+        this->cubeMesh = std::make_unique<Mesh>("res/models/cube/cube.obj");
     }
 
     ~Renderer3D() {
@@ -72,81 +75,13 @@ public:
     }
 
     void drawCube(float scale, glm::vec3 position) {
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++;  
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++;  
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f,-1.0) + position) * scale;
-        this->renderDataBuffer++;  
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++;  
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f,-1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(-1.0f, 1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-        this->renderDataBuffer->position = (glm::vec3(1.0f,-1.0f, 1.0f) + position) * scale;
-        this->renderDataBuffer++; 
-
-        this->vertexCount += 36;
-        this->IndexCount += 36;
+        for (const Vertex vertex : this->cubeMesh->vertices) {
+            this->renderDataBuffer->position = (vertex.position + position) * scale;
+            this->renderDataBuffer++;
+        }
+        
+        this->vertexCount += cubeVertexCount;
+        this->IndexCount += cubeVertexCount;
     }
 
     void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
