@@ -16,6 +16,8 @@ public:
 		for (const objl::Vertex otherVertex: loader.LoadedVertices) {
 			Vertex myVertex;
 			memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position) );
+			memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
+
 			this->vertices.push_back(myVertex);
 		}
 	}

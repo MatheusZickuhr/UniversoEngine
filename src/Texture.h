@@ -9,12 +9,14 @@ private:
     unsigned int id, slot;
     int width, height, bitsPerPixel;
 
+    static unsigned int currentAvailableTextureSlot;
 public:
+    
 
-
-    Texture(const std::string &filepath, unsigned int slot) {
-
-        this->slot = slot;
+    Texture(const std::string &filepath) {
+        
+        this->slot = currentAvailableTextureSlot;
+        currentAvailableTextureSlot++;
 
         stbi_set_flip_vertically_on_load(1);
 
@@ -56,3 +58,6 @@ public:
     inline int getHeight() const { return height; };
 
 };
+
+
+unsigned int Texture::currentAvailableTextureSlot = 0;

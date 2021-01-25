@@ -20,8 +20,7 @@ class Renderer3D {
 
 private:
     unsigned int vertexCount;
-    unsigned int IndexCount;
-    unsigned int currentTextureSlot;
+    unsigned int indexCount;
 
     Vertex* verticesPtrStart;
     Vertex* vertices;
@@ -41,8 +40,7 @@ public:
 
     Renderer3D() {
         this->vertexCount = 0;
-        this->IndexCount = 0;
-        this->currentTextureSlot = 0;
+        this->indexCount = 0;
 
         this->verticesPtrStart = new Vertex[maxVertices];
         this->vertices = this->verticesPtrStart;
@@ -53,6 +51,9 @@ public:
         this->createIndexBuffer();
 
         this->loadShaders();
+
+        this->setupShaderUniforms();
+
 
         this->drawer = std::make_unique<Drawer>();
     }
@@ -65,27 +66,40 @@ public:
     void startDrawing() {
         this->vertices = this->verticesPtrStart;
         this->vertexCount = 0;
-        this->IndexCount = 0;
+        this->indexCount = 0;
     }
 
     void endDrawing() {
         this->vertexBuffer->pushData(this->verticesPtrStart, sizeof(Vertex) * this->vertexCount);
-        this->indexBuffer->pushData(this->indices, sizeof(unsigned int) * IndexCount);
-        this->drawer->drawWithIdexes(this->vertexArray, IndexCount);
+        this->indexBuffer->pushData(this->indices, sizeof(unsigned int) * this->indexCount);
+        this->drawer->drawWithIdexes(this->vertexArray, this->indexCount);
     }
 
-    void drawMesh(Mesh* mesh, float scale, glm::vec3 position) {
+    void drawMesh(Mesh* mesh, Texture* texture, float scale, glm::vec3 position) {
+        
+        float textureSlot;
+
+        if (texture != nullptr) {
+            textureSlot = texture->getSlot();
+            texture->bind();
+        }
+        else {
+            textureSlot = -1.0f;
+        }
+            
         for (const Vertex vertex : mesh->vertices) {
             this->vertices->position = (vertex.position + position) * scale;
+            this->vertices->textureCoords = vertex.textureCoords;
+            this->vertices->textureSlot = textureSlot;
             this->vertices++;
         }
 
-        for (int i = this->IndexCount; i < mesh->vertices.size() + this->IndexCount; i++) {
+        for (int i = this->indexCount; i < mesh->vertices.size() + this->indexCount; i++) {
             this->indices[i] = i;
         }
         
         this->vertexCount += mesh->vertices.size();
-        this->IndexCount += mesh->vertices.size();
+        this->indexCount += mesh->vertices.size();
     }
 
     void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
@@ -101,6 +115,8 @@ private:
     void createVetexBuffer() {
         this->vertexBuffer = std::make_unique<VertexBuffer>(sizeof(Vertex) * maxVertices);
         this->vertexBuffer->addLayout(0, 3, sizeof(Vertex), offsetof(Vertex, position));
+        this->vertexBuffer->addLayout(1, 2, sizeof(Vertex), offsetof(Vertex, textureCoords));
+        this->vertexBuffer->addLayout(2, 1, sizeof(Vertex), offsetof(Vertex, textureSlot));
     }
 
     void createIndexBuffer() {
@@ -116,4 +132,11 @@ private:
         shaderProgram->bind();
     }
 
+    void setupShaderUniforms() {
+       
+        const unsigned int maxTextures = 32;
+        int textureSlots[maxTextures];
+        for (int i = 0; i < maxTextures; i++) textureSlots[i] = i;
+        this->shaderProgram->setUniform1iv("textureSlots", maxTextures, textureSlots);
+    }
 };

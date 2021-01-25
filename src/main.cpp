@@ -118,12 +118,11 @@ void APIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,
     
 }
 
-
 int main() {
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
@@ -149,14 +148,18 @@ int main() {
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
+    glEnable(GL_DEPTH_TEST);
+
     glViewport(0, 0, WIDTH, HEIGHT);
 
     printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
 
-    Renderer3D render = Renderer3D();
+    Mesh crateMesh("res/models/crate/crate.obj");
+    Texture crateTexture1("res/textures/crate/crate.jpg");
+    Texture crateTexture2("res/textures/crate/crate.png");
+    Texture crateTexture3("res/textures/crate/crate2.png");
 
-    Mesh rockMesh("res/models/rock/rock.obj");
-    Mesh cubeMesh("res/models/cube/cube.obj");
+    Renderer3D render = Renderer3D();
 
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     CameraKeybordAndMouseInput cameraInput(&camera);
@@ -174,8 +177,9 @@ int main() {
         render.clear(0.2f, 0.3f, 0.3f, 1.0f);
         render.setModelViewProjectionMatrix(camera.getModelViewProjectionMatrix(WIDTH, HEIGHT));
         render.startDrawing();
-        render.drawMesh(&rockMesh, .5f, glm::vec3(3.0f, 3.0f, 0.0f));
-        render.drawMesh(&cubeMesh, .5f, glm::vec3(-3.0f, -3.0f, 0.0f));
+        render.drawMesh(&crateMesh, &crateTexture1, .5f, glm::vec3(3.0f, 3.0f, 0.0f));
+        render.drawMesh(&crateMesh, &crateTexture2, .5f, glm::vec3(-3.0f, -3.0f, 0.0f));
+        render.drawMesh(&crateMesh, &crateTexture3, .5f, glm::vec3(-3.0f, -3.0f, -3.0f));
         render.endDrawing();
         
         glfwSwapBuffers(window);
