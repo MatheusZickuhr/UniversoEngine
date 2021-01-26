@@ -25,7 +25,7 @@ project "UniversoEngine"
     includedirs { "include/", "libs/glad/include/", "libs/glfw/include/", "libs/glm/", "libs/imgui/", "libs/imgui/examples"
 					, "libs/stb_image/include/", "libs/OBJ_Loader/include/" }
     
-    files { "src/*.cpp" }
+    files { "src/**.cpp", "src/**.h" }
 
     links { "GLFW", "GLM", "GLAD", "ImGui" }
 

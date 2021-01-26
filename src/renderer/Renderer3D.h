@@ -1,10 +1,10 @@
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "Shader.h"
-#include "ShaderProgram.h"
-#include "Texture.h"
-#include "Drawer.h"
+#include "renderer_api/VertexArray.h"
+#include "renderer_api/VertexBuffer.h"
+#include "renderer_api/IndexBuffer.h"
+#include "renderer_api/Shader.h"
+#include "renderer_api/ShaderProgram.h"
+#include "renderer_api/Texture.h"
+#include "renderer_api/Drawer.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <map>
