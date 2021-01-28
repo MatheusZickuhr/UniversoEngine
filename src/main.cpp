@@ -37,14 +37,14 @@ int main() {
 
     glViewport(0, 0, WIDTH, HEIGHT);
     
-    Mesh crateMesh("res/models/crate/crate.obj");
-    Texture crateTexture1("res/textures/crate/crate.jpg");
-    Texture crateTexture2("res/textures/crate/crate.png");
-    Texture crateTexture3("res/textures/crate/crate2.png");
+    engine::Mesh crateMesh("res/models/crate/crate.obj");
+    engine::Texture crateTexture1("res/textures/crate/crate.jpg");
+    engine::Texture crateTexture2("res/textures/crate/crate.png");
+    engine::Texture crateTexture3("res/textures/crate/crate2.png");
 
-    Renderer3D renderer = Renderer3D();
+    engine::Renderer3D renderer;
 
-    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    engine::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     CameraKeybordAndMouseInput cameraInput(&camera);
 
     float deltaTime = 0.0f;

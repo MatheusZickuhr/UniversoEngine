@@ -3,71 +3,74 @@
 #include <string>
 
 
-enum ShaderType { FragmentShader, VertexShader };
+namespace engine {
 
-class Shader {
+	enum ShaderType { FragmentShader, VertexShader };
 
-private:
-	unsigned int id;
+	class Shader {
 
-public:
+	private:
+		unsigned int id;
 
-	Shader(ShaderType shaderType, std::string shaderPath) {
-		auto shaderSource = this->readFile(shaderPath);
-		auto shaderSourceCharPtr = shaderSource.c_str();
+	public:
 
-		//crete shader 
-		switch (shaderType) {
-		case FragmentShader:
-			this->id = glCreateShader(GL_FRAGMENT_SHADER);
-			break;
-		case VertexShader:
-			this->id = glCreateShader(GL_VERTEX_SHADER);
-			break;
-		default:
-			std::cout << "invalid shader type" << std::endl;
-			break;
+		Shader(ShaderType shaderType, std::string shaderPath) {
+			auto shaderSource = this->readFile(shaderPath);
+			auto shaderSourceCharPtr = shaderSource.c_str();
+
+			//crete shader 
+			switch (shaderType) {
+			case FragmentShader:
+				this->id = glCreateShader(GL_FRAGMENT_SHADER);
+				break;
+			case VertexShader:
+				this->id = glCreateShader(GL_VERTEX_SHADER);
+				break;
+			default:
+				std::cout << "invalid shader type" << std::endl;
+				break;
+			}
+
+			// compile
+			glShaderSource(this->id, 1, &shaderSourceCharPtr, NULL);
+			glCompileShader(this->id);
+
+			// check for compile errors
+			int  success;
+			char infoLog[512];
+			glGetShaderiv(this->id, GL_COMPILE_STATUS, &success);
+
+			if (!success) {
+				glGetShaderInfoLog(this->id, 512, NULL, infoLog);
+				std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+			}
+
 		}
 
-		// compile
-		glShaderSource(this->id, 1, &shaderSourceCharPtr, NULL);
-		glCompileShader(this->id);
-
-		// check for compile errors
-		int  success;
-		char infoLog[512];
-		glGetShaderiv(this->id, GL_COMPILE_STATUS, &success);
-
-		if (!success) {
-			glGetShaderInfoLog(this->id, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+		unsigned int getId() {
+			return this->id;
 		}
 
-	}
+		void bind() {
 
-	unsigned int getId() {
-		return this->id;
-	}
-
-	void bind() {
-	
-	}
-	void unbind() {
-		
-	}
-private:
-	std::string readFile(std::string filePath) {
-		std::ifstream file;
-		std::string line;
-		std::string shaderSource;
-
-		file.open(filePath);
-
-		while (std::getline(file, line)) {
-			shaderSource.append(line);
-			shaderSource.append("\n");
 		}
+		void unbind() {
 
-		return shaderSource;
-	}
-};
+		}
+	private:
+		std::string readFile(std::string filePath) {
+			std::ifstream file;
+			std::string line;
+			std::string shaderSource;
+
+			file.open(filePath);
+
+			while (std::getline(file, line)) {
+				shaderSource.append(line);
+				shaderSource.append("\n");
+			}
+
+			return shaderSource;
+		}
+	};
+}

@@ -1,43 +1,46 @@
 
-class IndexBuffer {
-private:
-	unsigned int id;
-	unsigned int count;
+namespace engine {
 
-public:
+	class IndexBuffer {
+	private:
+		unsigned int id;
+		unsigned int count;
 
-	IndexBuffer(unsigned int *data, unsigned int count) {
-		this->count = count;
-		glGenBuffers(1, &this->id);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
-	}
+	public:
 
-	IndexBuffer(unsigned int count) {
-		this->count = count;
-		glGenBuffers(1, &this->id);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
-	}
+		IndexBuffer(unsigned int* data, unsigned int count) {
+			this->count = count;
+			glGenBuffers(1, &this->id);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
+		}
 
-	~IndexBuffer() {
-		glDeleteBuffers(1, &this->id);
-	}
+		IndexBuffer(unsigned int count) {
+			this->count = count;
+			glGenBuffers(1, &this->id);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
+		}
 
-	void pushData(unsigned int* data, unsigned int size) {
-		this->bind();
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
-	} 
+		~IndexBuffer() {
+			glDeleteBuffers(1, &this->id);
+		}
 
-	void bind() {
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-	}
+		void pushData(unsigned int* data, unsigned int size) {
+			this->bind();
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
+		}
 
-	void unbind() {
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
+		void bind() {
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
+		}
 
-	unsigned int getCount() {
-		return this->count;
-	}
-};
+		void unbind() {
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
+
+		unsigned int getCount() {
+			return this->count;
+		}
+	};
+}

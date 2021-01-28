@@ -1,24 +1,27 @@
 #include "OBJ_Loader/OBJ_Loader.h"
 #include <vector>
 
+namespace engine {
 
-class Mesh {
+
+	class Mesh {
 
 
-public:
+	public:
 
-	std::vector<Vertex> vertices;
+		std::vector<Vertex> vertices;
 
-	Mesh(const char * filepath) {
-		objl::Loader loader;
-		loader.LoadFile(filepath);
-		
-		for (const objl::Vertex otherVertex: loader.LoadedVertices) {
-			Vertex myVertex;
-			memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position) );
-			memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
+		Mesh(const char* filepath) {
+			objl::Loader loader;
+			loader.LoadFile(filepath);
 
-			this->vertices.push_back(myVertex);
+			for (const objl::Vertex otherVertex : loader.LoadedVertices) {
+				Vertex myVertex;
+				memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position));
+				memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
+
+				this->vertices.push_back(myVertex);
+			}
 		}
-	}
-};
+	};
+}
