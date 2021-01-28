@@ -1,3 +1,5 @@
+#pragma once
+
 namespace engine {
 
 	void APIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,

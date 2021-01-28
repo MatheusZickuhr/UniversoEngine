@@ -1,3 +1,5 @@
+#pragma once
+
 #include "renderer_api/VertexArray.h"
 #include "renderer_api/VertexBuffer.h"
 #include "renderer_api/IndexBuffer.h"
@@ -11,6 +13,7 @@
 #include <array>
 #include "Vertex.h"
 #include "Mesh.h"
+#include "GameObject.h"
 
 namespace engine {
 
@@ -102,6 +105,13 @@ namespace engine {
 
             this->vertexCount += mesh->vertices.size();
             this->indexCount += mesh->vertices.size();
+        }
+
+        void drawGameObject(GameObject* gameObject) {
+            this->drawMesh(gameObject->mesh,
+                gameObject->texture,
+                gameObject->scale,
+                gameObject->position);
         }
 
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {

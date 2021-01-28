@@ -1,3 +1,5 @@
+#pragma once
+
 const float SPEED = 2.5f;
 const float SENSITIVITY = 0.1f;
 

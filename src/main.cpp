@@ -42,6 +42,10 @@ int main() {
     engine::Texture crateTexture2("res/textures/crate/crate.png");
     engine::Texture crateTexture3("res/textures/crate/crate2.png");
 
+    engine::GameObject crate1(&crateMesh, &crateTexture1, .5f, glm::vec3(3.0f, 3.0f, 0.0f));
+    engine::GameObject crate2(&crateMesh, &crateTexture2, .5f, glm::vec3(-3.0f, -3.0f, 0.0f));
+    engine::GameObject crate3(&crateMesh, &crateTexture3, .5f, glm::vec3(-3.0f, -3.0f, -3.0f));
+
     engine::Renderer3D renderer;
 
     engine::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -60,9 +64,9 @@ int main() {
         renderer.clear(0.2f, 0.3f, 0.3f, 1.0f);
         renderer.setModelViewProjectionMatrix(camera.getModelViewProjectionMatrix(WIDTH, HEIGHT));
         renderer.startDrawing();
-        renderer.drawMesh(&crateMesh, &crateTexture1, .5f, glm::vec3(3.0f, 3.0f, 0.0f));
-        renderer.drawMesh(&crateMesh, &crateTexture2, .5f, glm::vec3(-3.0f, -3.0f, 0.0f));
-        renderer.drawMesh(&crateMesh, &crateTexture3, .5f, glm::vec3(-3.0f, -3.0f, -3.0f));
+        renderer.drawGameObject(&crate1);
+        renderer.drawGameObject(&crate2);
+        renderer.drawGameObject(&crate3);
         renderer.endDrawing();
         
         glfwSwapBuffers(window);

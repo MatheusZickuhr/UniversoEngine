@@ -1,3 +1,5 @@
+#pragma once
+
 #include "OBJ_Loader/OBJ_Loader.h"
 #include <vector>
 

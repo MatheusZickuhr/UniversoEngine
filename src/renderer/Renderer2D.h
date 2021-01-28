@@ -1,3 +1,5 @@
+#pragma once
+
 #include "renderer_api/VertexArray.h"
 #include "renderer_api/VertexBuffer.h"
 #include "renderer_api/IndexBuffer.h"
