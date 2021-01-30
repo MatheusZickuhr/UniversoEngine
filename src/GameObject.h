@@ -6,17 +6,24 @@ namespace engine {
 	
 	public:
 
-		Mesh* mesh;
-		Texture* texture;
+		std::shared_ptr<Mesh> mesh;
+		std::shared_ptr<Texture> texture;
 		glm::vec3 position;
 		float scale;
 
-		GameObject(Mesh* mesh, Texture* texture, float scale, glm::vec3 position)
+		GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> texture, float scale, glm::vec3 position)
 			: mesh(mesh), texture(texture), scale(scale), position(position) {}
 
-		GameObject() {}
+		GameObject(): scale(1.0f), position(glm::vec3(0.0f, 0.0f, 0.0f)) {}
 
-		void onStart();
-		void onUpdate(float deltaTime);
+		GameObject(const GameObject &other)
+			: mesh(other.mesh), texture(other.texture), scale(other.scale), position(other.position) {}
+
+		virtual void onStart() = 0;
+		virtual void onUpdate(float deltaTime) = 0;
+
+		bool shouldRender() {
+			return this->mesh != nullptr;
+		} 
 	};
 }

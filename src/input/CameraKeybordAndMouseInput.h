@@ -13,7 +13,7 @@ enum CameraMovement {
 class CameraKeybordAndMouseInput {
 
 private:
-	engine::Camera* camera;
+	std::shared_ptr<engine::Camera> camera;
     float movementSpeed;
     float mouseSensitivity;
 
@@ -22,7 +22,7 @@ private:
     bool firstMouse = true;
 
 public:
-	CameraKeybordAndMouseInput(engine::Camera* camera): movementSpeed(SPEED), mouseSensitivity(SENSITIVITY) {
+	CameraKeybordAndMouseInput(std::shared_ptr<engine::Camera> camera): movementSpeed(SPEED), mouseSensitivity(SENSITIVITY) {
 		this->camera = camera;
 	}
 

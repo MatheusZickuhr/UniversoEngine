@@ -31,12 +31,18 @@ namespace engine {
         // camera options
         float zoom;
 
+        float windowWidth, windowHeight;
+
         Camera(
+            float windowWidth,
+            float windowHeight,
             glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
             float yaw = YAW,
             float pitch = PITCH
         ) : front(glm::vec3(0.0f, 0.0f, -1.0f)), zoom(ZOOM) {
+            this->windowWidth = windowWidth;
+            this->windowHeight = windowHeight;
             this->position = position;
             this->worldUp = up;
             this->yaw = yaw;
@@ -60,9 +66,9 @@ namespace engine {
             return glm::lookAt(this->position, this->position + this->front, this->up);
         }
 
-        glm::mat4 getModelViewProjectionMatrix(float width, float height) {
+        glm::mat4 getModelViewProjectionMatrix() {
             glm::mat4 model = glm::mat4(1.0f);
-            glm::mat4 projection = glm::perspective(glm::radians(this->zoom), width / height, 0.1f, 100.0f);
+            glm::mat4 projection = glm::perspective(glm::radians(this->zoom), this->windowWidth/ this->windowHeight, 0.1f, 100.0f);
             glm::mat4 view = this->getViewMatrix();
 
             return projection * view * model;
