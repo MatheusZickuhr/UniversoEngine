@@ -2,72 +2,62 @@
 
 namespace engine {
 
-	class Engine;
+	class LevelManager;
 
 	class Level {
-	
-	private: 
 
-		std::vector<GameObject*> gameObjects;
+	private:
+
+		std::vector<std::shared_ptr<GameObject>> gameObjects;
 
 	protected:
-
-		Engine* engine;
+		LevelManager* levelManager;
+		std::shared_ptr<Camera> camera;
 
 	public:
 
-		~Level() {
-			for (GameObject* gameObject : this->gameObjects)
-				delete gameObject;
-
-			this->gameObjects.clear();
-		}
-		
-		void setEngineInstance(Engine* engine) {
-			this->engine = engine;
+		Level() {
+			this->camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 		}
 
-		template<typename T> 
-		T* createGameObject() {
-			T* gameObj = new T();
-			this->gameObjects.push_back(gameObj);
-			return gameObj;
-		}
-
-		/* performs a shallow copy of the game object */
-		template<typename T>
-		T* cloneGameObject(T* other) {
-			T* gameObj = new T(*other);
-			this->gameObjects.push_back(gameObj);
-			return gameObj;
-		}
-
-		const std::vector<GameObject*>& getGameObjects() {
-			return this->gameObjects;
-		}
-		
 		void start() {
 			this->onStart();
 			this->startGameObjects();
-		} 
+		}
 
 		void update(float deltaTime) {
 			this->onUpdate(deltaTime);
 			this->updateGameObjects(deltaTime);
+		}
+
+		void appendGameObject(std::shared_ptr<GameObject> gameObj) {
+			this->gameObjects.push_back(gameObj);
+		}
+
+		void setLevelManager(LevelManager* levelManager) {
+			this->levelManager = levelManager;
 		} 
 
-		virtual void onStart() = 0; 
+		const std::vector<std::shared_ptr<GameObject>>& getGameObjects() {
+			return this->gameObjects;
+		}
+
+		std::shared_ptr<Camera> getCamera() {
+			return this->camera;
+		}
+
+		virtual void onStart() = 0;
 		virtual void onUpdate(float deltaTime) = 0;
 
-	private: 
+	private:
 
 		void startGameObjects() {
-			for (GameObject* gameObject : this->gameObjects)
+			for (auto gameObject : this->gameObjects)
 				gameObject->onStart();
 		}
 
 		void updateGameObjects(float deltaTime) {
-			for (GameObject* gameObject : this->gameObjects)
+			for (auto gameObject : this->gameObjects)
 				gameObject->onUpdate(deltaTime);
 		}
 

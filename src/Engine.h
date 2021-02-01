@@ -5,8 +5,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "renderer/Renderer3D.h"
-#include "input/CameraKeybordAndMouseInput.h"
+#include "Input.h"
 #include "Level.h"
+#include "LevelManager.h"
+
 
 namespace engine {
 
@@ -17,9 +19,7 @@ namespace engine {
 		const char* windowName;
 		GLFWwindow* window;
 		std::unique_ptr<Renderer3D> rederer;
-		std::shared_ptr<Camera> camera;
-		std::unique_ptr<CameraKeybordAndMouseInput> cameraInput;
-		std::unique_ptr<Level> currentLevel;
+		std::shared_ptr<LevelManager> levelManager;
 		
 	public:
 
@@ -32,9 +32,10 @@ namespace engine {
 			this->checkGlad();
 			glViewport(0, 0, windowWidth, windowHeight);
 
+			this->levelManager = std::make_shared<LevelManager>();
 			this->rederer = std::make_unique<Renderer3D>();
-			this->camera = std::make_shared<Camera>(windowWidth, windowHeight, glm::vec3(0.0f, 0.0f, 3.0f));
-			this->cameraInput = std::make_unique<CameraKeybordAndMouseInput>(camera);
+			
+			Input::init(this->window);
 		}
 		
 		void run() {
@@ -46,11 +47,10 @@ namespace engine {
 				deltaTime = currentFrame - lastFrame;
 				lastFrame = currentFrame;
 
-				this->checkIfCurrentLevelIsLoaded();
-
-				this->cameraInput->update(this->window, deltaTime);
-
 				this->renderAndUpdateCurrentLevel(deltaTime);
+
+				if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+					glfwSetWindowShouldClose(window, true);
 
 				glfwSwapBuffers(this->window);
 				glfwPollEvents();
@@ -59,39 +59,27 @@ namespace engine {
 			glfwTerminate();
 		}
 
-		template <typename T>
-		void loadLevel() {
-			this->currentLevel = std::make_unique<T>();
-			this->currentLevel->setEngineInstance(this);
-			this->currentLevel->start();
+		std::shared_ptr<LevelManager> getLevelManager() {
+			return this->levelManager;
 		}
-
-		std::shared_ptr<Camera> getCamera() {
-			return this->camera;
-		}
-
 
 	private:
 
 		void renderAndUpdateCurrentLevel(float deltaTime) {
+			auto currentLevel = this->levelManager->getCurrentLevel();
+			auto mvp = currentLevel->getCamera()->getMvp(this->windowWidth, windowHeight);
+
 			this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);
-			this->rederer->startDrawing(this->camera);
-			for (auto gameObject : this->currentLevel->getGameObjects()) {
-				this->rederer->drawGameObject(gameObject);
+			this->rederer->startDrawing(mvp);
+			for (auto gameObject : currentLevel->getGameObjects()) {
+				this->rederer->drawMesh(gameObject->mesh,
+					gameObject->texture,
+					gameObject->scale,
+					gameObject->position);
 			}
 			this->rederer->endDrawing();
 
-			this->currentLevel->update(deltaTime);
-		}
-
-		void checkIfCurrentLevelIsLoaded() {
-			if (this->currentLevel == nullptr) {
-
-				std::cout << "The engine requires a inicial level" << std::endl;
-#ifdef _DEBUG
-				__debugbreak();
-#endif
-			}
+			currentLevel->update(deltaTime);
 		}
 
 		void initializeGlfwWindow() {

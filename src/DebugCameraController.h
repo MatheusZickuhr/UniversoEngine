@@ -10,7 +10,7 @@ enum CameraMovement {
     RIGHT
 };
 
-class CameraKeybordAndMouseInput {
+class DebugCameraController {
 
 private:
 	std::shared_ptr<engine::Camera> camera;
@@ -22,34 +22,31 @@ private:
     bool firstMouse = true;
 
 public:
-	CameraKeybordAndMouseInput(std::shared_ptr<engine::Camera> camera): movementSpeed(SPEED), mouseSensitivity(SENSITIVITY) {
+    DebugCameraController(std::shared_ptr<engine::Camera> camera): movementSpeed(SPEED), mouseSensitivity(SENSITIVITY) {
 		this->camera = camera;
 	}
 
-    void update(GLFWwindow* window, float deltaTime) {
-        this->processKeybordInput(window, deltaTime);
-        this->processMouseInput(window);
+    void update(float deltaTime) {
+        this->processKeybordInput(deltaTime);
+        this->processMouseInput();
     }
 
 private:
 
-    void processKeybordInput(GLFWwindow* window, float deltaTime) {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, true);
-
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    void processKeybordInput(float deltaTime) {
+        if (engine::Input::keyPressed('W'))
             this->updateCameraPosition(FORWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        if (engine::Input::keyPressed('S'))
             this->updateCameraPosition(BACKWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        if (engine::Input::keyPressed('A'))
             this->updateCameraPosition(LEFT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        if (engine::Input::keyPressed('D'))
             this->updateCameraPosition(RIGHT, deltaTime);
     }
 
-    void processMouseInput(GLFWwindow* window) {
+    void processMouseInput() {
         double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
+        engine::Input::getCursorPos(&xpos, &ypos);
 
         if (firstMouse) {
             lastX = xpos;

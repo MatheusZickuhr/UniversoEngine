@@ -69,8 +69,8 @@ namespace engine {
             delete[] this->indices;
         }
 
-        void startDrawing(std::shared_ptr<Camera> camera) {
-            this->shaderProgram->setUniformMat4f("Mvp", camera->getModelViewProjectionMatrix());
+        void startDrawing(glm::mat4 mvp) {
+            this->shaderProgram->setUniformMat4f("Mvp", mvp);
 
             this->vertices = this->verticesPtrStart;
             this->vertexCount = 0;
@@ -108,13 +108,6 @@ namespace engine {
 
             this->vertexCount += mesh->vertices.size();
             this->indexCount += mesh->vertices.size();
-        }
-
-        void drawGameObject(GameObject* gameObject) {
-            this->drawMesh(gameObject->mesh,
-                gameObject->texture,
-                gameObject->scale,
-                gameObject->position);
         }
 
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
