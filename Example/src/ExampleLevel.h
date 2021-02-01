@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Crate.h"
-#include "../DebugCameraController.h"
+#include "DebugCameraController.h"
 
 class ExampleLevel : public engine::Level {
 

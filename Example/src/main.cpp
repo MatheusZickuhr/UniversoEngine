@@ -1,6 +1,6 @@
 
 #include "Engine.h"
-#include "example/ExampleLevel.h"
+#include "ExampleLevel.h"
 
 
 int main() {
@@ -9,6 +9,3 @@ int main() {
 	engine.run();
 	return 0;
 }
-
-
-
