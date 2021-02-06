@@ -7,7 +7,7 @@
 #include "renderer/Renderer3D.h"
 #include "Input.h"
 #include "Level.h"
-#include "LevelManager.h"
+#include "LevelLoadingManager.h"
 
 
 namespace engine {
