@@ -60,7 +60,7 @@ namespace engine {
             return glm::lookAt(this->position, this->position + this->front, this->up);
         }
 
-        glm::mat4 getModelViewProjectionMatrix(float width, float height) {
+        glm::mat4 getMvp(float width, float height) {
             glm::mat4 model = glm::mat4(1.0f);
             glm::mat4 projection = glm::perspective(glm::radians(this->zoom), width / height, 0.1f, 100.0f);
             glm::mat4 view = this->getViewMatrix();

@@ -14,6 +14,7 @@
 #include "Vertex.h"
 #include "Mesh.h"
 #include "GameObject.h"
+#include "Camera.h"
 
 namespace engine {
 
@@ -68,7 +69,9 @@ namespace engine {
             delete[] this->indices;
         }
 
-        void startDrawing() {
+        void startDrawing(glm::mat4 mvp) {
+            this->shaderProgram->setUniformMat4f("Mvp", mvp);
+
             this->vertices = this->verticesPtrStart;
             this->vertexCount = 0;
             this->indexCount = 0;
@@ -80,7 +83,7 @@ namespace engine {
             this->drawer->drawWithIdexes(this->vertexArray, this->indexCount);
         }
 
-        void drawMesh(Mesh* mesh, Texture* texture, float scale, glm::vec3 position) {
+        void drawMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> texture, float scale, glm::vec3 position) {
 
             float textureSlot;
 
@@ -107,19 +110,8 @@ namespace engine {
             this->indexCount += mesh->vertices.size();
         }
 
-        void drawGameObject(GameObject* gameObject) {
-            this->drawMesh(gameObject->mesh,
-                gameObject->texture,
-                gameObject->scale,
-                gameObject->position);
-        }
-
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
             this->drawer->clear(r, g, b, a);
-        }
-
-        void setModelViewProjectionMatrix(glm::mat4 mvp) {
-            this->shaderProgram->setUniformMat4f("Mvp", mvp);
         }
 
     private:
