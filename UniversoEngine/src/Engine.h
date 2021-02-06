@@ -19,7 +19,7 @@ namespace engine {
 		const char* windowName;
 		GLFWwindow* window;
 		std::unique_ptr<Renderer3D> rederer;
-		std::shared_ptr<LevelManager> levelManager;
+		std::shared_ptr<LevelLoadingManager> levelLoadingManager;
 		
 	public:
 
@@ -32,7 +32,7 @@ namespace engine {
 			this->checkGlad();
 			glViewport(0, 0, windowWidth, windowHeight);
 
-			this->levelManager = std::make_shared<LevelManager>();
+			this->levelLoadingManager = std::make_shared<LevelLoadingManager>();
 			this->rederer = std::make_unique<Renderer3D>();
 			
 			Input::init(this->window);
@@ -59,14 +59,14 @@ namespace engine {
 			glfwTerminate();
 		}
 
-		std::shared_ptr<LevelManager> getLevelManager() {
-			return this->levelManager;
+		std::shared_ptr<LevelLoadingManager> getLevelLoadingManager() {
+			return this->levelLoadingManager;
 		}
 
 	private:
 
 		void renderAndUpdateCurrentLevel(float deltaTime) {
-			auto currentLevel = this->levelManager->getCurrentLevel();
+			auto currentLevel = this->levelLoadingManager->getCurrentLevel();
 			auto mvp = currentLevel->getCamera()->getMvp(this->windowWidth, windowHeight);
 
 			this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);

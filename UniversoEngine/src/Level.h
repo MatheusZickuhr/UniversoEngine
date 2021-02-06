@@ -2,7 +2,7 @@
 
 namespace engine {
 
-	class LevelManager;
+	class LevelLoadingManager;
 
 	class Level {
 
@@ -11,7 +11,7 @@ namespace engine {
 		std::vector<std::shared_ptr<GameObject>> gameObjects;
 
 	protected:
-		LevelManager* levelManager;
+		LevelLoadingManager* levelLoadingManager;
 		std::shared_ptr<Camera> camera;
 
 	public:
@@ -34,8 +34,8 @@ namespace engine {
 			this->gameObjects.push_back(gameObj);
 		}
 
-		void setLevelManager(LevelManager* levelManager) {
-			this->levelManager = levelManager;
+		void setLevelLoadingManager(LevelLoadingManager* levelManager) {
+			this->levelLoadingManager = levelManager;
 		} 
 
 		const std::vector<std::shared_ptr<GameObject>>& getGameObjects() {

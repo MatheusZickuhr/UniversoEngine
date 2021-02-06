@@ -2,7 +2,7 @@
 
 namespace engine {
 
-	class LevelManager {
+	class LevelLoadingManager {
 	private: 
 		std::shared_ptr<Level> currentLevel;
 
@@ -11,7 +11,7 @@ namespace engine {
 		template <typename T>
 		void loadLevel() {
 			this->currentLevel = std::make_shared<T>();
-			this->currentLevel->setLevelManager(this);
+			this->currentLevel->setLevelLoadingManager(this);
 			this->currentLevel->start();
 		}
 
