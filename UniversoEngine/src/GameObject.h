@@ -8,16 +8,14 @@ namespace engine {
 
 		std::shared_ptr<Mesh> mesh;
 		std::shared_ptr<Texture> texture;
-		glm::vec3 position;
-		float scale;
+		std::shared_ptr<Transform> transform;
 
 		GameObject(
 			std::shared_ptr<Mesh> mesh,
 			std::shared_ptr<Texture> texture,
-			float scale = 1.0f,
-			glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f)
+			std::shared_ptr<Transform> transform = std::make_shared<Transform>()
 		)
-		: mesh(mesh), texture(texture), scale(scale), position(position) {}
+		: mesh(mesh), texture(texture), transform(transform) {}
 
 		virtual void onStart() = 0;
 		virtual void onUpdate(float deltaTime) = 0;

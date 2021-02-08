@@ -13,6 +13,7 @@
 #include <array>
 #include "Vertex.h"
 #include "Mesh.h"
+#include "Transform.h"
 #include "GameObject.h"
 #include "Camera.h"
 
@@ -83,7 +84,7 @@ namespace engine {
             this->drawer->drawWithIdexes(this->vertexArray, this->indexCount);
         }
 
-        void drawMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> texture, float scale, glm::vec3 position) {
+        void drawMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> texture, std::shared_ptr<Transform> transform) {
 
             float textureSlot;
 
@@ -96,9 +97,11 @@ namespace engine {
             }
 
             for (const Vertex vertex : mesh->vertices) {
-                this->vertices->position = (vertex.position + position) * scale;
+                this->vertices->position = (vertex.position + transform->position) * transform->scale;
                 this->vertices->textureCoords = vertex.textureCoords;
                 this->vertices->textureSlot = textureSlot;
+                this->vertices->rotationAngle = transform->rotationAngle;
+                this->vertices->rotationAxis = transform->rotationAxis;
                 this->vertices++;
             }
 
@@ -121,6 +124,8 @@ namespace engine {
             this->vertexBuffer->addLayout(0, 3, sizeof(Vertex), offsetof(Vertex, position));
             this->vertexBuffer->addLayout(1, 2, sizeof(Vertex), offsetof(Vertex, textureCoords));
             this->vertexBuffer->addLayout(2, 1, sizeof(Vertex), offsetof(Vertex, textureSlot));
+            this->vertexBuffer->addLayout(3, 1, sizeof(Vertex), offsetof(Vertex, rotationAngle));
+            this->vertexBuffer->addLayout(4, 3, sizeof(Vertex), offsetof(Vertex, rotationAxis));
         }
 
         void createIndexBuffer() {

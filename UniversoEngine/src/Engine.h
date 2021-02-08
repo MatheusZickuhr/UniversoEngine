@@ -72,10 +72,11 @@ namespace engine {
 			this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);
 			this->rederer->startDrawing(mvp);
 			for (auto gameObject : currentLevel->getGameObjects()) {
-				this->rederer->drawMesh(gameObject->mesh,
+				this->rederer->drawMesh(
+					gameObject->mesh,
 					gameObject->texture,
-					gameObject->scale,
-					gameObject->position);
+					gameObject->transform
+				);
 			}
 			this->rederer->endDrawing();
 

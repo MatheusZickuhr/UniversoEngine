@@ -8,6 +8,9 @@ class ExampleLevel : public engine::Level {
 private:
 	std::unique_ptr<DebugCameraController> cameraInput;
 
+	std::shared_ptr<Crate> crate;
+	std::shared_ptr<Crate> crateClone;
+
 public:
 
 	void onStart() override {
@@ -16,10 +19,12 @@ public:
 		auto mesh = std::make_shared<engine::Mesh>("res/models/crate/crate.obj");
 		auto texture = std::make_shared<engine::Texture>("res/textures/crate/crate.jpg");
 
-		auto crate = std::make_shared<Crate>(mesh, texture);
+		crate = std::make_shared<Crate>(mesh, texture);
+		crate->transform->rotationAxis = { 1.0f, 0.0f, 0.0f };
 
-		auto crateClone = std::make_shared<Crate>(mesh, texture);
-		crateClone->position = glm::vec3(3.0f, 0.0f, 0.0f);
+		crateClone = std::make_shared<Crate>(mesh, texture);
+		crateClone->transform->position = { 3.0f, 0.0f, 0.0f };
+		crateClone->transform->rotationAxis = { 1.0f, 0.0f, 0.0f };
 
 		this->appendGameObject(crate);
 		this->appendGameObject(crateClone);
@@ -27,6 +32,11 @@ public:
 
 	void onUpdate(float deltaTime) override {
 		cameraInput->update(deltaTime);
+
+		constexpr float speed = 25.0f;
+
+		crate->transform->rotationAngle += deltaTime * speed;
+		crateClone->transform->rotationAngle -= deltaTime * speed;
 	}
 };
 
