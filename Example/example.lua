@@ -9,13 +9,13 @@ project "Example"
 	
     includedirs { 
 		"../include/",
-		"../libs/glad/include/",
-		"../libs/glfw/include/",
-		"../libs/glm/",
-		"../libs/imgui/",
-		"../libs/imgui/examples",
-		"../libs/stb_image/include/",
-		"../libs/OBJ_Loader/include/",
+		"../Libraries/glad/include/",
+		"../Libraries/glfw/include/",
+		"../Libraries/glm/",
+		"../Libraries/imgui/",
+		"../Libraries/imgui/examples",
+		"../Libraries/stb_image/include/",
+		"../Libraries/OBJ_Loader/include/",
 		"../UniversoEngine/src/",
 	}
     

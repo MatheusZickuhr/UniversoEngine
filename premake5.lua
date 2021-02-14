@@ -14,11 +14,11 @@ workspace "UniversoEngine"
         flags { "LinkTimeOptimization" }
 
 
-include "libs/glfw.lua"
-include "libs/glad.lua"
-include "libs/glm.lua"
-include "libs/imgui.lua"
-include "libs/stb_image.lua"
-include "libs/OBJ_Loader.lua"
+include "Libraries/glfw.lua"
+include "Libraries/glad.lua"
+include "Libraries/glm.lua"
+include "Libraries/imgui.lua"
+include "Libraries/stb_image.lua"
+include "Libraries/OBJ_Loader.lua"
 include "UniversoEngine/universoEngine.lua"
 include "Example/example.lua"
