@@ -1,11 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <vector>
-
 /*camera implementation based on https://learnopengl.com/Getting-started/Camera */
 
 namespace engine {

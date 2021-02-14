@@ -6,7 +6,7 @@
 class ExampleLevel : public engine::Level {
 
 private:
-	std::unique_ptr<DebugCameraController> cameraInput;
+	std::unique_ptr<engine::DebugCameraController> cameraInput;
 
 	std::shared_ptr<Crate> crate;
 	std::shared_ptr<Crate> crateClone;
@@ -14,7 +14,7 @@ private:
 public:
 
 	void onStart() override {
-		this->cameraInput = std::make_unique<DebugCameraController>(this->camera);
+		this->cameraInput = std::make_unique<engine::DebugCameraController>(this->camera);
 
 		auto mesh = std::make_shared<engine::Mesh>("res/models/crate/crate.obj");
 		auto texture = std::make_shared<engine::Texture>("res/textures/crate/crate.jpg");

@@ -1,10 +1,39 @@
 #pragma once
 
+#define STB_IMAGE_IMPLEMENTATION
+
+// c++ std
 #include <stdio.h>
 #include <iostream>
+#include <memory>
+#include <map>
+#include <array>
+#include <fstream>
+#include <string>
+#include <vector>
+
+// third party libraries
+#include <stb_image/stb_image.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "OBJ_Loader/OBJ_Loader.h"
+
+// engine
+#include "renderer/renderer_api/VertexArray.h"
+#include "renderer/renderer_api/VertexBuffer.h"
+#include "renderer/renderer_api/IndexBuffer.h"
+#include "renderer/renderer_api/Shader.h"
+#include "renderer/renderer_api/ShaderProgram.h"
+#include "renderer/renderer_api/Texture.h"
+#include "renderer/renderer_api/Drawer.h"
+#include "renderer/Vertex.h"
+#include "renderer/Mesh.h"
+#include "renderer/Camera.h"
 #include "renderer/Renderer3D.h"
+#include "Transform.h"
+#include "GameObject.h"
 #include "Input.h"
 #include "Level.h"
 #include "LevelLoadingManager.h"
@@ -75,7 +104,10 @@ namespace engine {
 				this->rederer->drawMesh(
 					gameObject->mesh,
 					gameObject->texture,
-					gameObject->transform
+					gameObject->transform->position,
+					gameObject->transform->scale,
+					gameObject->transform->rotationAxis,
+					gameObject->transform->rotationAngle
 				);
 			}
 			this->rederer->endDrawing();

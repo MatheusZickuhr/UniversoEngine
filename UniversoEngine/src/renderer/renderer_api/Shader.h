@@ -1,10 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <string>
-
-
 namespace engine {
 
 	enum ShaderType { FragmentShader, VertexShader };

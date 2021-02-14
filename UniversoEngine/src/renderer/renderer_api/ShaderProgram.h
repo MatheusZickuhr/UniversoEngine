@@ -1,8 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <iostream>
-
 namespace engine {
 
 	class ShaderProgram {

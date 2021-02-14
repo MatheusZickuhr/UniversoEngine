@@ -1,22 +1,5 @@
 #pragma once
 
-#include "renderer_api/VertexArray.h"
-#include "renderer_api/VertexBuffer.h"
-#include "renderer_api/IndexBuffer.h"
-#include "renderer_api/Shader.h"
-#include "renderer_api/ShaderProgram.h"
-#include "renderer_api/Texture.h"
-#include "renderer_api/Drawer.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <map>
-#include <array>
-#include "Vertex.h"
-#include "Mesh.h"
-#include "Transform.h"
-#include "GameObject.h"
-#include "Camera.h"
-
 namespace engine {
 
     // arbitrary values for now
@@ -84,7 +67,7 @@ namespace engine {
             this->drawer->drawWithIdexes(this->vertexArray, this->indexCount);
         }
 
-        void drawMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> texture, std::shared_ptr<Transform> transform) {
+        void drawMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Texture> texture, glm::vec3 position, glm::vec3 scale, glm::vec3 rotationAxis, float rotationAngle) {
 
             float textureSlot;
 
@@ -97,11 +80,11 @@ namespace engine {
             }
 
             for (const Vertex vertex : mesh->vertices) {
-                this->vertices->position = (vertex.position + transform->position) * transform->scale;
+                this->vertices->position = (vertex.position + position) * scale;
                 this->vertices->textureCoords = vertex.textureCoords;
                 this->vertices->textureSlot = textureSlot;
-                this->vertices->rotationAngle = transform->rotationAngle;
-                this->vertices->rotationAxis = transform->rotationAxis;
+                this->vertices->rotationAngle = rotationAngle;
+                this->vertices->rotationAxis = rotationAxis;
                 this->vertices++;
             }
 
