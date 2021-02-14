@@ -1,5 +1,10 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+#include "GameObject.h"
+#include "renderer/Camera.h"
+
 namespace engine {
 
 	class LevelLoadingManager;
@@ -16,50 +21,28 @@ namespace engine {
 
 	public:
 
-		Level() {
-			this->camera = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
-		}
+		Level();
 
-		void start() {
-			this->onStart();
-			this->startGameObjects();
-		}
+		void start();
 
-		void update(float deltaTime) {
-			this->onUpdate(deltaTime);
-			this->updateGameObjects(deltaTime);
-		}
+		void update(float deltaTime);
 
-		void appendGameObject(std::shared_ptr<GameObject> gameObj) {
-			this->gameObjects.push_back(gameObj);
-		}
+		void appendGameObject(std::shared_ptr<GameObject> gameObj);
 
-		void setLevelLoadingManager(LevelLoadingManager* levelManager) {
-			this->levelLoadingManager = levelManager;
-		} 
+		void setLevelLoadingManager(LevelLoadingManager* levelManager);
 
-		const std::vector<std::shared_ptr<GameObject>>& getGameObjects() {
-			return this->gameObjects;
-		}
+		const std::vector<std::shared_ptr<GameObject>>& getGameObjects();
 
-		std::shared_ptr<Camera> getCamera() {
-			return this->camera;
-		}
+		std::shared_ptr<Camera> getCamera();
 
 		virtual void onStart() = 0;
 		virtual void onUpdate(float deltaTime) = 0;
 
 	private:
 
-		void startGameObjects() {
-			for (auto gameObject : this->gameObjects)
-				gameObject->onStart();
-		}
+		void startGameObjects();
 
-		void updateGameObjects(float deltaTime) {
-			for (auto gameObject : this->gameObjects)
-				gameObject->onUpdate(deltaTime);
-		}
+		void updateGameObjects(float deltaTime);
 
 	};
 }

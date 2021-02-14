@@ -1,4 +1,8 @@
 #pragma once
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <glad/glad.h>
 
 namespace engine {
 
@@ -11,63 +15,16 @@ namespace engine {
 
 	public:
 
-		Shader(ShaderType shaderType, std::string shaderPath) {
-			auto shaderSource = this->readFile(shaderPath);
-			auto shaderSourceCharPtr = shaderSource.c_str();
+		Shader(ShaderType shaderType, std::string shaderPath);
 
-			//crete shader 
-			switch (shaderType) {
-			case FragmentShader:
-				this->id = glCreateShader(GL_FRAGMENT_SHADER);
-				break;
-			case VertexShader:
-				this->id = glCreateShader(GL_VERTEX_SHADER);
-				break;
-			default:
-				std::cout << "invalid shader type" << std::endl;
-				break;
-			}
+		unsigned int getId();
 
-			// compile
-			glShaderSource(this->id, 1, &shaderSourceCharPtr, NULL);
-			glCompileShader(this->id);
+		void bind();
 
-			// check for compile errors
-			int  success;
-			char infoLog[512];
-			glGetShaderiv(this->id, GL_COMPILE_STATUS, &success);
+		void unbind();
 
-			if (!success) {
-				glGetShaderInfoLog(this->id, 512, NULL, infoLog);
-				std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
-			}
-
-		}
-
-		unsigned int getId() {
-			return this->id;
-		}
-
-		void bind() {
-
-		}
-		void unbind() {
-
-		}
 	private:
-		std::string readFile(std::string filePath) {
-			std::ifstream file;
-			std::string line;
-			std::string shaderSource;
 
-			file.open(filePath);
-
-			while (std::getline(file, line)) {
-				shaderSource.append(line);
-				shaderSource.append("\n");
-			}
-
-			return shaderSource;
-		}
+		std::string readFile(std::string filePath);
 	};
 }

@@ -1,12 +1,19 @@
 #pragma once
 
+#include <memory>
+#include <iostream>
+#include "Level.h"
+
 namespace engine {
 
 	class LevelLoadingManager {
+
 	private: 
 		std::shared_ptr<Level> currentLevel;
 
 	public:
+
+		LevelLoadingManager();
 
 		template <typename T>
 		void loadLevel() {
@@ -15,16 +22,7 @@ namespace engine {
 			this->currentLevel->start();
 		}
 
-		std::shared_ptr<Level> getCurrentLevel() {
-			if (this->currentLevel == nullptr) {
-
-				std::cout << "The engine requires a inicial level" << std::endl;
-#ifdef _DEBUG
-				__debugbreak();
-#endif
-			}
-			return this->currentLevel;
-		}
+		std::shared_ptr<Level> getCurrentLevel();
 
 	};
 }

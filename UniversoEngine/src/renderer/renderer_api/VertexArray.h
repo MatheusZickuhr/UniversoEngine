@@ -1,28 +1,21 @@
 #pragma once
 
+#include <glad/glad.h>
+
 namespace engine {
 	
-
 	class VertexArray {
 
 	private:
 		unsigned int id;
 
 	public:
-		VertexArray() {
-			glGenVertexArrays(1, &this->id);
-			glBindVertexArray(this->id);
-		}
-		~VertexArray() {
-			glDeleteVertexArrays(1, &this->id);
-		}
+		VertexArray();
 
-		void bind() {
-			glBindVertexArray(this->id);
-		}
+		~VertexArray();
 
-		void unbind() {
-			glBindVertexArray(0);
-		}
+		void bind();
+
+		void unbind();
 	};
 }

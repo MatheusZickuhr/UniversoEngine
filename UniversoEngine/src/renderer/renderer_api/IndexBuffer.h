@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glad/glad.h>
+
 namespace engine {
 
 	class IndexBuffer {
@@ -9,39 +11,17 @@ namespace engine {
 
 	public:
 
-		IndexBuffer(unsigned int* data, unsigned int count) {
-			this->count = count;
-			glGenBuffers(1, &this->id);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
-		}
+		IndexBuffer(unsigned int* data, unsigned int count);
 
-		IndexBuffer(unsigned int count) {
-			this->count = count;
-			glGenBuffers(1, &this->id);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
-		}
+		IndexBuffer(unsigned int count);
 
-		~IndexBuffer() {
-			glDeleteBuffers(1, &this->id);
-		}
+		~IndexBuffer();
+		void pushData(unsigned int* data, unsigned int size);
 
-		void pushData(unsigned int* data, unsigned int size) {
-			this->bind();
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
-		}
+		void bind();
 
-		void bind() {
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-		}
+		void unbind();
 
-		void unbind() {
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		}
-
-		unsigned int getCount() {
-			return this->count;
-		}
+		unsigned int getCount();
 	};
 }

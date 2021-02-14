@@ -2,6 +2,8 @@
 
 #define SCAPE_KEY = GLFW_KEY_ESCAPE
 
+#include <GLFW/glfw3.h>
+
 namespace engine {
 	
 	class Input {
@@ -12,19 +14,12 @@ namespace engine {
 
 	public:
 
-		static void init(GLFWwindow* windowInstance) {
-			window = windowInstance;
-		}
+		static void init(GLFWwindow* windowInstance);
 
-		static void getCursorPos(double* xpos, double* ypos) {
-			glfwGetCursorPos(window, xpos, ypos);
-		}
+		static void getCursorPos(double* xpos, double* ypos);
 
-		static bool keyPressed(char key) {
-			return glfwGetKey(window, key) == GLFW_PRESS;
-		} 
+		static bool keyPressed(char key);
 
 	};
 
-	GLFWwindow* Input::window = nullptr;
 } 

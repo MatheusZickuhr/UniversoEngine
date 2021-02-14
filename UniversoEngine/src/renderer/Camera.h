@@ -1,5 +1,8 @@
 #pragma once
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 /*camera implementation based on https://learnopengl.com/Getting-started/Camera */
 
 namespace engine {
@@ -25,41 +28,12 @@ namespace engine {
         // camera options
         float zoom;
 
-        Camera(
-            glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-            float yaw = YAW,
-            float pitch = PITCH
-        ) : front(glm::vec3(0.0f, 0.0f, -1.0f)), zoom(ZOOM) {
-            this->position = position;
-            this->worldUp = up;
-            this->yaw = yaw;
-            this->pitch = pitch;
+        Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),float yaw = YAW,float pitch = PITCH);
 
-            this->updateVectors();
-        }
+        void updateVectors();
 
-        void updateVectors() {
-            glm::vec3 newFront;
-            newFront.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
-            newFront.y = sin(glm::radians(this->pitch));
-            newFront.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
-            this->front = glm::normalize(newFront);
+        glm::mat4 getViewMatrix();
 
-            this->right = glm::normalize(glm::cross(this->front, this->worldUp));
-            this->up = glm::normalize(glm::cross(this->right, this->front));
-        }
-
-        glm::mat4 getViewMatrix() {
-            return glm::lookAt(this->position, this->position + this->front, this->up);
-        }
-
-        glm::mat4 getMvp(float width, float height) {
-            glm::mat4 model = glm::mat4(1.0f);
-            glm::mat4 projection = glm::perspective(glm::radians(this->zoom), width / height, 0.1f, 100.0f);
-            glm::mat4 view = this->getViewMatrix();
-
-            return projection * view * model;
-        }
+        glm::mat4 getMvp(float width, float height);
     };
 }
