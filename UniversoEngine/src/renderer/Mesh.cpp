@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "OBJ_Loader/OBJ_Loader.h"
+#include <cstring>
 
 namespace engine {
 
@@ -9,8 +10,8 @@ namespace engine {
 
 		for (const objl::Vertex otherVertex : loader.LoadedVertices) {
 			Vertex myVertex;
-			memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position));
-			memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
+			std::memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position));
+			std::memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
 
 			this->vertices.push_back(myVertex);
 		}

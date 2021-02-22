@@ -21,24 +21,11 @@ project "Example"
     
     files { "src/**.cpp", "src/**.h" }
 
-    links { "UniversoEngine" }
+    links { "UniversoEngine", "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image" }
 
-	filter "system:linux"
-		pic "On"
+    filter "system:linux"
+		links { "dl", "pthread" }
+		defines { "_X11" }
 
-		systemversion "latest"
-		staticruntime "On"
-
-
-	filter "system:windows"
-		systemversion "latest"
-		staticruntime "On"
-
-
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "on"
+    filter "system:windows"
+        defines { "_WINDOWS" }

@@ -17,3 +17,4 @@ libs/Makefile
 imgui.ini
 
 .vscode
+.idea
