@@ -3,8 +3,8 @@ project "OBJ_Loader"
 	language "C++"
 	architecture "x86_64"
 
-	targetdir "../bin/%{cfg.buildcfg}"
-	objdir "../obj/%{cfg.buildcfg}"
+	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
+	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	
 	includedirs { "OBJ_Loader/include/" }
 

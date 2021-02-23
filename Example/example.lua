@@ -4,19 +4,19 @@ project "Example"
 	architecture "x86_64"
 	staticruntime "on"
 
-	targetdir "../bin/%{cfg.buildcfg}"
-	objdir "../obj/%{cfg.buildcfg}"
+	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
+	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	
     includedirs { 
-		"../include/",
-		"../Libraries/glad/include/",
-		"../Libraries/glfw/include/",
-		"../Libraries/glm/",
-		"../Libraries/imgui/",
-		"../Libraries/imgui/examples",
-		"../Libraries/stb_image/include/",
-		"../Libraries/OBJ_Loader/include/",
-		"../UniversoEngine/src/",
+		"%{wks.location}/include/",
+		"%{wks.location}/Libraries/glad/include/",
+		"%{wks.location}/Libraries/glfw/include/",
+		"%{wks.location}/Libraries/glm/",
+		"%{wks.location}/Libraries/imgui/",
+		"%{wks.location}/Libraries/imgui/examples",
+		"%{wks.location}/Libraries/stb_image/include/",
+		"%{wks.location}/Libraries/OBJ_Loader/include/",
+		"%{wks.location}/UniversoEngine/src/",
 	}
     
     files { "src/**.cpp", "src/**.h" }
