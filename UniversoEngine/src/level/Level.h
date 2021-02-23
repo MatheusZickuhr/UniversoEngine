@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <memory>
-#include "GameObject.h"
-#include "renderer/Camera.h"
+#include "../GameObject.h"
+#include "../renderer/Camera.h"
 
 namespace engine {
 
