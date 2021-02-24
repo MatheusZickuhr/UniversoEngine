@@ -3,48 +3,72 @@
 
 namespace engine {
 
-	Engine::Engine(float windowWidth, float windowHeight, const char* windowName) {
+	Engine::Engine(
+			Level* initialLevel,
+			float windowWidth,
+			float windowHeight,
+			const char *windowName) {
+		
+		this->currentLevel = initialLevel;
 		this->windowWidth = windowWidth;
 		this->windowHeight = windowHeight;
 		this->windowName = windowName;
+		this->lastFrameTime = 0.0f; 
 
 		this->initializeGlfwWindow();
 		this->checkGlad();
 		glViewport(0, 0, windowWidth, windowHeight);
 
-		this->levelLoadingManager = std::make_shared<LevelLoadingManager>();
-		this->rederer = std::make_unique<Renderer3D>();
+		this->rederer = new Renderer3D();
+
+		this->physicsWorld = new PhysicsWorld();
 
 		Input::init(this->window);
+
+		this->currentLevel->start();
 	}
 
-	void Engine::run() {
-		float deltaTime = 0.0f;
-		float lastFrame = 0.0f;
-
-		while (!glfwWindowShouldClose(this->window)) {
-			float currentFrame = glfwGetTime();
-			deltaTime = currentFrame - lastFrame;
-			lastFrame = currentFrame;
-
-			this->renderAndUpdateCurrentLevel(deltaTime);
-
-			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-				glfwSetWindowShouldClose(window, true);
-
-			glfwSwapBuffers(this->window);
-			glfwPollEvents();
-		}
-
+	Engine::~Engine() {
+		delete this->rederer;
+		delete this->physicsWorld;
 		glfwTerminate();
 	}
 
-	std::shared_ptr<LevelLoadingManager> Engine::getLevelLoadingManager() {
-		return this->levelLoadingManager;
+	void Engine::tick() {
+		float currentFrameTime = glfwGetTime();
+		float deltaTime = currentFrameTime - this->lastFrameTime;
+		this->lastFrameTime = currentFrameTime;
+
+		this->renderCurrentLevel(deltaTime);
+		this->updateCurrentLevelLogic(deltaTime);
+		this->updateCurrentLevelPhysics(deltaTime);
+
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, true);
+
+		glfwSwapBuffers(this->window);
+		glfwPollEvents();
+		
 	}
 
-	void Engine::renderAndUpdateCurrentLevel(float deltaTime) {
-		auto currentLevel = this->levelLoadingManager->getCurrentLevel();
+	bool Engine::isRunning() {
+		return !glfwWindowShouldClose(this->window);
+	}
+
+	void Engine::setLevel(Level* level) {
+		this->currentLevel = level;
+		this->currentLevel->start();
+	}
+
+	void Engine::updateCurrentLevelPhysics(float deltaTime) {
+		
+	}
+
+	void Engine::updateCurrentLevelLogic(float deltaTime) {
+		this->currentLevel->update(deltaTime);
+	}
+
+	void Engine::renderCurrentLevel(float deltaTime) {
 		auto mvp = currentLevel->getCamera()->getMvp(this->windowWidth, windowHeight);
 
 		this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);
@@ -60,8 +84,6 @@ namespace engine {
 			);
 		}
 		this->rederer->endDrawing();
-
-		currentLevel->update(deltaTime);
 	}
 
 	void Engine::initializeGlfwWindow() {
@@ -82,7 +104,7 @@ namespace engine {
 		}
 
 		glfwMakeContextCurrent(this->window);
-		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		//glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	void Engine::checkGlad() {

@@ -20,10 +20,6 @@ namespace engine {
 		this->gameObjects.push_back(gameObj);
 	}
 
-	void Level::setLevelLoadingManager(LevelLoadingManager* levelManager) {
-		this->levelLoadingManager = levelManager;
-	}
-
 	const std::vector<std::shared_ptr<GameObject>>& Level::getGameObjects() {
 		return this->gameObjects;
 	}

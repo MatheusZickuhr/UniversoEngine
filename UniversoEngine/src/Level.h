@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <memory>
-#include "../GameObject.h"
-#include "../renderer/Camera.h"
+#include "GameObject.h"
+#include "renderer/Camera.h"
 
 namespace engine {
 
@@ -16,7 +16,6 @@ namespace engine {
 		std::vector<std::shared_ptr<GameObject>> gameObjects;
 
 	protected:
-		LevelLoadingManager* levelLoadingManager;
 		std::shared_ptr<Camera> camera;
 
 	public:
@@ -28,8 +27,6 @@ namespace engine {
 		void update(float deltaTime);
 
 		void appendGameObject(std::shared_ptr<GameObject> gameObj);
-
-		void setLevelLoadingManager(LevelLoadingManager* levelManager);
 
 		const std::vector<std::shared_ptr<GameObject>>& getGameObjects();
 
