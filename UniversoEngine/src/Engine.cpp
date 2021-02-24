@@ -61,7 +61,19 @@ namespace engine {
 	}
 
 	void Engine::updateCurrentLevelPhysics(float deltaTime) {
-		
+		for (auto gameObject : currentLevel->getGameObjects()) {
+			gameObject->rigidBody->position = gameObject->transform->position; 
+			this->physicsWorld->appendRigidBody(gameObject->rigidBody);
+		}
+
+		this->physicsWorld->update(deltaTime);
+
+		for (auto gameObject : currentLevel->getGameObjects()) {
+			 gameObject->transform->position = gameObject->rigidBody->position;
+		}
+
+		this->physicsWorld->clear();
+
 	}
 
 	void Engine::updateCurrentLevelLogic(float deltaTime) {
@@ -104,7 +116,7 @@ namespace engine {
 		}
 
 		glfwMakeContextCurrent(this->window);
-		//glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	void Engine::checkGlad() {

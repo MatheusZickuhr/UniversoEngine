@@ -1,4 +1,7 @@
+#pragma once
+
 #include <vector>
+#include <memory>
 #include <glm/glm.hpp>
 #include "RigidBody.h"
 
@@ -8,12 +11,12 @@ namespace engine {
 
     private:
         const glm::vec3 gravityForce = {0.0f, -1.0f, 0.0f};
-        std::vector<RigidBody*> rigidBodies;        
+        std::vector<std::shared_ptr<RigidBody>> rigidBodies;        
 
     public:
         void update(float deltaTime);
 
-        void appendRigidBody(RigidBody* rigidBody);
+        void appendRigidBody(std::shared_ptr<RigidBody> rigidBody);
 
         void clear();
     };

@@ -1,7 +1,8 @@
 #pragma once
 #include <memory>
-#include "renderer/Mesh.h"
-#include "renderer/renderer_api/Texture.h"
+#include "../renderer/Mesh.h"
+#include "../renderer/renderer_api/Texture.h"
+#include "../physics/RigidBody.h"
 #include "Transform.h"
 
 namespace engine {
@@ -13,11 +14,11 @@ namespace engine {
 		std::shared_ptr<Mesh> mesh;
 		std::shared_ptr<Texture> texture;
 		std::shared_ptr<Transform> transform;
+		std::shared_ptr<RigidBody> rigidBody;
 
 		GameObject(
 			std::shared_ptr<Mesh> mesh,
-			std::shared_ptr<Texture> texture,
-			std::shared_ptr<Transform> transform = std::make_shared<Transform>()
+			std::shared_ptr<Texture> texture
 		);
 
 		virtual void onStart() = 0;

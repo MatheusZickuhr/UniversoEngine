@@ -1,6 +1,6 @@
 
 #include "Engine.h"
-#include "DebugCameraController.h"
+#include "utils/DebugCameraController.h"
 
 class Crate : public engine::GameObject {
 
@@ -37,6 +37,7 @@ public:
 
 		crateClone = std::make_shared<Crate>(mesh, texture);
 		crateClone->transform->position = { 3.0f, -5.0f, 0.0f };
+		crateClone->rigidBody->isStatic = true;
 
 
 		this->appendGameObject(crate);

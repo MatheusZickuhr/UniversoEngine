@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "renderer/Camera.h"
-#include "Input.h"
+#include "../renderer/Camera.h"
+#include "../input/Input.h"
 
 namespace engine {
 

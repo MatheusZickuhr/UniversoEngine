@@ -6,15 +6,17 @@ namespace engine {
         this->velocity = {0.0f, 0.0f, 0.0f};       
         this->accelaration = {0.0f, 0.0f, 0.0f};
         this->mass = 1.0f;       
+        this->isStatic = false;
     }
 
     void RigidBody::applyForce(glm::vec3 force) {
         this->accelaration = force / mass;
     }
 
-    void RigidBody::update(float deltaTime) {
-        this->velocity += accelaration;
-        this->position += velocity * deltaTime;
+    void RigidBody::updatePosition(float deltaTime) {
+        this->velocity += this->accelaration;
+        this->position += this->velocity * deltaTime;
+        this->velocity = {0.0f, 0.0f, 0.0f}; 
     }
 
 }

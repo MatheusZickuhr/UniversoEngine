@@ -7,8 +7,8 @@
 
 #include "renderer/Renderer3D.h"
 #include "physics/PhysicsWorld.h"
-#include "Input.h"
-#include "Level.h"
+#include "input/Input.h"
+#include "level/Level.h"
 
 namespace engine {
 
