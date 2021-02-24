@@ -22,10 +22,6 @@ namespace engine {
 
 		Level();
 
-		void start();
-
-		void update(float deltaTime);
-
 		void appendGameObject(std::shared_ptr<GameObject> gameObj);
 
 		const std::vector<std::shared_ptr<GameObject>>& getGameObjects();
@@ -34,12 +30,6 @@ namespace engine {
 
 		virtual void onStart() = 0;
 		virtual void onUpdate(float deltaTime) = 0;
-
-	private:
-
-		void startGameObjects();
-
-		void updateGameObjects(float deltaTime);
 
 	};
 }

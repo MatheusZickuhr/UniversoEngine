@@ -25,7 +25,7 @@ namespace engine {
 
 		Input::init(this->window);
 
-		this->currentLevel->start();
+		this->initializeCurrentLevel();
 	}
 
 	Engine::~Engine() {
@@ -57,7 +57,15 @@ namespace engine {
 
 	void Engine::setLevel(Level* level) {
 		this->currentLevel = level;
-		this->currentLevel->start();
+		this->initializeCurrentLevel();
+	}
+
+	void Engine::initializeCurrentLevel() {
+
+		this->currentLevel->onStart();
+
+		for (auto gameObject : this->currentLevel->getGameObjects()) 
+			gameObject->onStart();
 	}
 
 	void Engine::updateCurrentLevelPhysics(float deltaTime) {
@@ -77,7 +85,10 @@ namespace engine {
 	}
 
 	void Engine::updateCurrentLevelLogic(float deltaTime) {
-		this->currentLevel->update(deltaTime);
+		this->currentLevel->onUpdate(deltaTime);
+
+		for (auto gameObject : this->currentLevel->getGameObjects()) 
+			gameObject->onUpdate(deltaTime);
 	}
 
 	void Engine::renderCurrentLevel(float deltaTime) {

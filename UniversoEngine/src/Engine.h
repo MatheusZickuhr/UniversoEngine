@@ -38,6 +38,9 @@ namespace engine {
 		void setLevel(Level* level);
 
 	private:
+	
+		void initializeCurrentLevel();
+
 		void updateCurrentLevelLogic(float deltaTime);
 
 		void updateCurrentLevelPhysics(float deltaTime);
