@@ -4,6 +4,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "RigidBody.h"
+#include "TriangleIntersection.h"
 
 namespace engine {
 
@@ -19,5 +20,8 @@ namespace engine {
         void appendRigidBody(std::shared_ptr<RigidBody> rigidBody);
 
         void clear();
+
+    private:
+        bool isColliding(std::shared_ptr<RigidBody> rigidBody);
     };
 }

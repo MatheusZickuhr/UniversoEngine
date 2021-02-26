@@ -5,9 +5,8 @@
 #include "../game_object/GameObject.h"
 #include "../renderer/Camera.h"
 
-namespace engine {
 
-	class LevelLoadingManager;
+namespace engine {
 
 	class Level {
 
@@ -21,7 +20,7 @@ namespace engine {
 	public:
 
 		Level();
-
+		
 		void appendGameObject(std::shared_ptr<GameObject> gameObj);
 
 		const std::vector<std::shared_ptr<GameObject>>& getGameObjects();

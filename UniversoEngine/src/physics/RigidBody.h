@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <glm/glm.hpp>
-#include "ColisionMesh.h"
+#include "CollisionMesh.h"
 
 namespace engine {
 
@@ -15,7 +15,7 @@ namespace engine {
 
     public:
         bool isStatic;
-        std::shared_ptr<ColisionMesh> colisionMesh;
+        std::shared_ptr<CollisionMesh> collisionMesh;
 
         glm::vec3 position;
 

@@ -3,7 +3,9 @@
 #include "../renderer/Mesh.h"
 #include "../renderer/renderer_api/Texture.h"
 #include "../physics/RigidBody.h"
+#include "../physics/CollisionMesh.h"
 #include "Transform.h"
+
 
 namespace engine {
 
@@ -16,10 +18,7 @@ namespace engine {
 		std::shared_ptr<Transform> transform;
 		std::shared_ptr<RigidBody> rigidBody;
 
-		GameObject(
-			std::shared_ptr<Mesh> mesh,
-			std::shared_ptr<Texture> texture
-		);
+		GameObject(std::shared_ptr<Mesh> mesh,std::shared_ptr<Texture> texture);
 
 		virtual void onStart() = 0;
 		

@@ -36,7 +36,7 @@ public:
 		crate = std::make_shared<Crate>(mesh, texture);
 
 		crateClone = std::make_shared<Crate>(mesh, texture);
-		crateClone->transform->position = { 3.0f, -5.0f, 0.0f };
+		crateClone->transform->position = { 0.5f, -7.0f, 0.0f };
 		crateClone->rigidBody->isStatic = true;
 
 
