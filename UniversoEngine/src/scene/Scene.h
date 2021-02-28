@@ -2,13 +2,13 @@
 
 #include <vector>
 #include <memory>
-#include "../game_object/GameObject.h"
 #include "../renderer/Camera.h"
+#include "GameObject.h"
 
 
 namespace engine {
 
-	class Level {
+	class Scene {
 
 	private:
 
@@ -19,7 +19,7 @@ namespace engine {
 
 	public:
 
-		Level();
+		Scene();
 		
 		void appendGameObject(std::shared_ptr<GameObject> gameObj);
 

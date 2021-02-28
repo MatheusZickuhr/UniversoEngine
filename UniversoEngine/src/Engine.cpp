@@ -4,12 +4,12 @@
 namespace engine {
 
 	Engine::Engine(
-			Level* initialLevel,
+			Scene* initialScene,
 			float windowWidth,
 			float windowHeight,
 			const char *windowName) {
 		
-		this->currentLevel = initialLevel;
+		this->currentScene = initialScene;
 		this->windowWidth = windowWidth;
 		this->windowHeight = windowHeight;
 		this->windowName = windowName;
@@ -25,7 +25,7 @@ namespace engine {
 
 		Input::init(this->window);
 
-		this->initializeCurrentLevel();
+		this->initializeCurrentScene();
 	}
 
 	Engine::~Engine() {
@@ -39,9 +39,9 @@ namespace engine {
 		float deltaTime = currentFrameTime - this->lastFrameTime;
 		this->lastFrameTime = currentFrameTime;
 
-		this->renderCurrentLevel(deltaTime);
-		this->updateCurrentLevelLogic(deltaTime);
-		this->updateCurrentLevelPhysics(deltaTime);
+		this->renderCurrentScene(deltaTime);
+		this->updateCurrentSceneLogic(deltaTime);
+		this->updateCurrentScenePhysics(deltaTime);
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
@@ -55,40 +55,40 @@ namespace engine {
 		return !glfwWindowShouldClose(this->window);
 	}
 
-	void Engine::setLevel(Level* level) {
-		this->currentLevel = level;
-		this->initializeCurrentLevel();
+	void Engine::setScene(Scene* scene) {
+		this->currentScene = scene;
+		this->initializeCurrentScene();
 	}
 
-	void Engine::initializeCurrentLevel() {
+	void Engine::initializeCurrentScene() {
 
-		this->currentLevel->onStart();
+		this->currentScene->onStart();
 
-		for (auto gameObject : this->currentLevel->getGameObjects()) 
+		for (auto gameObject : this->currentScene->getGameObjects()) 
 			gameObject->onStart();
 	}
 
-	void Engine::updateCurrentLevelPhysics(float deltaTime) {
-		for (auto gameObject : currentLevel->getGameObjects()) 
+	void Engine::updateCurrentScenePhysics(float deltaTime) {
+		for (auto gameObject : currentScene->getGameObjects()) 
 			this->physicsWorld->appendRigidBody(gameObject->rigidBody);
 		
 		this->physicsWorld->update(deltaTime);
 		this->physicsWorld->clear();
 	}
 
-	void Engine::updateCurrentLevelLogic(float deltaTime) {
-		this->currentLevel->onUpdate(deltaTime);
+	void Engine::updateCurrentSceneLogic(float deltaTime) {
+		this->currentScene->onUpdate(deltaTime);
 
-		for (auto gameObject : this->currentLevel->getGameObjects()) 
+		for (auto gameObject : this->currentScene->getGameObjects()) 
 			gameObject->onUpdate(deltaTime);
 	}
 
-	void Engine::renderCurrentLevel(float deltaTime) {
-		auto mvp = currentLevel->getCamera()->getMvp(this->windowWidth, windowHeight);
+	void Engine::renderCurrentScene(float deltaTime) {
+		auto mvp = currentScene->getCamera()->getMvp(this->windowWidth, windowHeight);
 
 		this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);
 		this->rederer->startDrawing(mvp);
-		for (auto gameObject : currentLevel->getGameObjects()) {
+		for (auto gameObject : currentScene->getGameObjects()) {
 			this->rederer->drawMesh(
 				gameObject->mesh,
 				gameObject->texture,

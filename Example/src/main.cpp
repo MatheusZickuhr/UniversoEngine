@@ -17,7 +17,7 @@ public:
 	}
 };
 
-class ExampleLevel : public engine::Level {
+class ExampleScene : public engine::Scene {
 
 private:
 	std::unique_ptr<engine::DebugCameraController> cameraInput;
@@ -51,14 +51,14 @@ public:
 };
 
 int main() {
-	ExampleLevel* initialLevel = new ExampleLevel();
-	engine::Engine* engine = new engine::Engine(initialLevel, 800, 600, "Example");
+	ExampleScene* initialScene = new ExampleScene();
+	engine::Engine* engine = new engine::Engine(initialScene, 800, 600, "Example");
 
 	while (engine->isRunning()) {
 		engine->tick();
 	}
 
-	delete initialLevel;
+	delete initialScene;
 	delete engine;
 
 	return 0;

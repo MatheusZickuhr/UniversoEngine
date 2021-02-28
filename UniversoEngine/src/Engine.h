@@ -8,7 +8,7 @@
 #include "renderer/Renderer3D.h"
 #include "physics/PhysicsWorld.h"
 #include "input/Input.h"
-#include "level/Level.h"
+#include "scene/Scene.h"
 
 namespace engine {
 
@@ -20,11 +20,11 @@ namespace engine {
 		GLFWwindow *window;
 		Renderer3D* rederer;
 		PhysicsWorld* physicsWorld;
-		Level *currentLevel;
+		Scene *currentScene;
 
 	public:
 		Engine(
-			Level* initialLevel,
+			Scene* initialScene,
 			float windowWidth,
 			float windowHeight,
 			const char *windowName);
@@ -35,17 +35,17 @@ namespace engine {
 
 		bool isRunning();
 
-		void setLevel(Level* level);
+		void setScene(Scene* scene);
 
 	private:
 	
-		void initializeCurrentLevel();
+		void initializeCurrentScene();
 
-		void updateCurrentLevelLogic(float deltaTime);
+		void updateCurrentSceneLogic(float deltaTime);
 
-		void updateCurrentLevelPhysics(float deltaTime);
+		void updateCurrentScenePhysics(float deltaTime);
 
-		void renderCurrentLevel(float deltaTime);
+		void renderCurrentScene(float deltaTime);
 
 		void initializeGlfwWindow();
 
