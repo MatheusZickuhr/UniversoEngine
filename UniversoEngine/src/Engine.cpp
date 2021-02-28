@@ -69,19 +69,11 @@ namespace engine {
 	}
 
 	void Engine::updateCurrentLevelPhysics(float deltaTime) {
-		for (auto gameObject : currentLevel->getGameObjects()) {
-			gameObject->rigidBody->position = gameObject->transform->position; 
+		for (auto gameObject : currentLevel->getGameObjects()) 
 			this->physicsWorld->appendRigidBody(gameObject->rigidBody);
-		}
-
+		
 		this->physicsWorld->update(deltaTime);
-
-		for (auto gameObject : currentLevel->getGameObjects()) {
-			 gameObject->transform->position = gameObject->rigidBody->position;
-		}
-
 		this->physicsWorld->clear();
-
 	}
 
 	void Engine::updateCurrentLevelLogic(float deltaTime) {

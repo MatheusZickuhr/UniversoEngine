@@ -2,7 +2,8 @@
 
 namespace engine {
 
-    RigidBody::RigidBody(glm::vec3 position): position(position) {
+    RigidBody::RigidBody(std::shared_ptr<Transform> transform, std::shared_ptr<CollisionMesh> collisionMesh)
+    : transform(transform), collisionMesh(collisionMesh) {
         this->velocity = {0.0f, 0.0f, 0.0f};       
         this->accelaration = {0.0f, 0.0f, 0.0f};
         this->mass = 1.0f;       
@@ -13,9 +14,13 @@ namespace engine {
         this->accelaration = force / mass;
     }
 
+    void RigidBody::update(float deltaTime) {
+        this->updatePosition(deltaTime);
+    }
+
     void RigidBody::updatePosition(float deltaTime) {
         this->velocity += this->accelaration;
-        this->position += this->velocity * deltaTime;
+        this->transform->position += this->velocity * deltaTime;
         this->velocity = {0.0f, 0.0f, 0.0f}; 
     }
 

@@ -3,6 +3,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "CollisionMesh.h"
+#include "../math/Transform.h"
 
 namespace engine {
 
@@ -17,13 +18,16 @@ namespace engine {
         bool isStatic;
         std::shared_ptr<CollisionMesh> collisionMesh;
 
-        glm::vec3 position;
+        std::shared_ptr<Transform> transform;
 
-        RigidBody(glm::vec3 position  = {0.0f, 0.0f, 0.0f});
+        RigidBody(std::shared_ptr<Transform> trasnform, std::shared_ptr<CollisionMesh> collisionMesh);
 
         void applyForce(glm::vec3 force);
 
-        void updatePosition(float deltaTime);
+        void update(float deltaTime); 
 
+        private:
+
+            void updatePosition(float deltaTime);
     };
 }

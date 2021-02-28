@@ -8,7 +8,7 @@ namespace engine {
             if (rigidBody->isStatic || this->isColliding(rigidBody)) continue;
 
             rigidBody->applyForce(gravityForce);
-            rigidBody->updatePosition(deltaTime);
+            rigidBody->update(deltaTime);
         }
     }
 
@@ -16,23 +16,27 @@ namespace engine {
 
         for (auto otherRigidBody: this->rigidBodies) {
 
-            if (targetRigidBody == otherRigidBody) {
+            if (targetRigidBody == otherRigidBody) 
                 continue;
-            }
-
+            
             for (int i = 0; i < targetRigidBody->collisionMesh->vertices.size(); i+=3) {
+                auto targetVertices = targetRigidBody->collisionMesh->vertices;
+                auto targetTranform = targetRigidBody->transform;
 
                 Triangle targetTriangle = {
-                    targetRigidBody->collisionMesh->vertices[i+0] + targetRigidBody->position,
-                    targetRigidBody->collisionMesh->vertices[i+1] + targetRigidBody->position,
-                    targetRigidBody->collisionMesh->vertices[i+2] + targetRigidBody->position
+                    (targetVertices[i+0] + targetTranform->position) * targetTranform->scale,
+                    (targetVertices[i+1] + targetTranform->position) * targetTranform->scale,
+                    (targetVertices[i+2] + targetTranform->position) * targetTranform->scale
                 };
 
                 for (int j = 0; j < otherRigidBody->collisionMesh->vertices.size(); j+=3) {
+                    auto otherVertices = otherRigidBody->collisionMesh->vertices; 
+                    auto otherTransform = otherRigidBody->transform;
+
                     Triangle otherTriangle = {
-                        otherRigidBody->collisionMesh->vertices[j+0] + otherRigidBody->position,
-                        otherRigidBody->collisionMesh->vertices[j+1] + otherRigidBody->position,
-                        otherRigidBody->collisionMesh->vertices[j+2] + otherRigidBody->position
+                        (otherVertices[j+0] + otherTransform->position) * otherTransform->scale,
+                        (otherVertices[j+1] + otherTransform->position) * otherTransform->scale,
+                        (otherVertices[j+2] + otherTransform->position) * otherTransform->scale
                     };
 
                     auto doesCollid = trianglesIntersects(&targetTriangle, &otherTriangle);
