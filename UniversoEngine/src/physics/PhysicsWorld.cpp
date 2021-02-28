@@ -5,10 +5,11 @@ namespace engine {
     void PhysicsWorld::update(float deltaTime) {
 
         for (auto rigidBody : this->rigidBodies) {
+            rigidBody->update(deltaTime);
+            
             if (rigidBody->isStatic || this->isColliding(rigidBody)) continue;
 
             rigidBody->applyForce(gravityForce);
-            rigidBody->update(deltaTime);
         }
     }
 

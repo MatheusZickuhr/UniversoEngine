@@ -21,6 +21,7 @@ namespace engine {
     void RigidBody::updatePosition(float deltaTime) {
         this->velocity += this->accelaration;
         this->transform->position += this->velocity * deltaTime;
+        this->accelaration = {0.0f, 0.0f, 0.0f}; 
         this->velocity = {0.0f, 0.0f, 0.0f}; 
     }
 

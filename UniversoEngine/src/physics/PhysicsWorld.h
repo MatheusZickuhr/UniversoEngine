@@ -11,7 +11,7 @@ namespace engine {
     class PhysicsWorld {
 
     private:
-        const glm::vec3 gravityForce = {0.0f, -1.0f, 0.0f};
+        const glm::vec3 gravityForce = {0.0f, -5.0f, 0.0f};
         std::vector<std::shared_ptr<RigidBody>> rigidBodies;        
 
     public:
