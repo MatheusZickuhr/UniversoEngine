@@ -23,7 +23,7 @@ namespace engine {
         }
     };
 
-    struct Triangle {
+    struct CollisionCheckTriangle {
         glm::vec3 v0;
         glm::vec3 v1;
         glm::vec3 v2;
@@ -35,7 +35,7 @@ namespace engine {
 
         glm::vec3 D;
 
-        void preComputeDistancesFrom(Triangle* other) {
+        void preComputeDistancesFrom(CollisionCheckTriangle* other) {
             // compute signed distance from other s plane 
             const glm::vec3 n = other->n(); 
             const float d = other->d(); 
@@ -44,7 +44,7 @@ namespace engine {
             dv2 = glm::dot(n, v2) + d;
         }
 
-        void preComputeDFrom(Triangle* other) {
+        void preComputeDFrom(CollisionCheckTriangle* other) {
             D = glm::cross(n(), other->n());
         }
 
@@ -106,10 +106,14 @@ namespace engine {
             };
         }
 
+        glm::vec3 centerPosition() {
+            return (v0 + v1 + v2) / 3.0f; 
+        }
+
     };
 
 
-    bool trianglesIntersects(Triangle* T1, Triangle* T2);
+    bool trianglesIntersects(CollisionCheckTriangle* T1, CollisionCheckTriangle* T2);
 
 }
 

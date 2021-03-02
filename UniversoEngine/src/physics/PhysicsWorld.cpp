@@ -5,15 +5,23 @@ namespace engine {
     void PhysicsWorld::update(float deltaTime) {
 
         for (auto rigidBody : this->rigidBodies) {
-            rigidBody->update(deltaTime);
+            if (rigidBody->isStatic) 
+                continue;
+
+            Collision collision = this->checkCollision(rigidBody);
             
-            if (rigidBody->isStatic || this->isColliding(rigidBody)) continue;
+            if (collision.happened) {
+                rigidBody->velocity = {0.0f, 0.0f, 0.0f};
+                rigidBody->applyForce(-gravityForce);
+            }
 
             rigidBody->applyForce(gravityForce);
+
+            rigidBody->update(deltaTime);
         }
     }
 
-    bool PhysicsWorld::isColliding(std::shared_ptr<RigidBody> targetRigidBody) {
+    Collision PhysicsWorld::checkCollision(std::shared_ptr<RigidBody> targetRigidBody) {
 
         for (auto otherRigidBody: this->rigidBodies) {
 
@@ -24,7 +32,7 @@ namespace engine {
                 auto targetVertices = targetRigidBody->collisionMesh->vertices;
                 auto targetTranform = targetRigidBody->transform;
 
-                Triangle targetTriangle = {
+                CollisionCheckTriangle targetTriangle = {
                     (targetVertices[i+0] + targetTranform->position) * targetTranform->scale,
                     (targetVertices[i+1] + targetTranform->position) * targetTranform->scale,
                     (targetVertices[i+2] + targetTranform->position) * targetTranform->scale
@@ -34,7 +42,7 @@ namespace engine {
                     auto otherVertices = otherRigidBody->collisionMesh->vertices; 
                     auto otherTransform = otherRigidBody->transform;
 
-                    Triangle otherTriangle = {
+                    CollisionCheckTriangle otherTriangle = {
                         (otherVertices[j+0] + otherTransform->position) * otherTransform->scale,
                         (otherVertices[j+1] + otherTransform->position) * otherTransform->scale,
                         (otherVertices[j+2] + otherTransform->position) * otherTransform->scale
@@ -42,13 +50,18 @@ namespace engine {
 
                     auto doesCollid = trianglesIntersects(&targetTriangle, &otherTriangle);
 
-                    if (doesCollid)
-                        return true;
+                    if (doesCollid) {
+                        glm::vec3 reverseDirection = glm::normalize(
+                            targetTriangle.centerPosition() - otherTriangle.centerPosition()
+                        );
+                        return {true, reverseDirection};
+                    }
+                        
                 }
             }
         }
 
-        return false;
+        return {false};
     }
 
     void PhysicsWorld::appendRigidBody(std::shared_ptr<RigidBody> rigidBody) {

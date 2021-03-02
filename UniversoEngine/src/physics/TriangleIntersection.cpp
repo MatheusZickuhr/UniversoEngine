@@ -1,7 +1,7 @@
 #include "TriangleIntersection.h"
 namespace engine {
 
-    bool trianglesIntersects(Triangle* T1, Triangle* T2) {
+    bool trianglesIntersects(CollisionCheckTriangle* T1, CollisionCheckTriangle* T2) {
         T1->preComputeDistancesFrom(T2);
         T1->preComputeDFrom(T2);
         T2->preComputeDistancesFrom(T1);

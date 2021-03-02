@@ -11,18 +11,16 @@ namespace engine {
     }
 
     void RigidBody::applyForce(glm::vec3 force) {
-        this->accelaration = force / mass;
+        this->accelaration += force / mass;
     }
 
     void RigidBody::update(float deltaTime) {
-        this->updatePosition(deltaTime);
-    }
-
-    void RigidBody::updatePosition(float deltaTime) {
         this->velocity += this->accelaration;
         this->transform->position += this->velocity * deltaTime;
+        
         this->accelaration = {0.0f, 0.0f, 0.0f}; 
-        this->velocity = {0.0f, 0.0f, 0.0f}; 
+
+        this->velocity = glm::clamp(velocity, minVelocity, maxVelocity);
     }
 
 }

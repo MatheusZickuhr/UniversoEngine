@@ -8,10 +8,17 @@
 
 namespace engine {
 
+    struct Collision {
+        bool happened;
+        glm::vec3 reverseDirection;
+    };
+
     class PhysicsWorld {
 
     private:
-        const glm::vec3 gravityForce = {0.0f, -5.0f, 0.0f};
+        const glm::vec3 gravityDirection = {0.0f, -1.0f, 0.0f};
+        const float gravityMagnitude = 0.1;
+        const glm::vec3 gravityForce = gravityDirection * gravityMagnitude;
         std::vector<std::shared_ptr<RigidBody>> rigidBodies;        
 
     public:
@@ -22,6 +29,6 @@ namespace engine {
         void clear();
 
     private:
-        bool isColliding(std::shared_ptr<RigidBody> rigidBody);
+        Collision checkCollision(std::shared_ptr<RigidBody> rigidBody);
     };
 }

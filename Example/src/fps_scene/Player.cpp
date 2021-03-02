@@ -1,7 +1,7 @@
 #include "Player.h"
 
 void Player::onStart() {
-    this->movementSpeed = 1000.0f;
+    this->movementSpeed = 500.0f;
     this->mouseSensitivity = 0.1f;
 }
 
@@ -35,7 +35,7 @@ void Player::processKeybordInput(float deltaTime) {
 
     glm::vec3 jumpForce = {0.0f, 15.0f, 0.0f};
     if (engine::Input::keyPressed('F')){
-        this->rigidBody->applyForce(jumpForce);
+        this->rigidBody->applyForce(jumpForce * deltaTime);
     }
 }
 
