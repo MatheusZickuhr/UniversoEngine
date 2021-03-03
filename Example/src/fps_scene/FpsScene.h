@@ -5,6 +5,7 @@
 
 #include "Floor.h"
 #include "Player.h"
+#include "Obstacle.h"
 
 
 class FpsScene : public engine::Scene {

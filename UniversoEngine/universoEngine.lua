@@ -15,12 +15,13 @@ project "UniversoEngine"
 		"%{wks.location}/Libraries/imgui/",
 		"%{wks.location}/Libraries/imgui/examples",
 		"%{wks.location}/Libraries/stb_image/include/",
-		"%{wks.location}/Libraries/OBJ_Loader/include/"
+		"%{wks.location}/Libraries/OBJ_Loader/include/",
+		"%{wks.location}/Libraries/tri_tri_intersect/include/"
 	}
     
     files { "src/**.cpp", "src/**.h" }
 
-    links { "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image" }
+    links { "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect" }
 
     filter "system:linux"
         links { "dl", "pthread" }

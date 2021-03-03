@@ -7,61 +7,39 @@ namespace engine {
         for (auto rigidBody : this->rigidBodies) {
             if (rigidBody->isStatic) 
                 continue;
-
-            Collision collision = this->checkCollision(rigidBody);
+       
+            rigidBody->addForce(gravityForce * deltaTime);
             
-            if (collision.happened) {
-                rigidBody->velocity = {0.0f, 0.0f, 0.0f};
-                rigidBody->applyForce(-gravityForce);
+            for (auto toBeAppliedForce : rigidBody->toBeAppliedForces) {
+                rigidBody->applyForce(toBeAppliedForce);
+                rigidBody->moveToNextState();
+                int collisionCount = this->getCollisionCount(rigidBody);
+                rigidBody->moveToPrevState();
+                if (collisionCount > 0) {
+                    rigidBody->applyForce(-toBeAppliedForce);  
+                }
+                
             }
 
-            rigidBody->applyForce(gravityForce);
-
-            rigidBody->update(deltaTime);
+            rigidBody->update();
+            rigidBody->toBeAppliedForces.clear();
         }
     }
 
-    Collision PhysicsWorld::checkCollision(std::shared_ptr<RigidBody> targetRigidBody) {
+     int PhysicsWorld::getCollisionCount(std::shared_ptr<RigidBody> targetRigidBody) {
+        int collisionCount = 0;
 
-        for (auto otherRigidBody: this->rigidBodies) {
+        for (auto otherRigidBody : this->rigidBodies) {
+           if (otherRigidBody == targetRigidBody) continue;
 
-            if (targetRigidBody == otherRigidBody) 
-                continue;
+            bool didCollid = targetRigidBody->collidesWith(otherRigidBody);
+
+            if (didCollid)
+                collisionCount++;
             
-            for (int i = 0; i < targetRigidBody->collisionMesh->vertices.size(); i+=3) {
-                auto targetVertices = targetRigidBody->collisionMesh->vertices;
-                auto targetTranform = targetRigidBody->transform;
-
-                CollisionCheckTriangle targetTriangle = {
-                    (targetVertices[i+0] + targetTranform->position) * targetTranform->scale,
-                    (targetVertices[i+1] + targetTranform->position) * targetTranform->scale,
-                    (targetVertices[i+2] + targetTranform->position) * targetTranform->scale
-                };
-
-                for (int j = 0; j < otherRigidBody->collisionMesh->vertices.size(); j+=3) {
-                    auto otherVertices = otherRigidBody->collisionMesh->vertices; 
-                    auto otherTransform = otherRigidBody->transform;
-
-                    CollisionCheckTriangle otherTriangle = {
-                        (otherVertices[j+0] + otherTransform->position) * otherTransform->scale,
-                        (otherVertices[j+1] + otherTransform->position) * otherTransform->scale,
-                        (otherVertices[j+2] + otherTransform->position) * otherTransform->scale
-                    };
-
-                    auto doesCollid = trianglesIntersects(&targetTriangle, &otherTriangle);
-
-                    if (doesCollid) {
-                        glm::vec3 reverseDirection = glm::normalize(
-                            targetTriangle.centerPosition() - otherTriangle.centerPosition()
-                        );
-                        return {true, reverseDirection};
-                    }
-                        
-                }
-            }
         }
 
-        return {false};
+        return collisionCount;
     }
 
     void PhysicsWorld::appendRigidBody(std::shared_ptr<RigidBody> rigidBody) {

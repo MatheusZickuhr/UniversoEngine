@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "CollisionMesh.h"
 #include "../math/Transform.h"
+#include "TriangleIntersection.h"
 
 namespace engine {
 
@@ -15,17 +17,27 @@ namespace engine {
 
     public:
         float mass;
-        glm::vec3 accelaration;
-        glm::vec3 velocity;
         bool isStatic;
+        glm::vec3 acceleration;
+        glm::vec3 velocity;
+        glm::vec3 prevVelocity;
+        glm::vec3 prevPosition;
         std::shared_ptr<CollisionMesh> collisionMesh;
         std::shared_ptr<Transform> transform;
-        
+        std::vector<glm::vec3> toBeAppliedForces;
+
         RigidBody(std::shared_ptr<Transform> trasnform, std::shared_ptr<CollisionMesh> collisionMesh);
+
+        void moveToNextState();
+
+        void moveToPrevState();
+
+        void addForce(glm::vec3 force);
 
         void applyForce(glm::vec3 force);
 
-        void update(float deltaTime); 
+        void update(); 
 
+        bool collidesWith(std::shared_ptr<RigidBody> other);
     };
 }

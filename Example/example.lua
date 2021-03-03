@@ -16,12 +16,13 @@ project "Example"
 		"%{wks.location}/Libraries/imgui/examples",
 		"%{wks.location}/Libraries/stb_image/include/",
 		"%{wks.location}/Libraries/OBJ_Loader/include/",
-		"%{wks.location}/UniversoEngine/src/",
+		"%{wks.location}/Libraries/tri_tri_intersect/include/",
+		"%{wks.location}/UniversoEngine/src/"
 	}
     
     files { "src/**.cpp", "src/**.h" }
 
-    links { "UniversoEngine", "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image" }
+    links { "UniversoEngine", "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect" }
 
     filter "system:linux"
 		links { "dl", "pthread" }

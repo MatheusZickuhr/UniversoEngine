@@ -5,9 +5,11 @@ void FpsScene::onStart() {
     auto texture = std::make_shared<engine::Texture>("res/textures/crate/crate.jpg");
 
     auto floor = std::make_shared<Floor>(mesh, texture);
+    auto obstacle = std::make_shared<Obstacle>(mesh, texture);
     auto player = std::make_shared<Player>(mesh, texture);
     player->setCamera(this->camera);
 
+    this->appendGameObject(obstacle);
     this->appendGameObject(floor);
     this->appendGameObject(player);
 }
