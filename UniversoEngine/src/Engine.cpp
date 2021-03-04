@@ -38,10 +38,12 @@ namespace engine {
 		float currentFrameTime = glfwGetTime();
 		float deltaTime = currentFrameTime - this->lastFrameTime;
 		this->lastFrameTime = currentFrameTime;
+		
+		constexpr float fixedDeltaTime = 0.0169f; 
 
 		this->renderCurrentScene(deltaTime);
-		this->updateCurrentSceneLogic(deltaTime);
-		this->updateCurrentScenePhysics(deltaTime);
+		this->updateCurrentSceneLogic(fixedDeltaTime);
+		this->updateCurrentScenePhysics(fixedDeltaTime);
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
