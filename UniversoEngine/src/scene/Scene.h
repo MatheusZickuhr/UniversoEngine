@@ -11,7 +11,10 @@
 #include "TransformComponent.h"
 #include "RigidBodyComponent.h"
 
+
 namespace engine {
+
+	class Entity;
 
 	class Scene {
 
@@ -31,6 +34,8 @@ namespace engine {
 		const std::vector<std::shared_ptr<GameObject>>& getGameObjects();
 
 		std::shared_ptr<Camera> getCamera();
+
+		Entity createEntity();
 
 		virtual void onStart() = 0;
 		virtual void onUpdate(float deltaTime) = 0;

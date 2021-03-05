@@ -17,11 +17,14 @@
 		auto collisionMesh = std::make_shared<engine::CollisionMesh>(vertices);
 		auto rigidBody = std::make_shared<engine::RigidBody>(transform, collisionMesh);
 
-		auto entity = registry.create();
-		registry.emplace<engine::MeshComponent>(entity, mesh);
-		registry.emplace<engine::TextureComponent>(entity, texture);
-		registry.emplace<engine::TransformComponent>(entity, transform);
-		registry.emplace<engine::RigidBodyComponent>(entity, rigidBody);
+		auto entity = createEntity();
+		entity.addComponent<engine::MeshComponent>(mesh);
+		entity.addComponent<engine::TextureComponent>(texture);
+		entity.addComponent<engine::TransformComponent>(transform);
+		entity.addComponent<engine::RigidBodyComponent>(rigidBody);
+		
+		auto t = entity.getComponent<engine::TransformComponent>();
+		auto has = entity.hasComponent<engine::TransformComponent>();
 
 		// create second entity
 

@@ -1,12 +1,11 @@
 #pragma once
-
+#include "scene/Entity.h"
 #include "scene/Scene.h"
 #include "utils/DebugCameraController.h"
 #include "renderer/Mesh.h"
 #include "renderer/renderer_api/Texture.h"
 #include "physics/RigidBody.h"
 #include "physics/CollisionMesh.h"
-
 #include "Crate.h"
 
 class ExampleScene : public engine::Scene {

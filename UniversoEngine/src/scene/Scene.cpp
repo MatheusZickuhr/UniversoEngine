@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Entity.h"
 
 namespace engine {
 
@@ -16,6 +17,11 @@ namespace engine {
 
 	std::shared_ptr<Camera> Scene::getCamera() {
 		return this->camera;
+	}
+
+	Entity Scene::createEntity() {
+		entt::entity entity = this->registry.create();
+		return Entity {entity, this}; 
 	}
 
 }
