@@ -11,7 +11,7 @@ namespace engine {
 
     private:
         const glm::vec3 gravityDirection = {0.0f, -1.0f, 0.0f};
-        const float gravityMagnitude = 10.0;
+        const float gravityMagnitude = 0.3;
         const glm::vec3 gravityForce = gravityDirection * gravityMagnitude;
         std::vector<std::shared_ptr<RigidBody>> rigidBodies;        
 

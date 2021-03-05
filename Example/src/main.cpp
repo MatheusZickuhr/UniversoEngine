@@ -5,7 +5,7 @@
 
 
 int main() {
-	FpsScene* initialScene = new FpsScene();
+	ExampleScene* initialScene = new ExampleScene();
 	engine::Engine* engine = new engine::Engine(initialScene, 800, 600, "Example");
 
 	while (engine->isRunning()) {

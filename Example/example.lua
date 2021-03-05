@@ -1,6 +1,7 @@
 project "Example"
 	kind "ConsoleApp"
     language "C++"
+	cppdialect "C++17"
 	architecture "x86_64"
 	staticruntime "on"
 
@@ -17,12 +18,13 @@ project "Example"
 		"%{wks.location}/Libraries/stb_image/include/",
 		"%{wks.location}/Libraries/OBJ_Loader/include/",
 		"%{wks.location}/Libraries/tri_tri_intersect/include/",
+		"%{wks.location}/Libraries/entt/include/",
 		"%{wks.location}/UniversoEngine/src/"
 	}
     
     files { "src/**.cpp", "src/**.h" }
 
-    links { "UniversoEngine", "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect" }
+    links { "UniversoEngine", "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect", "entt" }
 
     filter "system:linux"
 		links { "dl", "pthread" }

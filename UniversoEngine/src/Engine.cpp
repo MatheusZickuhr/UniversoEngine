@@ -71,8 +71,10 @@ namespace engine {
 	}
 
 	void Engine::updateCurrentScenePhysics(float deltaTime) {
-		for (auto gameObject : currentScene->getGameObjects()) 
-			this->physicsWorld->appendRigidBody(gameObject->rigidBody);
+		auto view = this->currentScene->registry.view<RigidBodyComponent>();
+
+		for (auto [entity, rbComp]: view.each()) 
+			this->physicsWorld->appendRigidBody(rbComp.rigidBody);
 		
 		this->physicsWorld->update(deltaTime);
 		this->physicsWorld->clear();
@@ -86,18 +88,25 @@ namespace engine {
 	}
 
 	void Engine::renderCurrentScene(float deltaTime) {
-		auto mvp = currentScene->getCamera()->getMvp(this->windowWidth, windowHeight);
+		auto view = this->currentScene->registry
+		.view<MeshComponent, TextureComponent, TransformComponent>();
 
+		auto mvp = currentScene->getCamera()->getMvp(this->windowWidth, windowHeight);
 		this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);
 		this->rederer->startDrawing(mvp);
-		for (auto gameObject : currentScene->getGameObjects()) {
+
+		for (auto [entity, meshComp, textComp, transComp] : view.each()) {
+			auto mesh = meshComp.mesh;
+			auto texture = textComp.texture;
+			auto transform = transComp.transform;
+
 			this->rederer->drawMesh(
-				gameObject->mesh,
-				gameObject->texture,
-				gameObject->transform->position,
-				gameObject->transform->scale,
-				gameObject->transform->rotationAxis,
-				gameObject->transform->rotationAngle
+				mesh, 
+				texture,
+				transform->position,
+				transform->scale,
+				transform->rotationAxis,
+				transform->rotationAngle
 			);
 		}
 		this->rederer->endDrawing();
