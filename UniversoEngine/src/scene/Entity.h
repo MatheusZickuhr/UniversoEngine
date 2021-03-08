@@ -3,10 +3,13 @@
 #include <type_traits>
 #include <entt/entt.hpp>
 #include "Scene.h"
-#include "Components.h"
 
 namespace engine {
     
+    struct RigidBodyComponent;
+    
+    struct BehaviorComponent;
+
     class Entity {
 
     private:
@@ -37,5 +40,8 @@ namespace engine {
 
     template<>
     RigidBodyComponent& Entity::addComponent<RigidBodyComponent>();
+
+    template<>
+    BehaviorComponent&  Entity::addComponent<BehaviorComponent >();
 
 }

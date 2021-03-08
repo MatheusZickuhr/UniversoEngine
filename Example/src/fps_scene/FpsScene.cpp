@@ -9,9 +9,9 @@ void FpsScene::onStart() {
     auto player = std::make_shared<Player>(mesh, texture);
     player->setCamera(this->camera);
 
-    this->appendGameObject(obstacle);
-    this->appendGameObject(floor);
-    this->appendGameObject(player);
+    // this->appendGameObject(obstacle);
+    // this->appendGameObject(floor);
+    // this->appendGameObject(player);
 }
 
 void FpsScene::onUpdate(float deltaTime) {

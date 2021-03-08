@@ -9,6 +9,9 @@
 #include "../physics/RigidBody.h"
 #include "../math/Transform.h"
 
+#include "Entity.h"
+#include "Behavior.h"
+
 namespace engine {
 
     struct MeshComponent {
@@ -35,6 +38,25 @@ namespace engine {
 
     struct TransformComponent {
         Transform transform;
+    };
+
+
+    struct BehaviorComponent {
+        Behavior* behavior = nullptr;
+        Entity* entity = nullptr;
+
+        BehaviorComponent(Entity* entity) {
+            this->entity = entity;
+        }
+        
+        ~BehaviorComponent() {
+            delete behavior;
+        }
+
+        template<typename T>
+        void bindBehavior() {
+            behavior = new T(entity);
+        }
     };
 
 }

@@ -66,8 +66,6 @@ namespace engine {
 
 		this->currentScene->onStart();
 
-		for (auto gameObject : this->currentScene->getGameObjects()) 
-			gameObject->onStart();
 	}
 
 	void Engine::updateCurrentScenePhysics(float deltaTime) {
@@ -90,8 +88,6 @@ namespace engine {
 	void Engine::updateCurrentSceneLogic(float deltaTime) {
 		this->currentScene->onUpdate(deltaTime);
 
-		for (auto gameObject : this->currentScene->getGameObjects()) 
-			gameObject->onUpdate(deltaTime);
 	}
 
 	void Engine::renderCurrentScene(float deltaTime) {

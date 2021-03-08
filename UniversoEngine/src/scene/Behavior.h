@@ -1,3 +1,4 @@
+#pragma once
 #include "Entity.h"
 
 namespace engine {
@@ -10,8 +11,8 @@ namespace engine {
     public:
         Behavior(Entity* entity) : entity(entity) {}
         
-        virtual void onUpdate(float deltaTime);
+        virtual void onUpdate(float deltaTime) = 0;
 
-        virtual void onStart(); 
+        virtual void onStart() = 0; 
     };
 }

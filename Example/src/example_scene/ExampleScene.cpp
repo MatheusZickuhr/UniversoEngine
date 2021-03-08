@@ -1,4 +1,5 @@
 #include "ExampleScene.h"
+#include "scene/Components.h"
 
 ExampleScene::~ExampleScene() {
 	delete this->boxTexture;
@@ -11,15 +12,12 @@ void ExampleScene::onStart() {
 	boxTexture = new Texture("res/textures/crate/crate.jpg");
 	boxMesh = new Mesh("res/models/crate/crate.obj");
 	
-	// used for physics collision
-	auto boxCollisionMesh  = boxMesh->getVeticesPositions();
-
 	auto entity = createEntity();
-	entity.addComponent<MeshComponent>(boxMesh);
-	entity.addComponent<TextureComponent>(boxTexture);
-	entity.addComponent<TransformComponent>();
-	entity.addComponent<RigidBodyComponent>();
-
+	entity->addComponent<MeshComponent>(boxMesh);
+	entity->addComponent<TextureComponent>(boxTexture);
+	entity->addComponent<TransformComponent>();
+	entity->addComponent<RigidBodyComponent>();
+	entity->addComponent<BehaviorComponent>().bindBehavior<CrateBehavior>();
 }
 
 void ExampleScene::onUpdate(float deltaTime) {
