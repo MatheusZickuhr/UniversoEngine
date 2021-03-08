@@ -71,12 +71,19 @@ namespace engine {
 	}
 
 	void Engine::updateCurrentScenePhysics(float deltaTime) {
-		auto view = this->currentScene->registry.view<RigidBodyComponent>();
+		auto view = this->currentScene->registry
+		.view<RigidBodyComponent, TransformComponent>();
 
-		for (auto [entity, rbComp]: view.each()) 
+		for (auto [entity, rbComp, transComp]: view.each()) {
 			this->physicsWorld->appendRigidBody(rbComp.rigidBody);
+		} 
 		
 		this->physicsWorld->update(deltaTime);
+
+		for (auto [entity, rbComp, transComp]: view.each()) {
+			transComp.transform.position = rbComp.rigidBody->transform.position; 
+		} 
+
 		this->physicsWorld->clear();
 	}
 
@@ -96,17 +103,13 @@ namespace engine {
 		this->rederer->startDrawing(mvp);
 
 		for (auto [entity, meshComp, textComp, transComp] : view.each()) {
-			auto mesh = meshComp.mesh;
-			auto texture = textComp.texture;
-			auto transform = transComp.transform;
-
 			this->rederer->drawMesh(
-				mesh, 
-				texture,
-				transform->position,
-				transform->scale,
-				transform->rotationAxis,
-				transform->rotationAngle
+				meshComp.mesh, 
+				textComp.texture,
+				transComp.transform.position,
+				transComp.transform.scale,
+				transComp.transform.rotationAxis,
+				transComp.transform.rotationAngle
 			);
 		}
 		this->rederer->endDrawing();
@@ -130,7 +133,7 @@ namespace engine {
 		}
 
 		glfwMakeContextCurrent(this->window);
-		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		// glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	void Engine::checkGlad() {

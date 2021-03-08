@@ -3,7 +3,7 @@
 
 namespace engine {
 
-    RigidBody::RigidBody(std::shared_ptr<Transform> transform, std::shared_ptr<CollisionMesh> collisionMesh)
+    RigidBody::RigidBody(std::vector<glm::vec3> collisionMesh)
     : transform(transform), collisionMesh(collisionMesh) {
         this->velocity = {0.0f, 0.0f, 0.0f};       
         this->acceleration = {0.0f, 0.0f, 0.0f};
@@ -21,7 +21,7 @@ namespace engine {
 
     void RigidBody::update() {
         this->velocity += this->acceleration;
-        this->transform->position += this->velocity;
+        this->transform.position += this->velocity;
         this->acceleration = {0.0f, 0.0f, 0.0f};
         this->velocity = {0.0f, 0.0f, 0.0f};
         this->velocity = glm::clamp(velocity, minVelocity, maxVelocity);
@@ -29,32 +29,27 @@ namespace engine {
 
     void RigidBody::moveToNextState() {
         this->prevVelocity = this->velocity;
-        this->prevPosition = this->transform->position;
+        this->prevPosition = this->transform.position;
 
         this->velocity += this->acceleration;
-        this->transform->position += this->velocity;
+        this->transform.position += this->velocity;
     }
 
     void RigidBody::moveToPrevState() {
         this->velocity = this->prevVelocity;
-        this->transform->position = this->prevPosition;
+        this->transform.position = this->prevPosition;
     }
 
-    bool RigidBody::collidesWith(std::shared_ptr<RigidBody> other) {
-        for (int i = 0; i < this->collisionMesh->vertices.size(); i+=3) {
-            auto vertices = this->collisionMesh->vertices;
-            
-            auto v0 = (vertices[i+0] + this->transform->position) * this->transform->scale;
-            auto v1 = (vertices[i+1] + this->transform->position) * this->transform->scale;
-            auto v2 = (vertices[i+2] + this->transform->position) * this->transform->scale;
+    bool RigidBody::collidesWith(RigidBody* other) {
+        for (int i = 0; i < collisionMesh.size(); i+=3) {     
+            auto v0 = (collisionMesh[i+0] + this->transform.position) * this->transform.scale;
+            auto v1 = (collisionMesh[i+1] + this->transform.position) * this->transform.scale;
+            auto v2 = (collisionMesh[i+2] + this->transform.position) * this->transform.scale;
 
-            for (int j = 0; j < other->collisionMesh->vertices.size(); j+=3) {
-                auto otherVertices = other->collisionMesh->vertices; 
-                auto otherTransform = other->transform;
-
-                auto u0 = (otherVertices[j+0] + otherTransform->position) * otherTransform->scale;
-                auto u1 = (otherVertices[j+1] + otherTransform->position) * otherTransform->scale;
-                auto u2 = (otherVertices[j+2] + otherTransform->position) * otherTransform->scale;
+            for (int j = 0; j < other->collisionMesh.size(); j+=3) {
+                auto u0 = (other->collisionMesh[j+0] + other->transform.position) * other->transform.scale;
+                auto u1 = (other->collisionMesh[j+1] + other->transform.position) * other->transform.scale;
+                auto u2 = (other->collisionMesh[j+2] + other->transform.position) * other->transform.scale;
 
                 auto doesCollid = tri_tri_intersect(
                     glm::value_ptr(v0), glm::value_ptr(v1), glm::value_ptr(v2),

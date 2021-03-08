@@ -17,4 +17,14 @@ namespace engine {
 		}
 	}
 
+	std::vector<glm::vec3> Mesh::getVeticesPositions() {
+		std::vector<glm::vec3> verticesPositions;
+
+		for (auto vertex : this->vertices) {
+		 	verticesPositions.push_back(vertex.position);
+		}
+
+		return verticesPositions;
+	}
+
 }

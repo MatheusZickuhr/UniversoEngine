@@ -1,10 +1,12 @@
 #pragma once
 
+#include <type_traits>
 #include <entt/entt.hpp>
 #include "Scene.h"
+#include "Components.h"
 
 namespace engine {
-
+    
     class Entity {
 
     private:
@@ -18,8 +20,7 @@ namespace engine {
 
         template<typename T, typename... Args>
         T& addComponent(Args &&... args) {
-            T& comp = scene->registry.emplace<T>(entity, std::forward<Args>(args)...);
-            return comp;
+            return scene->registry.emplace<T>(entity, std::forward<Args>(args)...);
         }
 
         template<typename T>
@@ -33,5 +34,8 @@ namespace engine {
         }
 
     };
+
+    template<>
+    RigidBodyComponent& Entity::addComponent<RigidBodyComponent>();
 
 }

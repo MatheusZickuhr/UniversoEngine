@@ -6,11 +6,7 @@
 #include "GameObject.h"
 #include "entt/entt.hpp"
 
-#include "MeshComponent.h"
-#include "TextureComponent.h"
-#include "TransformComponent.h"
-#include "RigidBodyComponent.h"
-
+#include "Components.h"
 
 namespace engine {
 

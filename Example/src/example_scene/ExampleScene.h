@@ -5,18 +5,21 @@
 #include "renderer/Mesh.h"
 #include "renderer/renderer_api/Texture.h"
 #include "physics/RigidBody.h"
-#include "physics/CollisionMesh.h"
 #include "Crate.h"
 
-class ExampleScene : public engine::Scene {
+using namespace engine;
+
+class ExampleScene : public Scene {
 
 private:
-	std::unique_ptr<engine::DebugCameraController> cameraInput;
+	DebugCameraController* cameraInput;
 
-	std::shared_ptr<Crate> crate;
-	std::shared_ptr<Crate> crateClone;
+	Texture* boxTexture;
+	Mesh* boxMesh;
 
 public:
+
+	~ExampleScene();
 
 	void onStart() override;
 
