@@ -5,7 +5,7 @@ namespace engine {
 
     class Behavior {
         
-    private:
+    protected:
         Entity* entity;
 
     public:

@@ -1,11 +1,10 @@
-#pragma once
 #include <memory>
-#include "scene/GameObject.h"
-#include "renderer/Camera.h"
+#include "scene/Behavior.h"
 #include "input/Input.h"
+#include "physics/RigidBody.h"
+#include "scene/Components.h"
 
-
-class Player: public engine::GameObject {
+class PlayerBehavior : public engine::Behavior {
 
 private:
     std::shared_ptr<engine::Camera> camera;
@@ -16,11 +15,12 @@ private:
     bool firstMouse = true;
 
 public:
-    using engine::GameObject::GameObject;
+
+    using engine::Behavior::Behavior;
+
+    void onStart() override;
 
     void onUpdate(float deltaTime) override;
-    void onStart() override;
-    void setCamera(std::shared_ptr<engine::Camera> camera);
 
 private:
 

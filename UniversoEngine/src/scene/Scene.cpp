@@ -19,10 +19,10 @@ namespace engine {
 	}
 
 	Entity* Scene::createEntity() {
-		entt::entity entity = this->registry.create();
-		auto newEntity = new Entity {entity, this};
-		entities.push_back(newEntity); 
-		return newEntity;
+		entt::entity enttEntity = this->registry.create();
+		Entity* entity = new Entity {enttEntity, this};
+		this->entities.push_back(entity);
+		return entity;
 	}
 
 }

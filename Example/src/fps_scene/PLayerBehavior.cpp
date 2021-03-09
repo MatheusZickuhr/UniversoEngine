@@ -1,45 +1,46 @@
-#include "Player.h"
+#include "PLayerBehavior.h"
 
-void Player::onStart() {
+
+void PlayerBehavior::onStart() {
+    camera =entity->getScene()->getCamera();
     this->movementSpeed = 6.0f;
     this->mouseSensitivity = 0.1f;
 }
 
-void Player::setCamera(std::shared_ptr<engine::Camera> camera) {
-    this->camera = camera;
-}
-
-void Player::onUpdate(float deltaTime) {
-    this->camera->position = this->transform->position;
+void PlayerBehavior::onUpdate(float deltaTime) {
+    auto transformComponent = entity->getComponent<engine::TransformComponent>();
+    this->camera->position = transformComponent.transform.position;
     this->camera->position.y += 2;
 
     this->processKeybordInput(deltaTime);
     this->processMouseInput();
 }
 
-void Player::processKeybordInput(float deltaTime) {
+void PlayerBehavior::processKeybordInput(float deltaTime) {
+    auto rigidBodyComponent = entity->getComponent<engine::RigidBodyComponent>();
+
     glm::vec3 frontDirection = this->movementSpeed * camera->front;
     frontDirection.y = 0;
     glm::vec3 rightDirection = this->movementSpeed * camera->right;
     rightDirection.y = 0;
 
     if (engine::Input::keyPressed('W'))
-        this->rigidBody->addForce(frontDirection * deltaTime);
+        rigidBodyComponent.rigidBody->addForce(frontDirection * deltaTime);
     if (engine::Input::keyPressed('S'))
-        this->rigidBody->addForce(-frontDirection * deltaTime);
+        rigidBodyComponent.rigidBody->addForce(-frontDirection * deltaTime);
     if (engine::Input::keyPressed('D'))
-        this->rigidBody->addForce(rightDirection * deltaTime);
+        rigidBodyComponent.rigidBody->addForce(rightDirection * deltaTime);
     if (engine::Input::keyPressed('A'))
-        this->rigidBody->addForce(-rightDirection * deltaTime);
+        rigidBodyComponent.rigidBody->addForce(-rightDirection * deltaTime);
 
 
     glm::vec3 jumpForce = {0.0f, 15.0f, 0.0f};
     if (engine::Input::keyPressed('F')){
-        this->rigidBody->addForce(jumpForce * deltaTime);
+        rigidBodyComponent.rigidBody->addForce(jumpForce * deltaTime);
     }
 }
 
-void Player::processMouseInput() {
+void PlayerBehavior::processMouseInput() {
     double xpos, ypos;
     engine::Input::getCursorPos(&xpos, &ypos);
 
@@ -59,7 +60,7 @@ void Player::processMouseInput() {
 }
 
 
-void Player::updateCameraAngles(float xoffset, float yoffset, GLboolean constrainPitch) {
+void PlayerBehavior::updateCameraAngles(float xoffset, float yoffset, GLboolean constrainPitch) {
     xoffset *= this->mouseSensitivity;
     yoffset *= this->mouseSensitivity;
 

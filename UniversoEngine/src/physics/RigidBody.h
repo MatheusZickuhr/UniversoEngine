@@ -22,7 +22,7 @@ namespace engine {
         glm::vec3 prevVelocity;
         glm::vec3 prevPosition;
         std::vector<glm::vec3> collisionMesh;
-        Transform transform;
+        Transform* transform;
         std::vector<glm::vec3> toBeAppliedForces;
 
         RigidBody(std::vector<glm::vec3> collisionMesh);

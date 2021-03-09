@@ -36,6 +36,10 @@ namespace engine {
             return scene->registry.has<T>(entity);
         }
 
+        Scene* getScene() {
+            return this->scene;
+        }
+
     };
 
     template<>

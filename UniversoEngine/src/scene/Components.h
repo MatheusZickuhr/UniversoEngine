@@ -23,39 +23,28 @@ namespace engine {
     };
 
     struct RigidBodyComponent {
-        
-        RigidBody* rigidBody = nullptr;
+        std::shared_ptr<RigidBody> rigidBody;
 
         RigidBodyComponent(std::vector<glm::vec3> collisionMesh) {
-            rigidBody = new RigidBody(collisionMesh);
+            rigidBody = std::make_shared<RigidBody>(collisionMesh);
         }
-        
-        ~RigidBodyComponent() {
-            delete rigidBody;
-        }
-        
     };
 
     struct TransformComponent {
         Transform transform;
     };
 
-
     struct BehaviorComponent {
-        Behavior* behavior = nullptr;
+        std::shared_ptr<Behavior> behavior;
         Entity* entity = nullptr;
 
         BehaviorComponent(Entity* entity) {
             this->entity = entity;
         }
-        
-        ~BehaviorComponent() {
-            delete behavior;
-        }
-
+    
         template<typename T>
         void bindBehavior() {
-            behavior = new T(entity);
+            behavior = std::make_shared<T>(entity);
         }
     };
 
