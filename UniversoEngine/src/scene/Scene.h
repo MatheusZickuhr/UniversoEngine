@@ -3,7 +3,6 @@
 #include <vector>
 #include <memory>
 #include "../renderer/Camera.h"
-#include "GameObject.h"
 #include "entt/entt.hpp"
 
 namespace engine {
