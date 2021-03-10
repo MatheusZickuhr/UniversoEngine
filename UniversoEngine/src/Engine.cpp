@@ -68,6 +68,7 @@ namespace engine {
 
 		auto view = this->currentScene->registry.view<BehaviorComponent>();
 			for (auto [entity, behaviorComp]: view.each()) {
+			behaviorComp.behavior->initialize();                                 
 			behaviorComp.behavior->onStart();
 		} 
 	}
@@ -89,7 +90,14 @@ namespace engine {
 		this->currentScene->onUpdate(deltaTime);
 
 		auto view = this->currentScene->registry.view<BehaviorComponent>();
+
 		for (auto [entity, behaviorComp]: view.each()) {
+
+			if (!behaviorComp.behavior->isInitialized()) {
+				behaviorComp.behavior->initialize();
+				behaviorComp.behavior->onStart();
+			}
+
 			behaviorComp.behavior->onUpdate(deltaTime);
 		} 
 
