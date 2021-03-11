@@ -3,20 +3,31 @@
 
 namespace engine {
 
+	float windowWidth, windowHeight;
+
+	void framebufferSizeCallback(GLFWwindow* window, int newWindowWidth, int newWindowHeight) {
+		windowWidth = newWindowWidth;
+		windowHeight = newWindowHeight;
+		glViewport(0, 0, newWindowWidth, newWindowHeight);
+	}
+
+
 	Engine::Engine(
 			Scene* initialScene,
-			float windowWidth,
-			float windowHeight,
+			float initialWindowWidth,
+			float initialWindowHeight,
 			const char *windowName) {
 		
+		windowWidth = initialWindowWidth;
+		windowHeight = initialWindowHeight;
+		
 		this->currentScene = initialScene;
-		this->windowWidth = windowWidth;
-		this->windowHeight = windowHeight;
 		this->windowName = windowName;
 		this->lastFrameTime = 0.0f; 
 
 		this->initializeGlfwWindow();
 		this->checkGlad();
+
 		glViewport(0, 0, windowWidth, windowHeight);
 
 		this->rederer = new Renderer3D();
@@ -107,7 +118,7 @@ namespace engine {
 		auto view = this->currentScene->registry
 		.view<MeshComponent, TextureComponent, TransformComponent>();
 
-		auto mvp = currentScene->getCamera()->getMvp(this->windowWidth, windowHeight);
+		auto mvp = currentScene->getCamera()->getMvp(windowWidth, windowHeight);
 		this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);
 		this->rederer->startDrawing(mvp);
 
@@ -131,7 +142,7 @@ namespace engine {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-		this->window = glfwCreateWindow(this->windowWidth, this->windowHeight, this->windowName, NULL, NULL);
+		this->window = glfwCreateWindow(windowWidth, windowHeight, this->windowName, NULL, NULL);
 
 		if (this->window == NULL) {
 			std::cout << "Failed to create GLFW window" << std::endl;
@@ -142,6 +153,7 @@ namespace engine {
 		}
 
 		glfwMakeContextCurrent(this->window);
+		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		glfwSwapInterval(1);

@@ -18,7 +18,7 @@ namespace engine {
 	class Engine {
 
 	private:
-		float windowWidth, windowHeight, lastFrameTime;
+		float lastFrameTime;
 		const char *windowName;
 		GLFWwindow *window;
 		Renderer3D* rederer;
@@ -28,8 +28,8 @@ namespace engine {
 	public:
 		Engine(
 			Scene* initialScene,
-			float windowWidth,
-			float windowHeight,
+			float initialWindowWidth,
+			float initialWindowHeight,
 			const char *windowName);
 
 		~Engine();
