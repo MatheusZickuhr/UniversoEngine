@@ -1,21 +1,25 @@
 #pragma once
-
+#include "scene/Entity.h"
 #include "scene/Scene.h"
 #include "utils/DebugCameraController.h"
 #include "renderer/Mesh.h"
 #include "renderer/renderer_api/Texture.h"
+#include "physics/RigidBody.h"
+#include "CrateBehavior.h"
 
-#include "Crate.h"
+using namespace engine;
 
-class ExampleScene : public engine::Scene {
+class ExampleScene : public Scene {
 
 private:
-	std::unique_ptr<engine::DebugCameraController> cameraInput;
+	DebugCameraController* cameraInput;
 
-	std::shared_ptr<Crate> crate;
-	std::shared_ptr<Crate> crateClone;
+	Texture* boxTexture;
+	Mesh* boxMesh;
 
 public:
+
+	~ExampleScene();
 
 	void onStart() override;
 

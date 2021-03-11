@@ -9,6 +9,9 @@
 #include "physics/PhysicsWorld.h"
 #include "input/Input.h"
 #include "scene/Scene.h"
+#include "entt/entt.hpp"
+
+#include "scene/Components.h"
 
 namespace engine {
 

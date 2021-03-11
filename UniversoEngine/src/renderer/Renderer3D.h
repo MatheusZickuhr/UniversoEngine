@@ -48,8 +48,8 @@ namespace engine {
         void endDrawing();
 
         void drawMesh(
-            std::shared_ptr<Mesh> mesh,
-            std::shared_ptr<Texture> texture,
+		    Mesh* mesh,
+		    Texture* texture,
             glm::vec3 position,
             glm::vec3 scale,
             glm::vec3 rotationAxis,

@@ -1,17 +1,17 @@
-project "tri_tri_intersect"
+project "entt"
 	kind "StaticLib"
-	language "C"
+	language "C++"
+    cppdialect "C++17"
 	architecture "x86_64"
 
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	
-	includedirs { "tri_tri_intersect/include/" }
+	includedirs { "entt/include/" }
 
 	files
 	{
-		"tri_tri_intersect/**.h",
-		"tri_tri_intersect/**.c"
+		"entt/**.hpp", "entt/**.cpp",
 	}
 	
 	filter "system:linux"

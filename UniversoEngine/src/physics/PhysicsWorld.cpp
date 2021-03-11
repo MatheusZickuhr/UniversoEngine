@@ -26,7 +26,7 @@ namespace engine {
         }
     }
 
-     int PhysicsWorld::getCollisionCount(std::shared_ptr<RigidBody> targetRigidBody) {
+     int PhysicsWorld::getCollisionCount(RigidBody* targetRigidBody) {
         int collisionCount = 0;
 
         for (auto otherRigidBody : this->rigidBodies) {
@@ -42,7 +42,7 @@ namespace engine {
         return collisionCount;
     }
 
-    void PhysicsWorld::appendRigidBody(std::shared_ptr<RigidBody> rigidBody) {
+    void PhysicsWorld::appendRigidBody(RigidBody* rigidBody) {
         this->rigidBodies.push_back(rigidBody);
     }
 

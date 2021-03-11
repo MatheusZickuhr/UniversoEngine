@@ -3,29 +3,30 @@
 #include <vector>
 #include <memory>
 #include "../renderer/Camera.h"
-#include "GameObject.h"
-
+#include "entt/entt.hpp"
 
 namespace engine {
+
+	class Entity;
 
 	class Scene {
 
 	private:
-
-		std::vector<std::shared_ptr<GameObject>> gameObjects;
-
+		std::vector<Entity*> entities;
+		
 	protected:
 		std::shared_ptr<Camera> camera;
 
 	public:
+		entt::registry registry;
 
 		Scene();
+
+		~Scene();
 		
-		void appendGameObject(std::shared_ptr<GameObject> gameObj);
-
-		const std::vector<std::shared_ptr<GameObject>>& getGameObjects();
-
 		std::shared_ptr<Camera> getCamera();
+
+		Entity* createEntity();
 
 		virtual void onStart() = 0;
 		virtual void onUpdate(float deltaTime) = 0;

@@ -1,8 +1,7 @@
 
 #include "Engine.h"
-#include "example_scene/ExampleScene.h"
 #include "fps_scene/FpsScene.h"
-
+#include "example_scene/ExampleScene.h"
 
 int main() {
 	FpsScene* initialScene = new FpsScene();

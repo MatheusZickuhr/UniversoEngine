@@ -10,7 +10,8 @@ project "OBJ_Loader"
 
 	files
 	{
-		"OBJ_Loader/include/OBJ_Loader/*.h"
+		"OBJ_Loader/**.h",
+		"OBJ_Loader/**.cpp"
 	}
 	
 	filter "system:linux"

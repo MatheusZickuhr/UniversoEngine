@@ -12,5 +12,7 @@ namespace engine {
 		std::vector<Vertex> vertices;
 
 		Mesh(const char* filepath);
+
+		std::vector<glm::vec3> getVeticesPositions();
 	};
 }

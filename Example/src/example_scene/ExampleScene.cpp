@@ -1,22 +1,25 @@
 #include "ExampleScene.h"
+#include "scene/Components.h"
 
-	void ExampleScene::onStart() {
-		this->cameraInput = std::make_unique<engine::DebugCameraController>(this->camera);
+ExampleScene::~ExampleScene() {
+	delete this->boxTexture;
+	delete this->boxMesh;
+	delete cameraInput;
+}
 
-		auto mesh = std::make_shared<engine::Mesh>("res/models/crate/crate.obj");
-		auto texture = std::make_shared<engine::Texture>("res/textures/crate/crate.jpg");
+void ExampleScene::onStart() {
+	cameraInput = new DebugCameraController(this->camera);
+	boxTexture = new Texture("res/textures/crate/crate.jpg");
+	boxMesh = new Mesh("res/models/crate/crate.obj");
+	
+	auto entity = createEntity();
+	entity->addComponent<MeshComponent>(boxMesh);
+	entity->addComponent<TextureComponent>(boxTexture);
+	entity->addComponent<TransformComponent>();
+	entity->addComponent<RigidBodyComponent>();
+	entity->addComponent<BehaviorComponent>().bindBehavior<CrateBehavior>();
+}
 
-		crate = std::make_shared<Crate>(mesh, texture);
-
-		crateClone = std::make_shared<Crate>(mesh, texture);
-		crateClone->transform->position = { 0.5f, -7.0f, 0.0f };
-		crateClone->rigidBody->isStatic = true;
-
-
-		this->appendGameObject(crate);
-		this->appendGameObject(crateClone);
-	}
-
-    void ExampleScene::onUpdate(float deltaTime) {
-		cameraInput->update(deltaTime);
-	}
+void ExampleScene::onUpdate(float deltaTime) {
+	cameraInput->update(deltaTime);
+}

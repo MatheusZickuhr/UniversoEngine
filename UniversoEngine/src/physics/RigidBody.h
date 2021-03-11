@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "CollisionMesh.h"
 #include "../math/Transform.h"
 #include "TriangleIntersection.h"
 
@@ -22,11 +22,11 @@ namespace engine {
         glm::vec3 velocity;
         glm::vec3 prevVelocity;
         glm::vec3 prevPosition;
-        std::shared_ptr<CollisionMesh> collisionMesh;
-        std::shared_ptr<Transform> transform;
+        std::vector<glm::vec3> collisionMesh;
+        Transform* transform;
         std::vector<glm::vec3> toBeAppliedForces;
 
-        RigidBody(std::shared_ptr<Transform> trasnform, std::shared_ptr<CollisionMesh> collisionMesh);
+        RigidBody(std::vector<glm::vec3> collisionMesh);
 
         void moveToNextState();
 
@@ -38,6 +38,6 @@ namespace engine {
 
         void update(); 
 
-        bool collidesWith(std::shared_ptr<RigidBody> other);
+        bool collidesWith(RigidBody* other);
     };
 }
