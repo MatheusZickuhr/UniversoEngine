@@ -143,6 +143,8 @@ namespace engine {
 
 		glfwMakeContextCurrent(this->window);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		glfwSwapInterval(1);
 	}
 
 	void Engine::checkGlad() {

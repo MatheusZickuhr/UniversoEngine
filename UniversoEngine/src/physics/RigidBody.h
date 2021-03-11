@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../math/Transform.h"

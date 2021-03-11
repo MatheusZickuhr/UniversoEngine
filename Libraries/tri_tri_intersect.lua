@@ -10,7 +10,8 @@ project "tri_tri_intersect"
 
 	files
 	{
-		"tri_tri_intersect/include/tri_tri_intersect/**.h"
+		"tri_tri_intersect/**.h",
+		"tri_tri_intersect/**.c"
 	}
 	
 	filter "system:linux"

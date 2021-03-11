@@ -1,30 +1,30 @@
 #include "FpsScene.h"
 
 FpsScene::~FpsScene() {
-    delete texture;
-    delete mesh;
+	delete texture;
+	delete mesh;
 }
 
 void FpsScene::onStart() {
-    texture = new engine::Texture("res/textures/crate/crate.jpg");
+	texture = new engine::Texture("res/textures/crate/crate.jpg");
 	mesh = new engine::Mesh("res/models/crate/crate.obj");
 
-    auto player = createEntity();
+	auto player = createEntity();
 	player->addComponent<engine::TextureComponent>(texture);
 	player->addComponent<engine::MeshComponent>(mesh);
 	player->addComponent<engine::TransformComponent>();
 	player->addComponent<engine::RigidBodyComponent>();
 	player->addComponent<engine::BehaviorComponent>()
-        .bindBehavior<PlayerBehavior>();
+		.bindBehavior<PlayerBehavior>();
 
 	auto floor = createEntity();
 	floor->addComponent<engine::TextureComponent>(texture);
 	floor->addComponent<engine::MeshComponent>(mesh);
 	floor->addComponent<engine::TransformComponent>();
 	floor->addComponent<engine::RigidBodyComponent>();
-    floor->getComponent<engine::RigidBodyComponent>().rigidBody->isStatic = true;
-    floor->getComponent<engine::TransformComponent>().transform.position.y = -5.0f;
-    floor->getComponent<engine::TransformComponent>().transform.scale = {10.0f, 0.5f, 10.0f};
+	floor->getComponent<engine::RigidBodyComponent>().rigidBody->isStatic = true;
+	floor->getComponent<engine::TransformComponent>().transform.position.y = -5.0f;
+	floor->getComponent<engine::TransformComponent>().transform.scale = { 10.0f, 0.5f, 10.0f };
 
 	auto obstacle1 = createEntity();
 	obstacle1->addComponent<engine::TextureComponent>(texture);
