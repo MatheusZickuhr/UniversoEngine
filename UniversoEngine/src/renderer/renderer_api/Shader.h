@@ -15,7 +15,7 @@ namespace engine {
 
 	public:
 
-		Shader(ShaderType shaderType, std::string shaderPath);
+		Shader(ShaderType shaderType, const std::string& shaderFilePath);
 
 		unsigned int getId();
 

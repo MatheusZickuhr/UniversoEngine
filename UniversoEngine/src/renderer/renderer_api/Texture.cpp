@@ -1,14 +1,20 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
 #include <glad/glad.h>
+
 #include "Texture.h"
+
+#include "../../debug/Assert.h"
 
 namespace engine {
 
 	unsigned int Texture::currentAvailableTextureSlot = 0;
 
 	Texture::Texture(const std::string& filepath) {
+		ASSERT_FILE_EXISTS(filepath);
 
+		ASSERT_FILE_EXTENSION(filepath, { ".png", ".jpg" });
+		
 		this->slot = currentAvailableTextureSlot;
 		currentAvailableTextureSlot++;
 

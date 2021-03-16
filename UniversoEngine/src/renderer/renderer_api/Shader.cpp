@@ -1,9 +1,16 @@
 #include "Shader.h"
 
+#include "../../debug/Assert.h"
+
 namespace engine {
 
-	Shader::Shader(ShaderType shaderType, std::string shaderPath) {
-		auto shaderSource = this->readFile(shaderPath);
+	Shader::Shader(ShaderType shaderType, const std::string& shaderFilePath) {
+
+		ASSERT_FILE_EXISTS(shaderFilePath);
+
+		ASSERT_FILE_EXTENSION(shaderFilePath, {".glsl"});
+
+		auto shaderSource = this->readFile(shaderFilePath);
 		auto shaderSourceCharPtr = shaderSource.c_str();
 
 		//crete shader 

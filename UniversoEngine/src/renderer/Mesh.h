@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include "Vertex.h"
 
 namespace engine {
@@ -11,7 +12,7 @@ namespace engine {
 
 		std::vector<Vertex> vertices;
 
-		Mesh(const char* filepath);
+		Mesh(const std::string& filepath);
 
 		std::vector<glm::vec3> getVeticesPositions();
 	};
