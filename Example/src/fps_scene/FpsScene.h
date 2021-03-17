@@ -6,8 +6,11 @@
 
 class FpsScene : public engine::Scene {
 private:
-    engine::Texture* texture;
-    engine::Mesh* mesh;
+    engine::Texture* boxTexture;
+    engine::Mesh* boxMesh;
+
+    engine::Texture* grassCubeTexture;
+    engine::Mesh* grassCubeMesh;
 
 public:
     ~FpsScene();
