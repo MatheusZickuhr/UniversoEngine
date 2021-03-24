@@ -30,8 +30,6 @@ namespace engine {
 
 		this->initializeGlfwWindow();
 
-		this->setViewPortSize(this->windowWidth, this->windowHeight);
-
 		this->renderer = new Renderer3D();
 
 		this->physicsWorld = new PhysicsWorld();
@@ -40,6 +38,7 @@ namespace engine {
 
 		this->initializeCurrentScene();
 		
+		this->setViewPortSize(this->windowWidth, this->windowHeight);
 	}
 
 	Engine::~Engine() {
@@ -51,7 +50,7 @@ namespace engine {
 	void Engine::setViewPortSize(float newWindowWidth, float newWindowHeight) {
 		this->windowWidth = newWindowWidth;
 		this->windowHeight = newWindowHeight;
-		glViewport(0, 0, newWindowWidth, newWindowHeight);
+		this->renderer->setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
 

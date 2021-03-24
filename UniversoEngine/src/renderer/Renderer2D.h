@@ -6,7 +6,7 @@
 #include "renderer_api/Shader.h"
 #include "renderer_api/ShaderProgram.h"
 #include "renderer_api/Texture.h"
-#include "renderer_api/Drawer.h"
+#include "renderer_api/DrawApi.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <map>
@@ -34,7 +34,7 @@ namespace engine {
         std::unique_ptr<Shader> vertexShader;
         std::unique_ptr<Shader> fragShader;
         std::unique_ptr<ShaderProgram> shaderProgram;
-        std::unique_ptr<Drawer> drawer;
+        std::unique_ptr<DrawApi> drawApi;
         std::map<const char*, std::shared_ptr<Texture>> textures;
         Vertex* renderDataBufferStart;
         Vertex* renderDataBuffer;
@@ -66,7 +66,7 @@ namespace engine {
             this->loadShaders();
             this->setupShaderUniforms();
 
-            this->drawer = std::make_unique<Drawer>();
+            this->drawApi = std::make_unique<DrawApi>();
         }
 
         ~Renderer2D() {
@@ -81,7 +81,7 @@ namespace engine {
 
         void end() {
             this->vertexBuffer->pushData(this->renderDataBufferStart, sizeof(Vertex) * this->vertexCount);
-            this->drawer->drawWithIdexes(this->vertexArray, IndexCount);
+            this->drawApi->drawWithIdexes(this->vertexArray, IndexCount);
         }
 
         void drawQuad(float scale, glm::vec2 position, const char* textureName) {
@@ -115,7 +115,7 @@ namespace engine {
         }
 
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
-            this->drawer->clear(r, g, b, a);
+            this->drawApi->clear(r, g, b, a);
         }
 
         void createTexture(const char* filepath, const char* textureName) {

@@ -7,7 +7,7 @@
 #include "renderer_api/IndexBuffer.h"
 #include "renderer_api/Shader.h"
 #include "renderer_api/ShaderProgram.h"
-#include "renderer_api/Drawer.h"
+#include "renderer_api/DrawApi.h"
 #include "renderer_api/Texture.h"
 #include "Mesh.h"
 
@@ -35,7 +35,7 @@ namespace engine {
         std::unique_ptr<Shader> fragShader;
         std::unique_ptr<ShaderProgram> shaderProgram;
 
-        std::unique_ptr<Drawer> drawer;
+        std::unique_ptr<DrawApi> drawApi;
 
     public:
 
@@ -57,6 +57,8 @@ namespace engine {
         );
 
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
+
+        void setViewPortSize(float width, float height);
 
     private:
 

@@ -1,8 +1,8 @@
-#include "Drawer.h"
+#include "DrawApi.h"
 
 namespace engine {
 
-	Drawer::Drawer() {
+	DrawApi::DrawApi() {
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(GLDebugMessageCallback, NULL);
@@ -10,15 +10,19 @@ namespace engine {
 		printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
 	}
 
-	void Drawer::drawWithIdexes(std::shared_ptr<VertexArray> vertexArray, unsigned int IndexCount) {
+	void DrawApi::drawWithIdexes(std::shared_ptr<VertexArray> vertexArray, unsigned int IndexCount) {
 		vertexArray->bind();
 		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 
-	void Drawer::clear(float r, float g, float b, float a) {
+	void DrawApi::clear(float r, float g, float b, float a) {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void DrawApi::setViewPortSize(float width, float height) {
+		glViewport(0, 0, width, height);
 	}
 
 	void APIENTRY GLDebugMessageCallback(

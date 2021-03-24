@@ -19,7 +19,7 @@ namespace engine {
 		this->setupShaderUniforms();
 
 
-		this->drawer = std::make_unique<Drawer>();
+		this->drawApi = std::make_unique<DrawApi>();
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -38,7 +38,7 @@ namespace engine {
 	void Renderer3D::endDrawing() {
 		this->vertexBuffer->pushData(this->verticesPtrStart, sizeof(Vertex) * this->vertexCount);
 		this->indexBuffer->pushData(this->indices, sizeof(unsigned int) * this->indexCount);
-		this->drawer->drawWithIdexes(this->vertexArray, this->indexCount);
+		this->drawApi->drawWithIdexes(this->vertexArray, this->indexCount);
 	}
 
 	void Renderer3D::drawMesh(
@@ -78,8 +78,12 @@ namespace engine {
 	}
 
 	void Renderer3D::clear(float r, float g, float b, float a) {
-		this->drawer->clear(r, g, b, a);
+		this->drawApi->clear(r, g, b, a);
 	}
+
+	void Renderer3D::setViewPortSize(float width, float height) {
+		this->drawApi->setViewPortSize(width, height);
+	} 
 
 	void Renderer3D::createVetexBuffer() {
 		this->vertexBuffer = std::make_unique<VertexBuffer>(sizeof(Vertex) * maxVertices);
