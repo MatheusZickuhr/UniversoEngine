@@ -3,65 +3,78 @@
 
 namespace engine {
 
-	float windowWidth, windowHeight;
-
 	void framebufferSizeCallback(GLFWwindow* window, int newWindowWidth, int newWindowHeight) {
-		windowWidth = newWindowWidth;
-		windowHeight = newWindowHeight;
-		glViewport(0, 0, newWindowWidth, newWindowHeight);
+		Engine::getInstance().setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
+	Engine& Engine::getInstance() {
+		static Engine instance;
+		return instance;
+	}
 
-	Engine::Engine(
-			Scene* initialScene,
-			float initialWindowWidth,
-			float initialWindowHeight,
-			const char *windowName) {
+	Engine::Engine() : windowWidth(800), windowHeight(600), windowName("Universo Engine"),
+		window(nullptr), currentScene(nullptr), renderer(nullptr), physicsWorld(nullptr)  {}
+
+	void Engine::initiliaze(
+		Scene* initialScene,
+		float initialWindowWidth,
+		float initialWindowHeight,
+		const char* windowName) {
 		
-		windowWidth = initialWindowWidth;
-		windowHeight = initialWindowHeight;
-		
+
+		this->windowWidth = initialWindowWidth;
+		this->windowHeight = initialWindowHeight;
+
 		this->currentScene = initialScene;
 		this->windowName = windowName;
-		this->lastFrameTime = 0.0f; 
 
 		this->initializeGlfwWindow();
-		this->checkGlad();
 
-		glViewport(0, 0, windowWidth, windowHeight);
+		this->setViewPortSize(this->windowWidth, this->windowHeight);
 
-		this->rederer = new Renderer3D();
+		this->renderer = new Renderer3D();
 
 		this->physicsWorld = new PhysicsWorld();
 
 		Input::init(this->window);
 
 		this->initializeCurrentScene();
+		
 	}
 
 	Engine::~Engine() {
-		delete this->rederer;
+		delete this->renderer;
 		delete this->physicsWorld;
 		glfwTerminate();
 	}
 
-	void Engine::tick() {
-		float currentFrameTime = glfwGetTime();
-		float deltaTime = currentFrameTime - this->lastFrameTime;
-		this->lastFrameTime = currentFrameTime;
+	void Engine::setViewPortSize(float newWindowWidth, float newWindowHeight) {
+		this->windowWidth = newWindowWidth;
+		this->windowHeight = newWindowHeight;
+		glViewport(0, 0, newWindowWidth, newWindowHeight);
+	}
+
+
+	void Engine::run() {
+		constexpr float fixedDeltaTime = 1.0f / 60.0f;
 		
-		constexpr float fixedDeltaTime = 0.0169f; 
+		float lastFrameTime = 0.0f;
 
-		this->renderCurrentScene(deltaTime);
-		this->updateCurrentSceneLogic(fixedDeltaTime);
-		this->updateCurrentScenePhysics(fixedDeltaTime);
+		while (this->isRunning()) {
+			float currentFrameTime = glfwGetTime();
+			float deltaTime = currentFrameTime - lastFrameTime;
+			lastFrameTime = currentFrameTime;
 
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, true);
+			this->renderCurrentScene(deltaTime);
+			this->updateCurrentSceneLogic(fixedDeltaTime);
+			this->updateCurrentScenePhysics(fixedDeltaTime);
 
-		glfwSwapBuffers(this->window);
-		glfwPollEvents();
-		
+			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+				glfwSetWindowShouldClose(window, true);
+
+			glfwSwapBuffers(this->window);
+			glfwPollEvents();
+		}
 	}
 
 	bool Engine::isRunning() {
@@ -118,12 +131,12 @@ namespace engine {
 		auto view = this->currentScene->registry
 		.view<MeshComponent, TextureComponent, TransformComponent>();
 
-		auto mvp = currentScene->getCamera()->getMvp(windowWidth, windowHeight);
-		this->rederer->clear(0.2f, 0.3f, 0.3f, 1.0f);
-		this->rederer->startDrawing(mvp);
+		auto mvp = currentScene->getCamera()->getMvp(this->windowWidth, this->windowHeight);
+		this->renderer->clear(0.2f, 0.3f, 0.3f, 1.0f);
+		this->renderer->startDrawing(mvp);
 
 		for (auto [entity, meshComp, textComp, transComp] : view.each()) {
-			this->rederer->drawMesh(
+			this->renderer->drawMesh(
 				meshComp.mesh, 
 				textComp.texture,
 				transComp.transform.position,
@@ -132,7 +145,7 @@ namespace engine {
 				transComp.transform.rotationAngle
 			);
 		}
-		this->rederer->endDrawing();
+		this->renderer->endDrawing();
 	}
 
 	void Engine::initializeGlfwWindow() {
@@ -142,31 +155,16 @@ namespace engine {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-		this->window = glfwCreateWindow(windowWidth, windowHeight, this->windowName, NULL, NULL);
+		this->window = glfwCreateWindow(this->windowWidth, this->windowHeight, this->windowName, NULL, NULL);
 
-		if (this->window == NULL) {
-			std::cout << "Failed to create GLFW window" << std::endl;
-			glfwTerminate();
-#ifdef _DEBUG
-			__debugbreak();
-#endif
-		}
-
+		ASSERT(this->window != NULL, "Failed to create GLFW window");
+		
 		glfwMakeContextCurrent(this->window);
 		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 		glfwSwapInterval(1);
-	}
 
-	void Engine::checkGlad() {
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			std::cout << "Failed to initialize GLAD" << std::endl;
-#ifdef _DEBUG
-			__debugbreak();
-#endif
-		}
-
+		ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Failed to initialize GLAD");
 	}
 
 }

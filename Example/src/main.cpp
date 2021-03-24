@@ -5,14 +5,11 @@
 
 int main() {
 	FpsScene* initialScene = new FpsScene();
-	engine::Engine* engine = new engine::Engine(initialScene, 800, 600, "Example");
-
-	while (engine->isRunning()) {
-		engine->tick();
-	}
-
+	
+	Engine::getInstance().initiliaze(initialScene, 800, 600, "Example");
+	Engine::getInstance().run();
+	
 	delete initialScene;
-	delete engine;
 
 	return 0;
 }

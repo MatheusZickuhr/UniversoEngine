@@ -13,35 +13,47 @@
 
 #include "scene/Components.h"
 
+#include "debug/Assert.h"
+
 namespace engine {
 
 	class Engine {
 
 	private:
-		float lastFrameTime;
-		const char *windowName;
-		GLFWwindow *window;
-		Renderer3D* rederer;
+		const char* windowName;
+		float windowWidth, windowHeight;
+		GLFWwindow* window;
+		Renderer3D* renderer;
 		PhysicsWorld* physicsWorld;
 		Scene *currentScene;
 
 	public:
-		Engine(
-			Scene* initialScene,
-			float initialWindowWidth,
-			float initialWindowHeight,
-			const char *windowName);
+		static Engine& getInstance();
+
+		Engine(Engine const&) = delete;
+
+		void operator=(Engine const&) = delete;
 
 		~Engine();
 
-		void tick();
+		void initiliaze(
+			Scene* initialScene,
+			float initialWindowWidth,
+			float initialWindowHeight,
+			const char* windowName);
 
-		bool isRunning();
+		void run();
 
 		void setScene(Scene* scene);
 
+		void setViewPortSize(float newWindowWidth, float newWindowHeight);
+
 	private:
-	
+		
+		Engine();
+
+		bool isRunning();
+
 		void initializeCurrentScene();
 
 		void updateCurrentSceneLogic(float deltaTime);
@@ -51,7 +63,5 @@ namespace engine {
 		void renderCurrentScene(float deltaTime);
 
 		void initializeGlfwWindow();
-
-		void checkGlad();
 	};
 }
