@@ -24,14 +24,14 @@ namespace engine {
 
     struct RigidBodyComponent {
         std::shared_ptr<RigidBody> rigidBody;
-
-        RigidBodyComponent(std::vector<glm::vec3> collisionMesh) {
-            rigidBody = std::make_shared<RigidBody>(collisionMesh);
+        
+        RigidBodyComponent(std::vector<glm::vec3> collisionMesh, Transform* transform) {
+            rigidBody = std::make_shared<RigidBody>(collisionMesh, transform);
         }
     };
 
     struct TransformComponent {
-        Transform transform;
+        std::shared_ptr<Transform> transform = std::make_shared<Transform>();
     };
 
     struct BehaviorComponent {

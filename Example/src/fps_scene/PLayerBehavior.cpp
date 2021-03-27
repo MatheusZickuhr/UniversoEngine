@@ -9,7 +9,7 @@ void PlayerBehavior::onStart() {
 
 void PlayerBehavior::onUpdate(float deltaTime) {
     auto transformComponent = entity->getComponent<engine::TransformComponent>();
-    this->camera->position = transformComponent.transform.position;
+    this->camera->position = transformComponent.transform->position;
     this->camera->position.y += 2;
 
     this->processKeybordInput(deltaTime);

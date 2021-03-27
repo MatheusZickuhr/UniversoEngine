@@ -2,23 +2,24 @@
 
 #include <vector>
 #include <memory>
+
+#include <entt/entt.hpp>
+
 #include "../renderer/Camera.h"
-#include "entt/entt.hpp"
 
 namespace engine {
 
 	class Entity;
 
 	class Scene {
-
-	private:
-		std::vector<Entity*> entities;
-		
 	protected:
 		std::shared_ptr<Camera> camera;
 
-	public:
+	private:
 		entt::registry registry;
+		std::vector<Entity*> entities;
+		
+	public:
 
 		Scene();
 
@@ -26,7 +27,15 @@ namespace engine {
 		
 		std::shared_ptr<Camera> getCamera();
 
+		entt::registry& getRegistry();
+
 		Entity* createEntity();
+
+		void update(float deltaTime);
+
+		void start();
+
+	private:
 
 		virtual void onStart() = 0;
 		virtual void onUpdate(float deltaTime) = 0;

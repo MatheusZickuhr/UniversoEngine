@@ -23,17 +23,17 @@ namespace engine {
 
         template<typename T, typename... Args>
         T& addComponent(Args &&... args) {
-            return scene->registry.emplace<T>(entity, std::forward<Args>(args)...);
+            return scene->getRegistry().emplace<T>(entity, std::forward<Args>(args)...);
         }
 
         template<typename T>
         T& getComponent() {
-            return scene->registry.get<T>(entity);
+            return scene->getRegistry().get<T>(entity);
         }
 
         template<typename T>
         bool hasComponent() {
-            return scene->registry.has<T>(entity);
+            return scene->getRegistry().has<T>(entity);
         }
 
         Scene* getScene() {

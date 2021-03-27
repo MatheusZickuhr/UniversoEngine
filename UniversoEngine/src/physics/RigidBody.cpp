@@ -3,7 +3,7 @@
 
 namespace engine {
 
-    RigidBody::RigidBody(std::vector<glm::vec3> collisionMesh)
+    RigidBody::RigidBody(std::vector<glm::vec3> collisionMesh, Transform* transform)
     : transform(transform), collisionMesh(collisionMesh) {
         this->velocity = {0.0f, 0.0f, 0.0f};       
         this->acceleration = {0.0f, 0.0f, 0.0f};

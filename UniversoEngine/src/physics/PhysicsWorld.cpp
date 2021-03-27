@@ -1,4 +1,5 @@
 #include "PhysicsWorld.h"
+#include "../debug/Assert.h"
 
 namespace engine {
 
@@ -44,6 +45,18 @@ namespace engine {
 
     void PhysicsWorld::appendRigidBody(RigidBody* rigidBody) {
         this->rigidBodies.push_back(rigidBody);
+    }
+
+    void PhysicsWorld::removeRigidBody(RigidBody* rigidBody) {
+        auto it = std::find(rigidBodies.begin(), rigidBodies.end(), rigidBody);
+
+        ASSERT(
+            it != rigidBodies.end(),
+            "Attempted to remove a non existing rigid body from the physics world"
+        );
+
+        int index = it - rigidBodies.begin();
+        rigidBodies.erase(rigidBodies.begin() + index);
     }
 
     void PhysicsWorld::clear() {

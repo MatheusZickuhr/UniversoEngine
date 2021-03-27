@@ -15,8 +15,9 @@ private:
 public:
     ~FpsScene();
 
+private:
+
     void onStart() override;
 
     void onUpdate(float deltaTime) override;
-
 };

@@ -26,7 +26,7 @@ namespace engine {
         Transform* transform;
         std::vector<glm::vec3> toBeAppliedForces;
 
-        RigidBody(std::vector<glm::vec3> collisionMesh);
+        RigidBody(std::vector<glm::vec3> collisionMesh, Transform* transform);
 
         void moveToNextState();
 

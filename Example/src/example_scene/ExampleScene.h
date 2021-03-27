@@ -21,6 +21,8 @@ public:
 
 	~ExampleScene();
 
+private:
+
 	void onStart() override;
 
 	void onUpdate(float deltaTime) override;

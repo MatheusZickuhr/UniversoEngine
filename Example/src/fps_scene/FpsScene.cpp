@@ -28,22 +28,22 @@ void FpsScene::onStart() {
 	floor->addComponent<engine::TransformComponent>();
 	floor->addComponent<engine::RigidBodyComponent>();
 	floor->getComponent<engine::RigidBodyComponent>().rigidBody->isStatic = true;
-	floor->getComponent<engine::TransformComponent>().transform.position.y = -5.0f;
-	floor->getComponent<engine::TransformComponent>().transform.scale = { 10.0f, 0.5f, 10.0f };
+	floor->getComponent<engine::TransformComponent>().transform->position.y = -5.0f;
+	floor->getComponent<engine::TransformComponent>().transform->scale = { 10.0f, 0.5f, 10.0f };
 
 	auto obstacle1 = createEntity();
 	obstacle1->addComponent<engine::TextureComponent>(grassCubeTexture);
 	obstacle1->addComponent<engine::MeshComponent>(grassCubeMesh);
 	obstacle1->addComponent<engine::TransformComponent>();
 	obstacle1->addComponent<engine::RigidBodyComponent>();
-	obstacle1->getComponent<engine::TransformComponent>().transform.position.x = 5;
+	obstacle1->getComponent<engine::TransformComponent>().transform->position.x = 5;
 
 	auto obstacle2 = createEntity();
 	obstacle2->addComponent<engine::TextureComponent>(boxTexture);
 	obstacle2->addComponent<engine::MeshComponent>(boxMesh);
 	obstacle2->addComponent<engine::TransformComponent>();
 	obstacle2->addComponent<engine::RigidBodyComponent>();
-	obstacle2->getComponent<engine::TransformComponent>().transform.position.x = -5;
+	obstacle2->getComponent<engine::TransformComponent>().transform->position.x = -5;
 }
 
 void FpsScene::onUpdate(float deltaTime) {

@@ -15,29 +15,20 @@ namespace engine {
 	Engine::Engine() : windowWidth(800), windowHeight(600), windowName("Universo Engine"),
 		window(nullptr), currentScene(nullptr), renderer(nullptr), physicsWorld(nullptr)  {}
 
-	void Engine::initiliaze(
-		Scene* initialScene,
-		float initialWindowWidth,
-		float initialWindowHeight,
-		const char* windowName) {
-		
+	void Engine::initiliaze(Scene* scene, float width, float height, const char* windowName) {
 
-		this->windowWidth = initialWindowWidth;
-		this->windowHeight = initialWindowHeight;
-
-		this->currentScene = initialScene;
+		this->windowWidth = width;
+		this->windowHeight = height;
 		this->windowName = windowName;
-
 		this->initializeGlfwWindow();
-
-		this->renderer = new Renderer3D();
-
-		this->physicsWorld = new PhysicsWorld();
-
-		Input::init(this->window);
-
-		this->initializeCurrentScene();
 		
+		this->renderer = new Renderer3D();
+		this->physicsWorld = new PhysicsWorld();
+		Input::init(this->window);
+		
+		this->currentScene = scene;
+		this->initializeCurrentScene();
+
 		this->setViewPortSize(this->windowWidth, this->windowHeight);
 	}
 
@@ -53,7 +44,6 @@ namespace engine {
 		this->renderer->setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
-
 	void Engine::run() {
 		constexpr float fixedDeltaTime = 1.0f / 60.0f;
 		
@@ -65,8 +55,8 @@ namespace engine {
 			lastFrameTime = currentFrameTime;
 
 			this->renderCurrentScene(deltaTime);
-			this->updateCurrentSceneLogic(fixedDeltaTime);
-			this->updateCurrentScenePhysics(fixedDeltaTime);
+			this->physicsWorld->update(fixedDeltaTime);
+			this->currentScene->update(fixedDeltaTime);
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, true);
@@ -80,54 +70,33 @@ namespace engine {
 		return !glfwWindowShouldClose(this->window);
 	}
 
+	void Engine::onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity) {
+		auto rbComp = registry.get<RigidBodyComponent>(entity);
+		this->physicsWorld->appendRigidBody(rbComp.rigidBody.get());
+	}
+
+	void Engine::onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
+		auto rbComp = registry.get<RigidBodyComponent>(entity);
+		this->physicsWorld->removeRigidBody(rbComp.rigidBody.get());
+	}
+
+	void Engine::initializeCurrentScene() {
+		this->currentScene->getRegistry().on_construct<RigidBodyComponent>()
+			.connect<&Engine::onRigidBodyComponentCreated>(this);
+
+		this->currentScene->getRegistry().on_destroy<RigidBodyComponent>()
+			.connect<&Engine::onRigidBodyComponentDestroyed>(this);
+
+		this->currentScene->start();
+	}
+
 	void Engine::setScene(Scene* scene) {
 		this->currentScene = scene;
 		this->initializeCurrentScene();
 	}
 
-	void Engine::initializeCurrentScene() {
-
-		this->currentScene->onStart();
-
-		auto view = this->currentScene->registry.view<BehaviorComponent>();
-			for (auto [entity, behaviorComp]: view.each()) {
-			behaviorComp.behavior->initialize();                                 
-			behaviorComp.behavior->onStart();
-		} 
-	}
-
-	void Engine::updateCurrentScenePhysics(float deltaTime) {
-		auto view = this->currentScene->registry
-		.view<RigidBodyComponent, TransformComponent>();
-
-		for (auto [entity, rbComp, transComp] : view.each()) {
-			rbComp.rigidBody->transform = &transComp.transform;
-			this->physicsWorld->appendRigidBody(rbComp.rigidBody.get());
-		}
-
-		this->physicsWorld->update(deltaTime);
-		this->physicsWorld->clear();
-	}
-
-	void Engine::updateCurrentSceneLogic(float deltaTime) {
-		this->currentScene->onUpdate(deltaTime);
-
-		auto view = this->currentScene->registry.view<BehaviorComponent>();
-
-		for (auto [entity, behaviorComp]: view.each()) {
-
-			if (!behaviorComp.behavior->isInitialized()) {
-				behaviorComp.behavior->initialize();
-				behaviorComp.behavior->onStart();
-			}
-
-			behaviorComp.behavior->onUpdate(deltaTime);
-		} 
-
-	}
-
 	void Engine::renderCurrentScene(float deltaTime) {
-		auto view = this->currentScene->registry
+		auto view = this->currentScene->getRegistry()
 		.view<MeshComponent, TextureComponent, TransformComponent>();
 
 		auto mvp = currentScene->getCamera()->getMvp(this->windowWidth, this->windowHeight);
@@ -138,10 +107,10 @@ namespace engine {
 			this->renderer->drawMesh(
 				meshComp.mesh, 
 				textComp.texture,
-				transComp.transform.position,
-				transComp.transform.scale,
-				transComp.transform.rotationAxis,
-				transComp.transform.rotationAngle
+				transComp.transform->position,
+				transComp.transform->scale,
+				transComp.transform->rotationAxis,
+				transComp.transform->rotationAngle
 			);
 		}
 		this->renderer->endDrawing();

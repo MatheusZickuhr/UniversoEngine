@@ -20,6 +20,8 @@ namespace engine {
 
         void appendRigidBody(RigidBody* rigidBody);
 
+        void removeRigidBody(RigidBody* rigidBody);
+
         void clear();
 
     private:

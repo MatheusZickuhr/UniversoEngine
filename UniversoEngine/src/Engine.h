@@ -36,11 +36,7 @@ namespace engine {
 
 		~Engine();
 
-		void initiliaze(
-			Scene* initialScene,
-			float initialWindowWidth,
-			float initialWindowHeight,
-			const char* windowName);
+		void initiliaze(Scene* scene, float width, float height, const char* windowName);
 
 		void run();
 
@@ -54,11 +50,11 @@ namespace engine {
 
 		bool isRunning();
 
+		void onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity);
+
+		void onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity);
+
 		void initializeCurrentScene();
-
-		void updateCurrentSceneLogic(float deltaTime);
-
-		void updateCurrentScenePhysics(float deltaTime);
 
 		void renderCurrentScene(float deltaTime);
 
