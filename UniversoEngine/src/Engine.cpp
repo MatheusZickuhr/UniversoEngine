@@ -104,14 +104,7 @@ namespace engine {
 		this->renderer->startDrawing(mvp);
 
 		for (auto [entity, meshComp, textComp, transComp] : view.each()) {
-			this->renderer->drawMesh(
-				meshComp.mesh, 
-				textComp.texture,
-				transComp.transform->position,
-				transComp.transform->scale,
-				transComp.transform->rotationAxis,
-				transComp.transform->rotationAngle
-			);
+			this->renderer->drawMesh(meshComp.mesh, textComp.texture, transComp.transform->getTransformMatrix());
 		}
 		this->renderer->endDrawing();
 	}

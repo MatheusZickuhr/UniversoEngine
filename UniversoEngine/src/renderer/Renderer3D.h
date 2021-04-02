@@ -47,14 +47,7 @@ namespace engine {
 
         void endDrawing();
 
-        void drawMesh(
-		    Mesh* mesh,
-		    Texture* texture,
-            glm::vec3 position,
-            glm::vec3 scale,
-            glm::vec3 rotationAxis,
-            float rotationAngle
-        );
+        void drawMesh(Mesh* mesh, Texture* texture, glm::mat4 transform);
 
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 

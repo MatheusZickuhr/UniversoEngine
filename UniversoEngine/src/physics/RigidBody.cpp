@@ -42,14 +42,14 @@ namespace engine {
 
     bool RigidBody::collidesWith(RigidBody* other) {
         for (int i = 0; i < collisionMesh.size(); i+=3) {     
-            auto v0 = (collisionMesh[i+0] + this->transform->position) * this->transform->scale;
-            auto v1 = (collisionMesh[i+1] + this->transform->position) * this->transform->scale;
-            auto v2 = (collisionMesh[i+2] + this->transform->position) * this->transform->scale;
+            auto v0 = (collisionMesh[i+0] * this->transform->scale) + this->transform->position;
+            auto v1 = (collisionMesh[i+1] * this->transform->scale) + this->transform->position;
+            auto v2 = (collisionMesh[i+2] * this->transform->scale) + this->transform->position;
 
             for (int j = 0; j < other->collisionMesh.size(); j+=3) {
-                auto u0 = (other->collisionMesh[j+0] + other->transform->position) * other->transform->scale;
-                auto u1 = (other->collisionMesh[j+1] + other->transform->position) * other->transform->scale;
-                auto u2 = (other->collisionMesh[j+2] + other->transform->position) * other->transform->scale;
+                auto u0 = (other->collisionMesh[j+0] * other->transform->scale) + other->transform->position;
+                auto u1 = (other->collisionMesh[j+1] * other->transform->scale) + other->transform->position;
+                auto u2 = (other->collisionMesh[j+2] * other->transform->scale) + other->transform->position;
 
                 auto doesCollid = tri_tri_intersect(
                     glm::value_ptr(v0), glm::value_ptr(v1), glm::value_ptr(v2),

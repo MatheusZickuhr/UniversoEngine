@@ -41,14 +41,7 @@ namespace engine {
 		this->drawApi->drawWithIdexes(this->vertexArray, this->indexCount);
 	}
 
-	void Renderer3D::drawMesh(
-		Mesh* mesh,
-		Texture* texture,
-		glm::vec3 position,
-		glm::vec3 scale,
-		glm::vec3 rotationAxis,
-		float rotationAngle
-	) {
+	void Renderer3D::drawMesh(Mesh* mesh,Texture* texture, glm::mat4 transform) {
 
 		float textureSlot;
 
@@ -61,11 +54,9 @@ namespace engine {
 		}
 
 		for (const Vertex vertex : mesh->vertices) {
-			this->vertices->position = (vertex.position + position) * scale;
+			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
 			this->vertices->textureCoords = vertex.textureCoords;
 			this->vertices->textureSlot = textureSlot;
-			this->vertices->rotationAngle = rotationAngle;
-			this->vertices->rotationAxis = rotationAxis;
 			this->vertices++;
 		}
 
@@ -90,8 +81,6 @@ namespace engine {
 		this->vertexBuffer->addLayout(0, 3, sizeof(Vertex), offsetof(Vertex, position));
 		this->vertexBuffer->addLayout(1, 2, sizeof(Vertex), offsetof(Vertex, textureCoords));
 		this->vertexBuffer->addLayout(2, 1, sizeof(Vertex), offsetof(Vertex, textureSlot));
-		this->vertexBuffer->addLayout(3, 1, sizeof(Vertex), offsetof(Vertex, rotationAngle));
-		this->vertexBuffer->addLayout(4, 3, sizeof(Vertex), offsetof(Vertex, rotationAxis));
 	}
 
 	void Renderer3D::createIndexBuffer() {

@@ -1,12 +1,13 @@
 #include "Transform.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace engine {
 
-	Transform::Transform() :
-		position(glm::vec3(0.0f, 0.0f, 0.0f)),
-		scale(glm::vec3(1.0f, 1.0f, 1.0f)),
-		rotationAxis(glm::vec3(0.0f, 0.0f, 0.0f)),
-		rotationAngle(0.0f) {
+	glm::mat4 Transform::getTransformMatrix() {
+		return glm::translate(glm::mat4(1.0f), this->position)
+			* glm::toMat4(glm::quat(this->rotation))
+			* glm::scale(glm::mat4(1.0f), this->scale);;
 	}
 
 }
