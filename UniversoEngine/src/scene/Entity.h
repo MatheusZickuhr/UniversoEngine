@@ -43,9 +43,6 @@ namespace engine {
     };
 
     template<>
-    RigidBodyComponent& Entity::addComponent<RigidBodyComponent>();
-
-    template<>
     BehaviorComponent&  Entity::addComponent<BehaviorComponent >();
 
 }

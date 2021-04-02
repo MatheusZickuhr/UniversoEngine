@@ -9,7 +9,7 @@ void PlayerBehavior::onStart() {
 
 void PlayerBehavior::onUpdate(float deltaTime) {
     auto transformComponent = entity->getComponent<engine::TransformComponent>();
-    this->camera->position = transformComponent.transform->position;
+    this->camera->position = transformComponent.transform.position;
     this->camera->position.y += 2;
 
     this->processKeybordInput(deltaTime);
@@ -24,20 +24,20 @@ void PlayerBehavior::processKeybordInput(float deltaTime) {
     glm::vec3 rightDirection = this->movementSpeed * camera->right;
     rightDirection.y = 0;
 
-    if (engine::Input::keyPressed('W'))
-        rigidBodyComponent.rigidBody->addForce(frontDirection * deltaTime);
-    if (engine::Input::keyPressed('S'))
-        rigidBodyComponent.rigidBody->addForce(-frontDirection * deltaTime);
-    if (engine::Input::keyPressed('D'))
-        rigidBodyComponent.rigidBody->addForce(rightDirection * deltaTime);
-    if (engine::Input::keyPressed('A'))
-        rigidBodyComponent.rigidBody->addForce(-rightDirection * deltaTime);
+    //if (engine::Input::keyPressed('W'))
+    //    rigidBodyComponent.rigidBody->addForce(frontDirection * deltaTime);
+    //if (engine::Input::keyPressed('S'))
+    //    rigidBodyComponent.rigidBody->addForce(-frontDirection * deltaTime);
+    //if (engine::Input::keyPressed('D'))
+    //    rigidBodyComponent.rigidBody->addForce(rightDirection * deltaTime);
+    //if (engine::Input::keyPressed('A'))
+    //    rigidBodyComponent.rigidBody->addForce(-rightDirection * deltaTime);
 
 
-    glm::vec3 jumpForce = {0.0f, 15.0f, 0.0f};
-    if (engine::Input::keyPressed('F')){
-        rigidBodyComponent.rigidBody->addForce(jumpForce * deltaTime);
-    }
+    //glm::vec3 jumpForce = {0.0f, 15.0f, 0.0f};
+    //if (engine::Input::keyPressed('F')){
+    //    rigidBodyComponent.rigidBody->addForce(jumpForce * deltaTime);
+    //}
 }
 
 void PlayerBehavior::processMouseInput() {

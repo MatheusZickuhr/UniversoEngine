@@ -7,7 +7,7 @@ namespace engine {
 	glm::mat4 Transform::getTransformMatrix() {
 		return glm::translate(glm::mat4(1.0f), this->position)
 			* glm::toMat4(glm::quat(this->rotation))
-			* glm::scale(glm::mat4(1.0f), this->scale);;
+			* glm::scale(glm::mat4(1.0f), this->scale);
 	}
 
 }

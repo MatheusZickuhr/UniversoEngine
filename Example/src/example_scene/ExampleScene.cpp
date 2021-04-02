@@ -16,8 +16,20 @@ void ExampleScene::onStart() {
 	entity->addComponent<MeshComponent>(boxMesh);
 	entity->addComponent<TextureComponent>(boxTexture);
 	entity->addComponent<TransformComponent>();
+	entity->getComponent<TransformComponent>().transform.position = {0.0f, 1.0f, 0.0f };
+	entity->getComponent<TransformComponent>().transform.rotation = {0.1f * 3.14f, 0.0f, 0.0f };
+	entity->addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	entity->addComponent<RigidBodyComponent>();
-	entity->addComponent<BehaviorComponent>().bindBehavior<CrateBehavior>();
+
+	auto floor = createEntity();
+	floor->addComponent<MeshComponent>(boxMesh);
+	floor->addComponent<TextureComponent>(boxTexture);
+	floor->addComponent<TransformComponent>();
+	floor->getComponent<TransformComponent>().transform.position.y = -5.0f;
+	floor->getComponent<TransformComponent>().transform.scale = { 10.0f, 0.5f, 10.0f };
+	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
+	floor->addComponent<RigidBodyComponent>(false);
+
 }
 
 void ExampleScene::onUpdate(float deltaTime) {

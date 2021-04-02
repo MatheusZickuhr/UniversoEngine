@@ -3,16 +3,19 @@
 #include <memory>
 #include <vector>
 
+#include <reactphysics3d/reactphysics3d.h>
+
 #include "../renderer/renderer_api/Texture.h"
 #include "../renderer/Mesh.h"
 
-#include "../physics/RigidBody.h"
 #include "../math/Transform.h"
 
 #include "Entity.h"
 #include "Behavior.h"
 
 namespace engine {
+
+    enum class CollisionShape { Box, Sphere, Capsule };
 
     struct MeshComponent {
         Mesh* mesh;
@@ -22,16 +25,17 @@ namespace engine {
         Texture* texture;
     };
 
+    struct CollisionShapeComponent {
+        CollisionShape collisionShape;
+    };
+
     struct RigidBodyComponent {
-        std::shared_ptr<RigidBody> rigidBody;
-        
-        RigidBodyComponent(std::vector<glm::vec3> collisionMesh, Transform* transform) {
-            rigidBody = std::make_shared<RigidBody>(collisionMesh, transform);
-        }
+        bool isDynamic = true;
+        reactphysics3d::RigidBody* rigidBody;
     };
 
     struct TransformComponent {
-        std::shared_ptr<Transform> transform = std::make_shared<Transform>();
+        Transform transform;
     };
 
     struct BehaviorComponent {

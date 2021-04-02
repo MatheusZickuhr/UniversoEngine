@@ -18,12 +18,13 @@ project "UniversoEngine"
 		"%{wks.location}/Libraries/stb_image/include/",
 		"%{wks.location}/Libraries/OBJ_Loader/include/",
 		"%{wks.location}/Libraries/tri_tri_intersect/include/",
-		"%{wks.location}/Libraries/entt/include/"
+		"%{wks.location}/Libraries/entt/include/",
+		"%{wks.location}/Libraries/reactphysics3d/include/"
 	}
     
     files { "src/**.cpp", "src/**.h" }
 
-    links { "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect", "entt" }
+    links { "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect", "entt", "reactphysics3d" }
 
     filter "system:linux"
         links { "dl", "pthread" }

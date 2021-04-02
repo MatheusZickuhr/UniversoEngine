@@ -19,12 +19,13 @@ project "Example"
 		"%{wks.location}/Libraries/OBJ_Loader/include/",
 		"%{wks.location}/Libraries/tri_tri_intersect/include/",
 		"%{wks.location}/Libraries/entt/include/",
+		"%{wks.location}/Libraries/reactphysics3d/include/",
 		"%{wks.location}/UniversoEngine/src/"
 	}
     
     files { "src/**.cpp", "src/**.h" }
 
-    links { "UniversoEngine", "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect", "entt" }
+    links { "UniversoEngine", "GLFW", "GLM", "GLAD", "ImGui", "OBJ_Loader", "stb_image", "tri_tri_intersect", "entt", "reactphysics3d" }
 
     filter "system:linux"
 		links { "dl", "pthread" }

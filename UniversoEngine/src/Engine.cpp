@@ -23,7 +23,7 @@ namespace engine {
 		this->initializeGlfwWindow();
 		
 		this->renderer = new Renderer3D();
-		this->physicsWorld = new PhysicsWorld();
+		this->physicsWorld = physicsCommon.createPhysicsWorld();
 		Input::init(this->window);
 		
 		this->currentScene = scene;
@@ -34,7 +34,6 @@ namespace engine {
 
 	Engine::~Engine() {
 		delete this->renderer;
-		delete this->physicsWorld;
 		glfwTerminate();
 	}
 
@@ -55,7 +54,7 @@ namespace engine {
 			lastFrameTime = currentFrameTime;
 
 			this->renderCurrentScene(deltaTime);
-			this->physicsWorld->update(fixedDeltaTime);
+			this->updateCurrentScenePhysics(fixedDeltaTime);
 			this->currentScene->update(fixedDeltaTime);
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -71,13 +70,59 @@ namespace engine {
 	}
 
 	void Engine::onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity) {
-		auto rbComp = registry.get<RigidBodyComponent>(entity);
-		this->physicsWorld->appendRigidBody(rbComp.rigidBody.get());
+		ASSERT(registry.has<TransformComponent>(entity),
+			"Entiy must have a transform component to have a rigid body component");
+		ASSERT(registry.has<CollisionShapeComponent>(entity),
+			"Entiy must have a collision shape component to have a rigid body component");
+
+		auto& transform = registry.get<TransformComponent>(entity).transform;
+
+		//create the RigidBody
+		reactphysics3d::Vector3 position(transform.position.x, transform.position.y, transform.position.z);
+		auto quat = glm::quat(transform.rotation);
+		reactphysics3d::Quaternion orientation = reactphysics3d::Quaternion(quat.x, quat.y, quat.z, quat.w);
+		reactphysics3d::Transform rigidBodyTransform(position, orientation);
+		reactphysics3d::RigidBody* rigidBody = this->physicsWorld->createRigidBody(rigidBodyTransform);
+
+		// Create the collisionShape for the RigidBody
+		reactphysics3d::ConvexPolyhedronShape* shape = nullptr;
+		
+		auto collisionShapeComp = registry.get<CollisionShapeComponent>(entity);
+
+		switch (collisionShapeComp.collisionShape) {
+			case CollisionShape::Box: {
+				const reactphysics3d::Vector3 halfExtents(
+					transform.scale.x, transform.scale.y, transform.scale.z);
+				shape = physicsCommon.createBoxShape(halfExtents);
+				break;
+			}
+			case CollisionShape::Capsule: {
+				
+				break;
+			}
+			case CollisionShape::Sphere: {
+
+				break;
+			}
+		}
+
+		ASSERT(shape != nullptr, "You must choose a valid/implemented collision shape");
+
+		reactphysics3d::Transform collisionShapeTransform;
+		rigidBody->addCollider(shape, collisionShapeTransform);
+
+		// set the RigidBody type
+		auto& rbComp = registry.get<RigidBodyComponent>(entity);
+		rigidBody->setType(rbComp.isDynamic 
+			? reactphysics3d::BodyType::DYNAMIC
+			: reactphysics3d::BodyType::STATIC);
+		
+		// update the RigidBody component with the created rigid body
+		rbComp.rigidBody = rigidBody;
 	}
 
 	void Engine::onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
-		auto rbComp = registry.get<RigidBodyComponent>(entity);
-		this->physicsWorld->removeRigidBody(rbComp.rigidBody.get());
+		
 	}
 
 	void Engine::initializeCurrentScene() {
@@ -104,9 +149,29 @@ namespace engine {
 		this->renderer->startDrawing(mvp);
 
 		for (auto [entity, meshComp, textComp, transComp] : view.each()) {
-			this->renderer->drawMesh(meshComp.mesh, textComp.texture, transComp.transform->getTransformMatrix());
+			this->renderer->drawMesh(meshComp.mesh, textComp.texture, transComp.transform.getTransformMatrix());
 		}
 		this->renderer->endDrawing();
+	}
+
+	void Engine::updateCurrentScenePhysics(float deltaTime) {
+
+		this->physicsWorld->update(deltaTime);
+
+		auto view = this->currentScene->getRegistry()
+			.view<RigidBodyComponent, TransformComponent>();
+
+		for (auto [entity, rbComp, transComp] : view.each()) {
+			auto& rbTransform = rbComp.rigidBody->getTransform();
+
+			auto& rbPosition = rbTransform.getPosition();
+			transComp.transform.position = { rbPosition.x , rbPosition.y , rbPosition.z };
+
+			auto& orientation = rbTransform.getOrientation();
+			transComp.transform.rotation = glm::eulerAngles(
+				glm::quat(orientation.x, orientation.y, orientation.z, orientation.w)
+			);
+		}
 	}
 
 	void Engine::initializeGlfwWindow() {

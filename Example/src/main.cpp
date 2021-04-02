@@ -4,7 +4,7 @@
 #include "example_scene/ExampleScene.h"
 
 int main() {
-	FpsScene* initialScene = new FpsScene();
+	ExampleScene* initialScene = new ExampleScene();
 	
 	Engine::getInstance().initiliaze(initialScene, 800, 600, "Example");
 	Engine::getInstance().run();
