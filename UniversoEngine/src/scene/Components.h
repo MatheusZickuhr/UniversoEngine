@@ -32,6 +32,10 @@ namespace engine {
     struct RigidBodyComponent {
         bool isDynamic = true;
         reactphysics3d::RigidBody* rigidBody;
+
+        void apllyForce(glm::vec3 force) {
+            rigidBody->applyForceToCenterOfMass(reactphysics3d::Vector3(force.x, force.y, force.z));
+        }
     };
 
     struct TransformComponent {

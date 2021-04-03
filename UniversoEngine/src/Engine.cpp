@@ -79,8 +79,8 @@ namespace engine {
 
 		//create the RigidBody
 		reactphysics3d::Vector3 position(transform.position.x, transform.position.y, transform.position.z);
-		auto quat = glm::quat(transform.rotation);
-		reactphysics3d::Quaternion orientation = reactphysics3d::Quaternion(quat.x, quat.y, quat.z, quat.w);
+		reactphysics3d::Vector3 rotation(transform.rotation.x, transform.rotation.y, transform.rotation.z);
+		reactphysics3d::Quaternion orientation = reactphysics3d::Quaternion::fromEulerAngles(rotation);
 		reactphysics3d::Transform rigidBodyTransform(position, orientation);
 		reactphysics3d::RigidBody* rigidBody = this->physicsWorld->createRigidBody(rigidBodyTransform);
 
@@ -169,7 +169,7 @@ namespace engine {
 
 			auto& orientation = rbTransform.getOrientation();
 			transComp.transform.rotation = glm::eulerAngles(
-				glm::quat(orientation.x, orientation.y, orientation.z, orientation.w)
+				glm::quat(orientation.w, orientation.x, orientation.y, orientation.z)
 			);
 		}
 	}
