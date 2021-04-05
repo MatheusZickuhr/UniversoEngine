@@ -4,7 +4,6 @@
 #include "utils/DebugCameraController.h"
 #include "renderer/Mesh.h"
 #include "renderer/renderer_api/Texture.h"
-#include "physics/RigidBody.h"
 #include "CrateBehavior.h"
 
 using namespace engine;

@@ -1,7 +1,6 @@
 #include <memory>
 #include "scene/Behavior.h"
 #include "input/Input.h"
-#include "physics/RigidBody.h"
 #include "scene/Components.h"
 
 class PlayerBehavior : public engine::Behavior {
