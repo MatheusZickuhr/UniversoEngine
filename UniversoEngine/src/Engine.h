@@ -56,9 +56,9 @@ namespace engine {
 
 		void initializeCurrentScene();
 
-		void renderCurrentScene(float deltaTime);
+		void renderCurrentScene();
 
-		void updateCurrentScenePhysics(float deltaTime);
+		void updateCurrentScenePhysics(float timeInterpolationFactor);
 
 		void initializeGlfwWindow();
 	};

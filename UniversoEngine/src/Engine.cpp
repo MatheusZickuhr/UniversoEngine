@@ -46,17 +46,33 @@ namespace engine {
 	void Engine::run() {
 		constexpr float fixedDeltaTime = 1.0f / 60.0f;
 		
-		float lastFrameTime = 0.0f;
+		float lastTime = 0.0f;
+
+		float accumulator = 0.0f;
 
 		while (this->isRunning()) {
-			float currentFrameTime = glfwGetTime();
-			float deltaTime = currentFrameTime - lastFrameTime;
-			lastFrameTime = currentFrameTime;
+			float currentTime = glfwGetTime();
+			float deltaTime = currentTime - lastTime;
+			lastTime = currentTime;
 
-			this->renderCurrentScene(deltaTime);
-			this->updateCurrentScenePhysics(fixedDeltaTime);
-			this->currentScene->update(fixedDeltaTime);
+			// update the physics world
+			accumulator += deltaTime;
 
+			while (accumulator >= fixedDeltaTime) {
+				this->physicsWorld->update(fixedDeltaTime);
+				accumulator -= fixedDeltaTime;
+			}
+
+			// update the current scene with the updated physics world data
+			float timeInterpolationFactor = accumulator / fixedDeltaTime;
+			this->updateCurrentScenePhysics(timeInterpolationFactor);
+			
+			// update the current scene runtime
+			this->currentScene->update(deltaTime);
+
+			// in the end just render the current scene
+			this->renderCurrentScene();
+		
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, true);
 
@@ -140,7 +156,7 @@ namespace engine {
 		this->initializeCurrentScene();
 	}
 
-	void Engine::renderCurrentScene(float deltaTime) {
+	void Engine::renderCurrentScene() {
 		auto view = this->currentScene->getRegistry()
 		.view<MeshComponent, TextureComponent, TransformComponent>();
 
@@ -154,20 +170,24 @@ namespace engine {
 		this->renderer->endDrawing();
 	}
 
-	void Engine::updateCurrentScenePhysics(float deltaTime) {
-
-		this->physicsWorld->update(deltaTime);
+	void Engine::updateCurrentScenePhysics(float timeInterpolationFactor) {
 
 		auto view = this->currentScene->getRegistry()
 			.view<RigidBodyComponent, TransformComponent>();
 
 		for (auto [entity, rbComp, transComp] : view.each()) {
-			auto& rbTransform = rbComp.rigidBody->getTransform();
+			// perform transform interpolation
+			auto& prevRbTransform = rbComp.prevTransform;
+			auto& currentRbTransform = rbComp.rigidBody->getTransform();
+			auto interpolatedTransform = reactphysics3d::Transform::interpolateTransforms(
+				prevRbTransform, currentRbTransform, timeInterpolationFactor);
+			rbComp.prevTransform = currentRbTransform;
 
-			auto& rbPosition = rbTransform.getPosition();
+			// update the transform component with the new values
+			auto& rbPosition = interpolatedTransform.getPosition();
 			transComp.transform.position = { rbPosition.x , rbPosition.y , rbPosition.z };
 
-			auto& orientation = rbTransform.getOrientation();
+			auto& orientation = interpolatedTransform.getOrientation();
 			transComp.transform.rotation = glm::eulerAngles(
 				glm::quat(orientation.w, orientation.x, orientation.y, orientation.z)
 			);

@@ -3,7 +3,7 @@
 
 void PlayerBehavior::onStart() {
     camera =entity->getScene()->getCamera();
-    this->movementSpeed = 6.0f;
+    this->movementSpeed = 500.0f;
     this->mouseSensitivity = 0.1f;
 }
 
@@ -19,9 +19,9 @@ void PlayerBehavior::onUpdate(float deltaTime) {
 void PlayerBehavior::processKeybordInput(float deltaTime) {
     auto rigidBodyComponent = entity->getComponent<engine::RigidBodyComponent>();
 
-    glm::vec3 frontDirection = this->movementSpeed * camera->front;
+    glm::vec3 frontDirection = this->movementSpeed * deltaTime * camera->front;
     frontDirection.y = 0;
-    glm::vec3 rightDirection = this->movementSpeed * camera->right;
+    glm::vec3 rightDirection = this->movementSpeed * deltaTime * camera->right;
     rightDirection.y = 0;
 
     if (engine::Input::keyPressed('W'))
