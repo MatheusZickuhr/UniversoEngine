@@ -12,6 +12,7 @@
 #include "input/Input.h"
 #include "scene/Scene.h"
 #include "scene/Components.h"
+#include "physics/RIgidBody.h"
 #include "debug/Assert.h"
 
 namespace engine {

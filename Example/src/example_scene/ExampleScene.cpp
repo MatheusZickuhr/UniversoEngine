@@ -28,7 +28,7 @@ void ExampleScene::onStart() {
 	floor->getComponent<TransformComponent>().transform.position.y = -5.0f;
 	floor->getComponent<TransformComponent>().transform.scale = { 10.0f, 0.5f, 10.0f };
 	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
-	floor->addComponent<RigidBodyComponent>(false);
+	floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
 
 }
 

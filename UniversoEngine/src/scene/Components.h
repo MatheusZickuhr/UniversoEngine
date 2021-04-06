@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include <reactphysics3d/reactphysics3d.h>
+#include "../physics/RigidBody.h"
 
 #include "../renderer/renderer_api/Texture.h"
 #include "../renderer/Mesh.h"
@@ -15,8 +15,7 @@
 
 namespace engine {
 
-    enum class CollisionShape { Box, Sphere, Capsule };
-
+   
     struct MeshComponent {
         Mesh* mesh;
     };
@@ -30,14 +29,8 @@ namespace engine {
     };
 
     struct RigidBodyComponent {
-        bool isDynamic = true;
-        reactphysics3d::RigidBody* rigidBody;
-        // used for interpolation
-        reactphysics3d::Transform prevTransform;
-
-        void apllyForce(glm::vec3 force) {
-            rigidBody->applyForceToCenterOfMass(reactphysics3d::Vector3(force.x, force.y, force.z));
-        }
+        RigidBodyType type = RigidBodyType::Dynamic;
+        RigidBody rigidBody;
     };
 
     struct TransformComponent {

@@ -128,13 +128,25 @@ namespace engine {
 		rigidBody->addCollider(shape, collisionShapeTransform);
 
 		// set the RigidBody type
-		auto& rbComp = registry.get<RigidBodyComponent>(entity);
-		rigidBody->setType(rbComp.isDynamic 
-			? reactphysics3d::BodyType::DYNAMIC
-			: reactphysics3d::BodyType::STATIC);
+		auto& rigidBodyComponent = registry.get<RigidBodyComponent>(entity);
+
+		switch (rigidBodyComponent.type) {
+			case RigidBodyType::Dynamic: {
+				rigidBody->setType(reactphysics3d::BodyType::DYNAMIC);
+				break;
+			}
+			case RigidBodyType::Static: {
+				rigidBody->setType(reactphysics3d::BodyType::STATIC);
+				break; 
+			}
+			case RigidBodyType::Kinemattic: {
+				rigidBody->setType(reactphysics3d::BodyType::KINEMATIC);
+				break;
+			}
+		}
 		
 		// update the RigidBody component with the created rigid body
-		rbComp.rigidBody = rigidBody;
+		rigidBodyComponent.rigidBody = RigidBody{ rigidBody };
 	}
 
 	void Engine::onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
@@ -177,11 +189,11 @@ namespace engine {
 
 		for (auto [entity, rbComp, transComp] : view.each()) {
 			// perform transform interpolation
-			auto& prevRbTransform = rbComp.prevTransform;
-			auto& currentRbTransform = rbComp.rigidBody->getTransform();
+			auto& prevRbTransform = rbComp.rigidBody.prevTransform;
+			auto& currentRbTransform = rbComp.rigidBody.rigidBodyPtr->getTransform();
 			auto interpolatedTransform = reactphysics3d::Transform::interpolateTransforms(
 				prevRbTransform, currentRbTransform, timeInterpolationFactor);
-			rbComp.prevTransform = currentRbTransform;
+			rbComp.rigidBody.prevTransform = currentRbTransform;
 
 			// update the transform component with the new values
 			auto& rbPosition = interpolatedTransform.getPosition();

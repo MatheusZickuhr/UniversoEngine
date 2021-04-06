@@ -2,6 +2,7 @@
 #include "renderer/renderer_api/Texture.h"
 #include "renderer/Mesh.h"
 #include "scene/Components.h"
+#include "physics/RigidBody.h"
 #include "PLayerBehavior.h"
 
 class FpsScene : public engine::Scene {

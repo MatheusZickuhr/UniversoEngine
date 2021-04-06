@@ -30,7 +30,7 @@ void FpsScene::onStart() {
 	floor->getComponent<engine::TransformComponent>().transform.position.y = -5.0f;
 	floor->getComponent<engine::TransformComponent>().transform.scale = { 10.0f, 0.5f, 10.0f };
 	floor->addComponent<engine::CollisionShapeComponent>(engine::CollisionShape::Box);
-	floor->addComponent<engine::RigidBodyComponent>(false);
+	floor->addComponent<engine::RigidBodyComponent>(engine::RigidBodyType::Static);
 
 
 	auto obstacle1 = createEntity();
