@@ -139,7 +139,7 @@ namespace engine {
 				rigidBody->setType(reactphysics3d::BodyType::STATIC);
 				break; 
 			}
-			case RigidBodyType::Kinemattic: {
+			case RigidBodyType::Kinematic: {
 				rigidBody->setType(reactphysics3d::BodyType::KINEMATIC);
 				break;
 			}

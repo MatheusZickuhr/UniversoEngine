@@ -6,7 +6,7 @@ namespace engine {
 	
 	enum class CollisionShape { Box, Sphere, Capsule };
 
-	enum class RigidBodyType { Dynamic , Static, Kinemattic };
+	enum class RigidBodyType { Dynamic , Static, Kinematic };
 
 	class RigidBody {
 		friend class Engine;
