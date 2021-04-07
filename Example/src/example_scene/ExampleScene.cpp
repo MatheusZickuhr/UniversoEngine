@@ -8,18 +8,31 @@ ExampleScene::~ExampleScene() {
 }
 
 void ExampleScene::onStart() {
+
+	this->camera->position = { 0.0f, -3.0f, 20.0f };
+
 	cameraInput = new DebugCameraController(this->camera);
 	boxTexture = new Texture("res/textures/crate/crate.jpg");
 	boxMesh = new Mesh("res/models/crate/crate.obj");
 	
-	auto entity = createEntity();
-	entity->addComponent<MeshComponent>(boxMesh);
-	entity->addComponent<TextureComponent>(boxTexture);
-	entity->addComponent<TransformComponent>();
-	entity->getComponent<TransformComponent>().transform.position = {0.0f, 1.0f, 0.0f };
-	entity->getComponent<TransformComponent>().transform.rotation = {0.1f * 3.14f, 0.0f, 0.0f };
-	entity->addComponent<CollisionShapeComponent>(CollisionShape::Box);
-	entity->addComponent<RigidBodyComponent>();
+	Random random;
+
+	for (float x = -6.0f; x <= 6.0f; x+= 2.0f) {
+		for (float z = -6.0f; z <= 6.0f; z += 2.0f) {
+			auto entity = createEntity();
+			entity->addComponent<MeshComponent>(boxMesh);
+			entity->addComponent<TextureComponent>(boxTexture);
+			entity->addComponent<TransformComponent>();
+			entity->getComponent<TransformComponent>().transform.scale *= 0.5f;
+			entity->getComponent<TransformComponent>().transform.position = { x, random.random() * 5.0f, z };
+			entity->getComponent<TransformComponent>().transform.rotation = { random.random() * 3.14f, 0.0f, 0.0f };
+			entity->addComponent<CollisionShapeComponent>(CollisionShape::Box);
+			entity->addComponent<RigidBodyComponent>();
+		}
+
+	}
+
+
 
 	auto floor = createEntity();
 	floor->addComponent<MeshComponent>(boxMesh);

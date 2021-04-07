@@ -5,6 +5,7 @@
 #include "renderer/Mesh.h"
 #include "renderer/renderer_api/Texture.h"
 #include "CrateBehavior.h"
+#include "math/Random.h"
 
 using namespace engine;
 
