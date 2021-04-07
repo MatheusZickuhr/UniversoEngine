@@ -30,7 +30,7 @@ namespace engine {
 
     struct RigidBodyComponent {
         RigidBodyType type = RigidBodyType::Dynamic;
-        RigidBody rigidBody;
+        RigidBody* rigidBody;
     };
 
     struct TransformComponent {

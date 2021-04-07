@@ -22,6 +22,7 @@ namespace engine {
 		this->windowName = windowName;
 		this->initializeGlfwWindow();
 		
+		this->physicsWorld = new ReactPhysics3dPhysicsWorld();
 		this->renderer = new Renderer3D();
 		Input::init(this->window);
 		
@@ -32,6 +33,7 @@ namespace engine {
 	}
 
 	Engine::~Engine() {
+		delete this->physicsWorld;
 		delete this->renderer;
 		glfwTerminate();
 	}
@@ -58,7 +60,7 @@ namespace engine {
 			accumulator += deltaTime;
 
 			while (accumulator >= fixedDeltaTime) {
-				this->physicsWorld.update(fixedDeltaTime);
+				this->physicsWorld->update(fixedDeltaTime);
 				accumulator -= fixedDeltaTime;
 			}
 
@@ -95,13 +97,13 @@ namespace engine {
 		auto& rigidBodyComponent = registry.get<RigidBodyComponent>(entity);
 
 		//create the RigidBody
-		RigidBody rigidBody = this->physicsWorld.createRigidBody(transform.position, transform.rotation);
+		RigidBody* rigidBody = this->physicsWorld->createRigidBody(transform.position, transform.rotation);
 
 		// Create the collisionShape for the RigidBody
-		rigidBody.addCollisionShape(transform.scale, collisionShape);
+		rigidBody->addCollisionShape(transform.scale, collisionShape);
 
 		// set the RigidBody type
-		rigidBody.setRigidBodyType(rigidBodyComponent.type);
+		rigidBody->setRigidBodyType(rigidBodyComponent.type);
 		
 		// update the RigidBodyComponent with the created RigidBody
 		rigidBodyComponent.rigidBody = rigidBody;
@@ -147,7 +149,7 @@ namespace engine {
 
 		for (auto [entity, rbComp, transComp] : view.each()) {
 			// perform transform interpolation
-			Transform interpolatedTransform = rbComp.rigidBody.getInterpolatedTranform(timeInterpolationFactor);
+			Transform interpolatedTransform = rbComp.rigidBody->getInterpolatedTranform(timeInterpolationFactor);
 			
 			// update the transform component
 			transComp.transform.position = interpolatedTransform.position;

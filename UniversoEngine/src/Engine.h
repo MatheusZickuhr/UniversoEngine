@@ -11,7 +11,7 @@
 #include "scene/Scene.h"
 #include "scene/Components.h"
 #include "physics/RigidBody.h"
-#include "physics/PhysicsWorld.h"
+#include "physics/ReactPhysics3dPhysicsWorld.h"
 #include "debug/Assert.h"
 
 namespace engine {
@@ -24,7 +24,7 @@ namespace engine {
 		GLFWwindow* window;
 		Renderer3D* renderer;
 		Scene *currentScene;
-		PhysicsWorld physicsWorld;
+		PhysicsWorld* physicsWorld;
 
 	public:
 		static Engine& getInstance();

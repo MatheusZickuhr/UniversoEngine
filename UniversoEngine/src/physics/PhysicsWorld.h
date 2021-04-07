@@ -6,19 +6,12 @@
 namespace engine {
 
 	class PhysicsWorld {
-
-	private:
-
-		reactphysics3d::PhysicsCommon physicsCommon;
-		reactphysics3d::PhysicsWorld* physicsWorld;
-
+	
 	public:
 
-		PhysicsWorld();
+		virtual void update(float deltaTime) = 0;
 
-		void update(float deltaTime);
-
-		RigidBody createRigidBody(const glm::vec3& position, const glm::vec3& rotation);
+		virtual RigidBody* createRigidBody(const glm::vec3& position, const glm::vec3& rotation) = 0;
 
 	};
 

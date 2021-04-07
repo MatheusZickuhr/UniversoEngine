@@ -1,17 +1,17 @@
-#include "RigidBody.h"
+#include "ReactPhysics3dRigidBody.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "../debug/Assert.h"
 
 namespace engine {
 
-	RigidBody::RigidBody() {}
+	ReactPhysics3dRigidBody::ReactPhysics3dRigidBody() {}
 
-	RigidBody::RigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody)
+	ReactPhysics3dRigidBody::ReactPhysics3dRigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody)
 		: physicsCommon(physicsCommon), rigidBodyPtr(rigidBody), prevTransform(rigidBody->getTransform()) {
 	}
 
-	void RigidBody::addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape) {
+	void ReactPhysics3dRigidBody::addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape) {
 		reactphysics3d::ConvexPolyhedronShape* shape = nullptr;
 
 		switch (collisionShape) {
@@ -35,7 +35,7 @@ namespace engine {
 		this->rigidBodyPtr->addCollider(shape, collisionShapeTransform);
 	}
 
-	Transform RigidBody::getInterpolatedTranform(float timeInterpolationFactor) {
+	Transform ReactPhysics3dRigidBody::getInterpolatedTranform(float timeInterpolationFactor) {
 		auto& currentTransform = this->rigidBodyPtr->getTransform();
 		auto interpolatedTransform = reactphysics3d::Transform::interpolateTransforms(
 			this->prevTransform, currentTransform, timeInterpolationFactor);
@@ -54,7 +54,7 @@ namespace engine {
 		return transform;
 	}
 
-	void RigidBody::setRigidBodyType(RigidBodyType rigidBodyType) {
+	void ReactPhysics3dRigidBody::setRigidBodyType(RigidBodyType rigidBodyType) {
 		switch (rigidBodyType) {
 		case RigidBodyType::Dynamic: {
 			this->rigidBodyPtr->setType(reactphysics3d::BodyType::DYNAMIC);
@@ -71,7 +71,7 @@ namespace engine {
 		}
 	}
 
-	void RigidBody::apllyForce(glm::vec3 force) {
+	void ReactPhysics3dRigidBody::apllyForce(glm::vec3 force) {
 		rigidBodyPtr->applyForceToCenterOfMass(reactphysics3d::Vector3(force.x, force.y, force.z));
 	}
 

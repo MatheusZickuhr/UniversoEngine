@@ -25,18 +25,18 @@ void PlayerBehavior::processKeybordInput(float deltaTime) {
     rightDirection.y = 0;
 
     if (engine::Input::keyPressed('W'))
-        rigidBodyComponent.rigidBody.apllyForce(frontDirection);
+        rigidBodyComponent.rigidBody->apllyForce(frontDirection);
     if (engine::Input::keyPressed('S'))
-        rigidBodyComponent.rigidBody.apllyForce(-frontDirection);
+        rigidBodyComponent.rigidBody->apllyForce(-frontDirection);
     if (engine::Input::keyPressed('D'))
-        rigidBodyComponent.rigidBody.apllyForce(rightDirection);
+        rigidBodyComponent.rigidBody->apllyForce(rightDirection);
     if (engine::Input::keyPressed('A'))
-        rigidBodyComponent.rigidBody.apllyForce(-rightDirection);
+        rigidBodyComponent.rigidBody->apllyForce(-rightDirection);
 
 
     glm::vec3 jumpForce = {0.0f, 15.0f, 0.0f};
     if (engine::Input::keyPressed('F')){
-        rigidBodyComponent.rigidBody.apllyForce(jumpForce);
+        rigidBodyComponent.rigidBody->apllyForce(jumpForce);
     }
 }
 

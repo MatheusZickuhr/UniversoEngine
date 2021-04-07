@@ -11,23 +11,14 @@ namespace engine {
 
 	class RigidBody {
 
-	private:
-		reactphysics3d::PhysicsCommon* physicsCommon;
-		reactphysics3d::RigidBody* rigidBodyPtr;
-		reactphysics3d::Transform prevTransform;
-
 	public:
-		RigidBody();
+		virtual void addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape) = 0;
 
-		RigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody);
+		virtual Transform getInterpolatedTranform(float timeInterpolationFactor) = 0;
 
-		void addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape);
+		virtual void setRigidBodyType(RigidBodyType rigidBodyType) = 0;
 
-		Transform getInterpolatedTranform(float timeInterpolationFactor);
-
-		void setRigidBodyType(RigidBodyType rigidBodyType);
-
-		void apllyForce(glm::vec3 force);
+		virtual void apllyForce(glm::vec3 force) = 0;
 
 	};
 
