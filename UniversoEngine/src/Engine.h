@@ -5,14 +5,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <entt/entt.hpp>
-#include <reactphysics3d/reactphysics3d.h>
-#include <glm/gtx/quaternion.hpp>
 
 #include "renderer/Renderer3D.h"
 #include "input/Input.h"
 #include "scene/Scene.h"
 #include "scene/Components.h"
-#include "physics/RIgidBody.h"
+#include "physics/RigidBody.h"
+#include "physics/PhysicsWorld.h"
 #include "debug/Assert.h"
 
 namespace engine {
@@ -25,8 +24,7 @@ namespace engine {
 		GLFWwindow* window;
 		Renderer3D* renderer;
 		Scene *currentScene;
-		reactphysics3d::PhysicsCommon physicsCommon;
-		reactphysics3d::PhysicsWorld* physicsWorld;
+		PhysicsWorld physicsWorld;
 
 	public:
 		static Engine& getInstance();

@@ -1,6 +1,7 @@
 #pragma once
 #include <reactphysics3d/reactphysics3d.h>
 #include <glm/glm.hpp>
+#include "../math/Transform.h"
 
 namespace engine {
 	
@@ -9,16 +10,22 @@ namespace engine {
 	enum class RigidBodyType { Dynamic , Static, Kinematic };
 
 	class RigidBody {
-		friend class Engine;
 
 	private:
+		reactphysics3d::PhysicsCommon* physicsCommon;
 		reactphysics3d::RigidBody* rigidBodyPtr;
 		reactphysics3d::Transform prevTransform;
 
 	public:
 		RigidBody();
 
-		RigidBody(reactphysics3d::RigidBody* rigidBody);
+		RigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody);
+
+		void addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape);
+
+		Transform getInterpolatedTranform(float timeInterpolationFactor);
+
+		void setRigidBodyType(RigidBodyType rigidBodyType);
 
 		void apllyForce(glm::vec3 force);
 

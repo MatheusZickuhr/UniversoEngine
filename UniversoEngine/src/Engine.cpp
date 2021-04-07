@@ -13,7 +13,7 @@ namespace engine {
 	}
 
 	Engine::Engine() : windowWidth(800), windowHeight(600), windowName("Universo Engine"),
-		window(nullptr), currentScene(nullptr), renderer(nullptr), physicsWorld(nullptr)  {}
+		window(nullptr), currentScene(nullptr), renderer(nullptr) {}
 
 	void Engine::initiliaze(Scene* scene, float width, float height, const char* windowName) {
 
@@ -23,7 +23,6 @@ namespace engine {
 		this->initializeGlfwWindow();
 		
 		this->renderer = new Renderer3D();
-		this->physicsWorld = physicsCommon.createPhysicsWorld();
 		Input::init(this->window);
 		
 		this->currentScene = scene;
@@ -59,7 +58,7 @@ namespace engine {
 			accumulator += deltaTime;
 
 			while (accumulator >= fixedDeltaTime) {
-				this->physicsWorld->update(fixedDeltaTime);
+				this->physicsWorld.update(fixedDeltaTime);
 				accumulator -= fixedDeltaTime;
 			}
 
@@ -92,61 +91,20 @@ namespace engine {
 			"Entiy must have a collision shape component to have a rigid body component");
 
 		auto& transform = registry.get<TransformComponent>(entity).transform;
-
-		//create the RigidBody
-		reactphysics3d::Vector3 position(transform.position.x, transform.position.y, transform.position.z);
-		reactphysics3d::Vector3 rotation(transform.rotation.x, transform.rotation.y, transform.rotation.z);
-		reactphysics3d::Quaternion orientation = reactphysics3d::Quaternion::fromEulerAngles(rotation);
-		reactphysics3d::Transform rigidBodyTransform(position, orientation);
-		reactphysics3d::RigidBody* rigidBody = this->physicsWorld->createRigidBody(rigidBodyTransform);
-
-		// Create the collisionShape for the RigidBody
-		reactphysics3d::ConvexPolyhedronShape* shape = nullptr;
-		
-		auto collisionShapeComp = registry.get<CollisionShapeComponent>(entity);
-
-		switch (collisionShapeComp.collisionShape) {
-			case CollisionShape::Box: {
-				const reactphysics3d::Vector3 halfExtents(
-					transform.scale.x, transform.scale.y, transform.scale.z);
-				shape = physicsCommon.createBoxShape(halfExtents);
-				break;
-			}
-			case CollisionShape::Capsule: {
-				
-				break;
-			}
-			case CollisionShape::Sphere: {
-
-				break;
-			}
-		}
-
-		ASSERT(shape != nullptr, "You must choose a valid/implemented collision shape");
-
-		reactphysics3d::Transform collisionShapeTransform;
-		rigidBody->addCollider(shape, collisionShapeTransform);
-
-		// set the RigidBody type
+		auto& collisionShape = registry.get<CollisionShapeComponent>(entity).collisionShape;
 		auto& rigidBodyComponent = registry.get<RigidBodyComponent>(entity);
 
-		switch (rigidBodyComponent.type) {
-			case RigidBodyType::Dynamic: {
-				rigidBody->setType(reactphysics3d::BodyType::DYNAMIC);
-				break;
-			}
-			case RigidBodyType::Static: {
-				rigidBody->setType(reactphysics3d::BodyType::STATIC);
-				break; 
-			}
-			case RigidBodyType::Kinematic: {
-				rigidBody->setType(reactphysics3d::BodyType::KINEMATIC);
-				break;
-			}
-		}
+		//create the RigidBody
+		RigidBody rigidBody = this->physicsWorld.createRigidBody(transform.position, transform.rotation);
+
+		// Create the collisionShape for the RigidBody
+		rigidBody.addCollisionShape(transform.scale, collisionShape);
+
+		// set the RigidBody type
+		rigidBody.setRigidBodyType(rigidBodyComponent.type);
 		
-		// update the RigidBody component with the created rigid body
-		rigidBodyComponent.rigidBody = RigidBody{ rigidBody };
+		// update the RigidBodyComponent with the created RigidBody
+		rigidBodyComponent.rigidBody = rigidBody;
 	}
 
 	void Engine::onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
@@ -189,20 +147,11 @@ namespace engine {
 
 		for (auto [entity, rbComp, transComp] : view.each()) {
 			// perform transform interpolation
-			auto& prevRbTransform = rbComp.rigidBody.prevTransform;
-			auto& currentRbTransform = rbComp.rigidBody.rigidBodyPtr->getTransform();
-			auto interpolatedTransform = reactphysics3d::Transform::interpolateTransforms(
-				prevRbTransform, currentRbTransform, timeInterpolationFactor);
-			rbComp.rigidBody.prevTransform = currentRbTransform;
-
-			// update the transform component with the new values
-			auto& rbPosition = interpolatedTransform.getPosition();
-			transComp.transform.position = { rbPosition.x , rbPosition.y , rbPosition.z };
-
-			auto& orientation = interpolatedTransform.getOrientation();
-			transComp.transform.rotation = glm::eulerAngles(
-				glm::quat(orientation.w, orientation.x, orientation.y, orientation.z)
-			);
+			Transform interpolatedTransform = rbComp.rigidBody.getInterpolatedTranform(timeInterpolationFactor);
+			
+			// update the transform component
+			transComp.transform.position = interpolatedTransform.position;
+			transComp.transform.rotation = interpolatedTransform.rotation;
 		}
 	}
 
