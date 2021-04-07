@@ -1,7 +1,7 @@
 #pragma once
+
+#include <glm/glm.hpp>
 #include "RigidBody.h"
-#include "../math/Transform.h"
-#include <reactphysics3d/reactphysics3d.h>
 
 namespace engine {
 

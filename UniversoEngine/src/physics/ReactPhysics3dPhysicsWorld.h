@@ -1,7 +1,8 @@
 #pragma once
 
 #include "PhysicsWorld.h"
-#include "ReactPhysics3dRigidBody.h"
+#include <vector>
+#include <reactphysics3d/reactphysics3d.h>
 
 namespace engine {
 

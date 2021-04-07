@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RigidBody.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 namespace engine {
 

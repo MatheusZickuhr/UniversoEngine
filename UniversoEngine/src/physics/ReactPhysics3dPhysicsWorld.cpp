@@ -1,4 +1,5 @@
 #include "ReactPhysics3dPhysicsWorld.h"
+#include "ReactPhysics3dRigidBody.h"
 #include "../debug/Assert.h"
 
 namespace engine {

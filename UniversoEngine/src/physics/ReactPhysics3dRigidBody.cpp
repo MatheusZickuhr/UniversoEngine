@@ -1,5 +1,4 @@
 #include "ReactPhysics3dRigidBody.h"
-#include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "../debug/Assert.h"
 
