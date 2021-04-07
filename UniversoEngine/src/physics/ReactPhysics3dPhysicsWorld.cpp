@@ -3,6 +3,13 @@
 
 namespace engine {
 
+	ReactPhysics3dPhysicsWorld::~ReactPhysics3dPhysicsWorld() {
+		for (auto rigidBody : this->rigidBodies) {
+			delete rigidBody;
+		}
+		this->rigidBodies.clear();
+	}
+
 	ReactPhysics3dPhysicsWorld::ReactPhysics3dPhysicsWorld() {
 		this->physicsWorld = physicsCommon.createPhysicsWorld();
 	}
@@ -17,8 +24,10 @@ namespace engine {
 		reactphysics3d::Transform rigidBodyTransform({ position.x, position.y, position.z }, rotationAsQuaternion);
 		reactphysics3d::RigidBody* rigidBody = this->physicsWorld->createRigidBody(rigidBodyTransform);
 
-		// returns a RigidBBody wrapper
-		return new ReactPhysics3dRigidBody{ &this->physicsCommon, rigidBody };
+		// returns a RigidBody wrapper
+		auto wrappedRigidBody = new ReactPhysics3dRigidBody{ &this->physicsCommon, rigidBody };
+		this->rigidBodies.push_back(wrappedRigidBody);
+		return wrappedRigidBody;
 	}
 
 }

@@ -11,8 +11,11 @@ namespace engine {
 
 		reactphysics3d::PhysicsCommon physicsCommon;
 		reactphysics3d::PhysicsWorld* physicsWorld;
+		std::vector<RigidBody*> rigidBodies;
 
 	public:
+
+		~ReactPhysics3dPhysicsWorld();
 
 		ReactPhysics3dPhysicsWorld();
 
