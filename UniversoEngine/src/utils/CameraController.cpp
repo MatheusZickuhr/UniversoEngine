@@ -1,32 +1,32 @@
-#include "DebugCameraController.h"
+#include "CameraController.h"
 
 
 namespace engine {
 
-	DebugCameraController::DebugCameraController(Camera& camera) :
+	CameraController::CameraController(Camera& camera) :
 		camera(camera),
 		movementSpeed(SPEED),
 		mouseSensitivity(SENSITIVITY) {
 		
 	}
 
-	void DebugCameraController::update(float deltaTime) {
+	void CameraController::update(float deltaTime) {
 		this->processKeybordInput(deltaTime);
 		this->processMouseInput();
 	}
 
-	void DebugCameraController::processKeybordInput(float deltaTime) {
+	void CameraController::processKeybordInput(float deltaTime) {
 		if (engine::Input::keyPressed('W'))
-			this->updateCameraPosition(FORWARD, deltaTime);
+			this->updateCameraPosition(CameraMovement::FORWARD, deltaTime);
 		if (engine::Input::keyPressed('S'))
-			this->updateCameraPosition(BACKWARD, deltaTime);
+			this->updateCameraPosition(CameraMovement::BACKWARD, deltaTime);
 		if (engine::Input::keyPressed('A'))
-			this->updateCameraPosition(LEFT, deltaTime);
+			this->updateCameraPosition(CameraMovement::LEFT, deltaTime);
 		if (engine::Input::keyPressed('D'))
-			this->updateCameraPosition(RIGHT, deltaTime);
+			this->updateCameraPosition(CameraMovement::RIGHT, deltaTime);
 	}
 
-	void DebugCameraController::processMouseInput() {
+	void CameraController::processMouseInput() {
 		double xpos, ypos;
 		engine::Input::getCursorPos(&xpos, &ypos);
 
@@ -45,23 +45,23 @@ namespace engine {
 		this->updateCameraAngles(xoffset, yoffset);
 	}
 
-	void DebugCameraController::updateCameraPosition(CameraMovement direction, float deltaTime) {
+	void CameraController::updateCameraPosition(CameraMovement direction, float deltaTime) {
 		float velocity = this->movementSpeed * deltaTime;
-		if (direction == FORWARD)
+		if (direction == CameraMovement::FORWARD)
 			this->camera.position += this->camera.front * velocity;
 
-		if (direction == BACKWARD)
+		if (direction == CameraMovement::BACKWARD)
 			this->camera.position -= this->camera.front * velocity;
 
-		if (direction == LEFT)
+		if (direction == CameraMovement::LEFT)
 			this->camera.position -= this->camera.right * velocity;
 
-		if (direction == RIGHT)
+		if (direction == CameraMovement::RIGHT)
 			this->camera.position += this->camera.right * velocity;
 
 	}
 
-	void DebugCameraController::updateCameraAngles(float xoffset, float yoffset, GLboolean constrainPitch) {
+	void CameraController::updateCameraAngles(float xoffset, float yoffset, bool constrainPitch) {
 		xoffset *= this->mouseSensitivity;
 		yoffset *= this->mouseSensitivity;
 

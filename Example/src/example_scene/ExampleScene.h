@@ -1,7 +1,7 @@
 #pragma once
 #include "scene/Entity.h"
 #include "scene/Scene.h"
-#include "utils/DebugCameraController.h"
+#include "utils/CameraController.h"
 #include "renderer/Mesh.h"
 #include "renderer/renderer_api/Texture.h"
 #include "CrateBehavior.h"
@@ -12,7 +12,7 @@ using namespace engine;
 class ExampleScene : public Scene {
 
 private:
-	DebugCameraController* cameraInput;
+	CameraController* cameraInput;
 
 	Texture* boxTexture;
 	Mesh* boxMesh;
