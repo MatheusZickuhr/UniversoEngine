@@ -13,35 +13,17 @@ namespace engine {
 	}
 
 	Engine::Engine() : windowWidth(800), windowHeight(600), windowName("Universo Engine"),
-		window(nullptr), currentScene(nullptr), renderer(nullptr) {}
-
-	void Engine::initiliaze(Scene* scene, float width, float height, const char* windowName) {
-
-		this->windowWidth = width;
-		this->windowHeight = height;
-		this->windowName = windowName;
-		this->initializeGlfwWindow();
-		
-		this->physicsWorld = new ReactPhysics3dPhysicsWorld();
-		this->renderer = new Renderer3D();
-		Input::init(this->window);
-		
-		this->currentScene = scene;
-		this->initializeCurrentScene();
-
-		this->setViewPortSize(this->windowWidth, this->windowHeight);
-	}
+		window(nullptr), currentScene(nullptr) {}
 
 	Engine::~Engine() {
-		delete this->physicsWorld;
-		delete this->renderer;
+		delete this->currentScene;
 		glfwTerminate();
 	}
 
 	void Engine::setViewPortSize(float newWindowWidth, float newWindowHeight) {
 		this->windowWidth = newWindowWidth;
 		this->windowHeight = newWindowHeight;
-		this->renderer->setViewPortSize(newWindowWidth, newWindowHeight);
+		this->currentScene->getRenderer()->setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
 	void Engine::run() {
@@ -60,19 +42,19 @@ namespace engine {
 			accumulator += deltaTime;
 
 			while (accumulator >= fixedDeltaTime) {
-				this->physicsWorld->update(fixedDeltaTime);
+				this->currentScene->updatePhysicsWorld(fixedDeltaTime);
 				accumulator -= fixedDeltaTime;
 			}
 
 			// update the current scene with the updated physics world data
 			float timeInterpolationFactor = accumulator / fixedDeltaTime;
-			this->updateCurrentScenePhysics(timeInterpolationFactor);
+			this->currentScene->updatePhysics(timeInterpolationFactor);
 			
 			// update the current scene runtime
-			this->currentScene->update(deltaTime);
+			this->currentScene->onUpdateCallBack(deltaTime);
 
 			// in the end just render the current scene
-			this->renderCurrentScene();
+			this->currentScene->render(this->windowWidth, this->windowHeight);
 		
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, true);
@@ -84,77 +66,6 @@ namespace engine {
 
 	bool Engine::isRunning() {
 		return !glfwWindowShouldClose(this->window);
-	}
-
-	void Engine::onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity) {
-		ASSERT(registry.has<TransformComponent>(entity),
-			"Entiy must have a transform component to have a rigid body component");
-		ASSERT(registry.has<CollisionShapeComponent>(entity),
-			"Entiy must have a collision shape component to have a rigid body component");
-
-		auto& transform = registry.get<TransformComponent>(entity).transform;
-		auto& collisionShape = registry.get<CollisionShapeComponent>(entity).collisionShape;
-		auto& rigidBodyComponent = registry.get<RigidBodyComponent>(entity);
-
-		//create the RigidBody
-		RigidBody* rigidBody = this->physicsWorld->createRigidBody(transform.position, transform.rotation);
-
-		// Create the collisionShape for the RigidBody
-		rigidBody->addCollisionShape(transform.scale, collisionShape);
-
-		// set the RigidBody type
-		rigidBody->setRigidBodyType(rigidBodyComponent.type);
-		
-		// update the RigidBodyComponent with the created RigidBody
-		rigidBodyComponent.rigidBody = rigidBody;
-	}
-
-	void Engine::onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
-		
-	}
-
-	void Engine::initializeCurrentScene() {
-		this->currentScene->getRegistry().on_construct<RigidBodyComponent>()
-			.connect<&Engine::onRigidBodyComponentCreated>(this);
-
-		this->currentScene->getRegistry().on_destroy<RigidBodyComponent>()
-			.connect<&Engine::onRigidBodyComponentDestroyed>(this);
-
-		this->currentScene->start();
-	}
-
-	void Engine::setScene(Scene* scene) {
-		this->currentScene = scene;
-		this->initializeCurrentScene();
-	}
-
-	void Engine::renderCurrentScene() {
-		auto view = this->currentScene->getRegistry()
-		.view<MeshComponent, TextureComponent, TransformComponent>();
-
-		auto mvp = currentScene->getCamera()->getMvp(this->windowWidth, this->windowHeight);
-		this->renderer->clear(0.2f, 0.3f, 0.3f, 1.0f);
-		this->renderer->startDrawing(mvp);
-
-		for (auto [entity, meshComp, textComp, transComp] : view.each()) {
-			this->renderer->drawMesh(meshComp.mesh, textComp.texture, transComp.transform.getTransformMatrix());
-		}
-		this->renderer->endDrawing();
-	}
-
-	void Engine::updateCurrentScenePhysics(float timeInterpolationFactor) {
-
-		auto view = this->currentScene->getRegistry()
-			.view<RigidBodyComponent, TransformComponent>();
-
-		for (auto [entity, rbComp, transComp] : view.each()) {
-			// perform transform interpolation
-			Transform interpolatedTransform = rbComp.rigidBody->getInterpolatedTranform(timeInterpolationFactor);
-			
-			// update the transform component
-			transComp.transform.position = interpolatedTransform.position;
-			transComp.transform.rotation = interpolatedTransform.rotation;
-		}
 	}
 
 	void Engine::initializeGlfwWindow() {
