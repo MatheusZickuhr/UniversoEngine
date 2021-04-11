@@ -15,6 +15,9 @@ namespace engine {
 
 		this->registry.on_destroy<RigidBodyComponent>()
 			.connect<&Scene::onRigidBodyComponentDestroyed>(this);
+
+		this->registry.on_destroy<BehaviorComponent>()
+			.connect<&Scene::onBehaviorComponentDestroyed>(this);
 	}
 
 	Scene::~Scene() {
@@ -131,4 +134,8 @@ namespace engine {
 
 	}
 
+	void Scene::onBehaviorComponentDestroyed(entt::registry& registry, entt::entity entity) {
+		auto& behaviorComponent = registry.get<BehaviorComponent>(entity);
+		behaviorComponent.destroy();
+	}
 }

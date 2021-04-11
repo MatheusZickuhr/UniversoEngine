@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "../physics/RigidBody.h"
@@ -38,16 +37,17 @@ namespace engine {
     };
 
     struct BehaviorComponent {
-        std::shared_ptr<Behavior> behavior;
-        Entity* entity = nullptr;
+        Entity* entity;
+        Behavior* behavior;
 
-        BehaviorComponent(Entity* entity) {
-            this->entity = entity;
-        }
-    
         template<typename T>
         void bindBehavior() {
-            behavior = std::make_shared<T>(entity);
+            behavior = new T(entity);
+        }
+
+        // free the allocated memory
+        void destroy() {
+            delete this->behavior;
         }
     };
 

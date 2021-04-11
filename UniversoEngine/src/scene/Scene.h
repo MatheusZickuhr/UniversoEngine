@@ -54,6 +54,8 @@ namespace engine {
 
 		void onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity);
 
+		void onBehaviorComponentDestroyed(entt::registry& registry, entt::entity entity);
+
 		virtual void onStart() = 0;
 		
 		virtual void onUpdate(float deltaTime) = 0;
