@@ -19,7 +19,7 @@ namespace engine {
     class DebugCameraController {
 
     private:
-        std::shared_ptr<engine::Camera> camera;
+        Camera& camera;
         float movementSpeed;
         float mouseSensitivity;
 
@@ -28,7 +28,7 @@ namespace engine {
         bool firstMouse = true;
 
     public:
-        DebugCameraController(std::shared_ptr<engine::Camera> camera) ;
+        DebugCameraController(Camera& camera);
 
         void update(float deltaTime);
 

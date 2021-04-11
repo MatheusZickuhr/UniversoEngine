@@ -5,14 +5,6 @@
 
 class PlayerBehavior : public engine::Behavior {
 
-private:
-    std::shared_ptr<engine::Camera> camera;
-    float movementSpeed;
-    float mouseSensitivity;
-    float lastX = 0;
-    float lastY = 0;
-    bool firstMouse = true;
-
 public:
 
     using engine::Behavior::Behavior;
@@ -22,6 +14,13 @@ public:
     void onUpdate(float deltaTime) override;
 
 private:
+
+    engine::Camera* camera;
+    float movementSpeed;
+    float mouseSensitivity;
+    float lastX = 0;
+    float lastY = 0;
+    bool firstMouse = true;
 
     void processKeybordInput(float deltaTime);
 

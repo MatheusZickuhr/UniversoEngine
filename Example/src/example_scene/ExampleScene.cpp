@@ -9,7 +9,7 @@ ExampleScene::~ExampleScene() {
 
 void ExampleScene::onStart() {
 
-	this->camera->position = { 0.0f, -3.0f, 20.0f };
+	this->camera.position = { 0.0f, -3.0f, 20.0f };
 
 	cameraInput = new DebugCameraController(this->camera);
 	boxTexture = new Texture("res/textures/crate/crate.jpg");

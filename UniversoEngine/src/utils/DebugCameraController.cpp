@@ -3,8 +3,11 @@
 
 namespace engine {
 
-	DebugCameraController::DebugCameraController(std::shared_ptr<engine::Camera> camera) : movementSpeed(SPEED), mouseSensitivity(SENSITIVITY) {
-		this->camera = camera;
+	DebugCameraController::DebugCameraController(Camera& camera) :
+		camera(camera),
+		movementSpeed(SPEED),
+		mouseSensitivity(SENSITIVITY) {
+		
 	}
 
 	void DebugCameraController::update(float deltaTime) {
@@ -45,16 +48,16 @@ namespace engine {
 	void DebugCameraController::updateCameraPosition(CameraMovement direction, float deltaTime) {
 		float velocity = this->movementSpeed * deltaTime;
 		if (direction == FORWARD)
-			this->camera->position += this->camera->front * velocity;
+			this->camera.position += this->camera.front * velocity;
 
 		if (direction == BACKWARD)
-			this->camera->position -= this->camera->front * velocity;
+			this->camera.position -= this->camera.front * velocity;
 
 		if (direction == LEFT)
-			this->camera->position -= this->camera->right * velocity;
+			this->camera.position -= this->camera.right * velocity;
 
 		if (direction == RIGHT)
-			this->camera->position += this->camera->right * velocity;
+			this->camera.position += this->camera.right * velocity;
 
 	}
 
@@ -62,16 +65,16 @@ namespace engine {
 		xoffset *= this->mouseSensitivity;
 		yoffset *= this->mouseSensitivity;
 
-		this->camera->yaw += xoffset;
-		this->camera->pitch += yoffset;
+		this->camera.yaw += xoffset;
+		this->camera.pitch += yoffset;
 
 		if (constrainPitch) {
-			if (this->camera->pitch > 89.0f)
-				this->camera->pitch = 89.0f;
-			if (this->camera->pitch < -89.0f)
-				this->camera->pitch = -89.0f;
+			if (this->camera.pitch > 89.0f)
+				this->camera.pitch = 89.0f;
+			if (this->camera.pitch < -89.0f)
+				this->camera.pitch = -89.0f;
 		}
 
-		this->camera->updateVectors();
+		this->camera.updateVectors();
 	}
 }

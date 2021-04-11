@@ -8,8 +8,7 @@ namespace engine {
 
 	Scene::Scene() :
 		physicsWorld(new ReactPhysics3dPhysicsWorld()),
-		renderer(new Renderer3D()),
-		camera(std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 0.0f))) {
+		renderer(new Renderer3D()) {
 	
 		this->registry.on_construct<RigidBodyComponent>()
 			.connect<&Scene::onRigidBodyComponentCreated>(this);
@@ -42,7 +41,7 @@ namespace engine {
 	void Scene::render(float windowWidth, float windowHeight) {
 		auto view = this->registry.view<MeshComponent, TextureComponent, TransformComponent>();
 
-		auto mvp = this->camera->getMvp(windowWidth, windowHeight);
+		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
 		this->renderer->clear(0.2f, 0.3f, 0.3f, 1.0f);
 		this->renderer->startDrawing(mvp);
 
@@ -86,7 +85,7 @@ namespace engine {
 		}
 	}
 
-	std::shared_ptr<Camera> Scene::getCamera() {
+	Camera& Scene::getCamera() {
 		return this->camera;
 	}
 

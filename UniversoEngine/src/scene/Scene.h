@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 
 #include <entt/entt.hpp>
 
@@ -32,7 +31,7 @@ namespace engine {
 		
 		void updatePhysics(float timeInterpolationFactor);
 
-		std::shared_ptr<Camera> getCamera();
+		Camera& getCamera();
 
 		entt::registry& getRegistry();
 		
@@ -40,7 +39,7 @@ namespace engine {
 
 	protected:
 
-		std::shared_ptr<Camera> camera;
+		Camera camera;
 
 		Entity* createEntity();
 
