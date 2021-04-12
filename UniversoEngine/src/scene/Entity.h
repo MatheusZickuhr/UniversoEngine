@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <entt/entt.hpp>
 #include "Scene.h"
+#include "../debug/Assert.h"
 
 namespace engine {
     
@@ -28,6 +29,8 @@ namespace engine {
 
         template<typename T>
         T& getComponent() {
+            ASSERT(this->hasComponent<T>(), "Entity does not have the specified component");
+
             return scene->getRegistry().get<T>(entity);
         }
 

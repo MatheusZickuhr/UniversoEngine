@@ -16,29 +16,36 @@ void ExampleScene::onStart() {
 	
 	Random random;
 
+	const float PI = 3.14f;
+
+	// create some boxes
 	for (float x = -6.0f; x <= 6.0f; x+= 2.0f) {
 		for (float z = -6.0f; z <= 6.0f; z += 2.0f) {
-			auto entity = createEntity();
-			entity->addComponent<MeshComponent>(boxMesh);
-			entity->addComponent<TextureComponent>(boxTexture);
-			entity->addComponent<TransformComponent>();
-			entity->getComponent<TransformComponent>().transform.scale *= 0.5f;
-			entity->getComponent<TransformComponent>().transform.position = { x, random.random() * 5.0f, z };
-			entity->getComponent<TransformComponent>().transform.rotation = { random.random() * 3.14f, 0.0f, 0.0f };
-			entity->addComponent<CollisionShapeComponent>(CollisionShape::Box);
-			entity->addComponent<RigidBodyComponent>();
-		}
+			auto box = createEntity();
+			box->addComponent<MeshComponent>(boxMesh);
+			box->addComponent<TextureComponent>(boxTexture);
+			box->addComponent<TransformComponent>();
+			
+			auto& boxTransformComponent = box->getComponent<TransformComponent>();
+			boxTransformComponent.transform.scale *= 0.5f;
+			boxTransformComponent.transform.position = { x, random.random() * 5.0f, z };
+			boxTransformComponent.transform.rotation = { random.random() * PI, 0.0f, 0.0f };
 
+			box->addComponent<CollisionShapeComponent>(CollisionShape::Box);
+			box->addComponent<RigidBodyComponent>();
+		}
 	}
 
-
-
+	// create a floor entity
 	auto floor = createEntity();
 	floor->addComponent<MeshComponent>(boxMesh);
 	floor->addComponent<TextureComponent>(boxTexture);
 	floor->addComponent<TransformComponent>();
-	floor->getComponent<TransformComponent>().transform.position.y = -5.0f;
-	floor->getComponent<TransformComponent>().transform.scale = { 10.0f, 0.5f, 10.0f };
+	
+	auto& floorTransformComponent = floor->getComponent<TransformComponent>();
+	floorTransformComponent.transform.position.y = -5.0f;
+	floorTransformComponent.transform.scale = { 10.0f, 0.5f, 10.0f };
+
 	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
 
