@@ -1,5 +1,4 @@
 #include "ExampleScene.h"
-#include "scene/Components.h"
 
 ExampleScene::~ExampleScene() {
 	delete this->boxTexture;

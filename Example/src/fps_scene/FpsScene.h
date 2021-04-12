@@ -1,17 +1,16 @@
-#include "scene/Scene.h"
-#include "renderer/renderer_api/Texture.h"
-#include "renderer/Mesh.h"
-#include "scene/Components.h"
-#include "physics/RigidBody.h"
+#include <UniversoEngine.h>
+
 #include "PLayerBehavior.h"
 
-class FpsScene : public engine::Scene {
-private:
-    engine::Texture* boxTexture;
-    engine::Mesh* boxMesh;
+using namespace engine;
 
-    engine::Texture* grassCubeTexture;
-    engine::Mesh* grassCubeMesh;
+class FpsScene : public Scene {
+private:
+    Texture* boxTexture;
+    Mesh* boxMesh;
+
+    Texture* grassCubeTexture;
+    Mesh* grassCubeMesh;
 
 public:
     ~FpsScene();

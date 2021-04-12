@@ -1,13 +1,12 @@
-#include <memory>
-#include "scene/Behavior.h"
-#include "input/Input.h"
-#include "scene/Components.h"
+#include <UniversoEngine.h>
 
-class PlayerBehavior : public engine::Behavior {
+using namespace engine;
+
+class PlayerBehavior : public Behavior {
 
 public:
 
-    using engine::Behavior::Behavior;
+    using Behavior::Behavior;
 
     void onStart() override;
 
@@ -15,7 +14,7 @@ public:
 
 private:
 
-    engine::Camera* camera;
+    Camera* camera;
     float movementSpeed;
     float mouseSensitivity;
     float lastX = 0;
