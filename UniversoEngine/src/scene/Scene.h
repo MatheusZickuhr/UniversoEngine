@@ -7,7 +7,7 @@
 #include "../renderer/Camera.h"
 #include "../renderer/Renderer3D.h"
 #include "../physics/ReactPhysics3dPhysicsWorld.h"
-#include "../physics/RIgidBody.h"
+#include "../physics/RigidBody.h"
 
 namespace engine {
 
