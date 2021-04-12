@@ -1,13 +1,10 @@
 #pragma once
 
-#include <memory>
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include "input/Input.h"
 #include "scene/Scene.h"
 #include "debug/Assert.h"
+
+struct GLFWwindow;
 
 namespace engine {
 

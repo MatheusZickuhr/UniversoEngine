@@ -26,5 +26,5 @@ private:
 
     void processMouseInput();
 
-    void updateCameraAngles(float xoffset, float yoffset, GLboolean constrainPitch = true);
+    void updateCameraAngles(float xoffset, float yoffset, bool constrainPitch = true);
 };

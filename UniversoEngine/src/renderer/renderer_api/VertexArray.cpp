@@ -1,4 +1,5 @@
 #include "VertexArray.h"
+#include <glad/glad.h>
 
 namespace engine {
 

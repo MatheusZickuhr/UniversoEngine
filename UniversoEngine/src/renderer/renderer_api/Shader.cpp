@@ -1,5 +1,5 @@
 #include "Shader.h"
-
+#include <glad/glad.h>
 #include "../../debug/Assert.h"
 
 namespace engine {

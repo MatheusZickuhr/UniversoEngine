@@ -60,7 +60,7 @@ void PlayerBehavior::processMouseInput() {
 }
 
 
-void PlayerBehavior::updateCameraAngles(float xoffset, float yoffset, GLboolean constrainPitch) {
+void PlayerBehavior::updateCameraAngles(float xoffset, float yoffset, bool constrainPitch) {
     xoffset *= this->mouseSensitivity;
     yoffset *= this->mouseSensitivity;
 

@@ -1,4 +1,5 @@
 #include "ShaderProgram.h"
+#include <glad/glad.h>
 
 namespace engine {
 
