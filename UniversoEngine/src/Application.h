@@ -8,17 +8,17 @@ struct GLFWwindow;
 
 namespace engine {
 
-	class Engine {
+	class Application {
 
 	public:
 
-		static Engine& getInstance();
+		static Application& getInstance();
 
-		Engine(Engine const&) = delete;
+		Application(Application const&) = delete;
 
-		void operator=(Engine const&) = delete;
+		void operator=(Application const&) = delete;
 
-		~Engine();
+		~Application();
 
 		void run();
 
@@ -51,7 +51,7 @@ namespace engine {
 		GLFWwindow* window;
 		Scene* currentScene;
 		
-		Engine();
+		Application();
 
 		bool isRunning();
 

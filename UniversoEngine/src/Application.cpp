@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "Application.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -6,29 +6,29 @@
 namespace engine {
 
 	void framebufferSizeCallback(GLFWwindow* window, int newWindowWidth, int newWindowHeight) {
-		Engine::getInstance().setViewPortSize(newWindowWidth, newWindowHeight);
+		Application::getInstance().setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
-	Engine& Engine::getInstance() {
-		static Engine instance;
+	Application& Application::getInstance() {
+		static Application instance;
 		return instance;
 	}
 
-	Engine::Engine() : windowWidth(800), windowHeight(600), windowName("Universo Engine"),
+	Application::Application() : windowWidth(800), windowHeight(600), windowName("Universo Application"),
 		window(nullptr), currentScene(nullptr) {}
 
-	Engine::~Engine() {
+	Application::~Application() {
 		delete this->currentScene;
 		glfwTerminate();
 	}
 
-	void Engine::setViewPortSize(float newWindowWidth, float newWindowHeight) {
+	void Application::setViewPortSize(float newWindowWidth, float newWindowHeight) {
 		this->windowWidth = newWindowWidth;
 		this->windowHeight = newWindowHeight;
 		this->currentScene->getRenderer()->setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
-	void Engine::run() {
+	void Application::run() {
 		constexpr float fixedDeltaTime = 1.0f / 60.0f;
 		
 		float lastTime = 0.0f;
@@ -66,11 +66,11 @@ namespace engine {
 		}
 	}
 
-	bool Engine::isRunning() {
+	bool Application::isRunning() {
 		return !glfwWindowShouldClose(this->window);
 	}
 
-	void Engine::initializeGlfwWindow() {
+	void Application::initializeGlfwWindow() {
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
