@@ -1,6 +1,6 @@
 #include "Assert.h"
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 
 void assertFileExists(
 	const std::string& filePath,

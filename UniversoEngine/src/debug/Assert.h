@@ -5,7 +5,7 @@
 #include <vector>
 #include <filesystem>
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 
 void assertFileExists(
 	const std::string& filePath,
@@ -25,9 +25,10 @@ void assertFileExtension(
 	const std::string& file,
 	const long line);
 
-#define ASSERT_FILE_EXISTS(filePath) assertFileExists(filePath, __FILE__, __LINE__)
 
 #define ASSERT(condition, message) assertm(#condition, message, condition, __FILE__, __LINE__)
+
+#define ASSERT_FILE_EXISTS(filePath) assertFileExists(filePath, __FILE__, __LINE__)
 
 #define ASSERT_FILE_EXTENSION(filePath, ...) assertFileExtension(filePath, __VA_ARGS__, __FILE__, __LINE__)
 
@@ -37,6 +38,6 @@ void assertFileExtension(
 
 #define ASSERT_FILE_EXISTS(filePath) do { } while (false)
 
-#define ASSERT_FILE_EXTENSION(filePath, validFileExtensions) do { } while (false)
+#define ASSERT_FILE_EXTENSION(filePath, ...) do { } while (false)
 
 #endif

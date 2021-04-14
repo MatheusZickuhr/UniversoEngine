@@ -96,7 +96,9 @@ namespace engine {
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwSwapInterval(0);
 
-		ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Failed to initialize GLAD");
+		const bool gladLoaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		
+		ASSERT(gladLoaded, "Failed to initialize GLAD");
 	}
 
 	void Application::initializeImGui() {
