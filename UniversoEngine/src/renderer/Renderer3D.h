@@ -13,29 +13,7 @@
 
 namespace engine {
 
-    // arbitrary values for now
-    const unsigned int maxVertices = 10000;
-    const unsigned int maxIndices = 10000;
-
     class Renderer3D {
-
-    private:
-        unsigned int vertexCount;
-        unsigned int indexCount;
-
-        Vertex* verticesPtrStart;
-        Vertex* vertices;
-        unsigned int* indices;
-
-        std::shared_ptr<VertexArray> vertexArray;
-        std::unique_ptr<VertexBuffer> vertexBuffer;
-        std::unique_ptr<IndexBuffer> indexBuffer;
-
-        std::unique_ptr<Shader> vertexShader;
-        std::unique_ptr<Shader> fragShader;
-        std::unique_ptr<ShaderProgram> shaderProgram;
-
-        std::unique_ptr<DrawApi> drawApi;
 
     public:
 
@@ -53,7 +31,28 @@ namespace engine {
 
         void setViewPortSize(float width, float height);
 
+        unsigned int getDrawCallsCount();
+
     private:
+
+        unsigned int vertexCount;
+        unsigned int indexCount;
+
+        unsigned int drawCallsCount;
+
+        Vertex* verticesPtrStart;
+        Vertex* vertices;
+        unsigned int* indices;
+
+        std::shared_ptr<VertexArray> vertexArray;
+        std::unique_ptr<VertexBuffer> vertexBuffer;
+        std::unique_ptr<IndexBuffer> indexBuffer;
+
+        std::unique_ptr<Shader> vertexShader;
+        std::unique_ptr<Shader> fragShader;
+        std::unique_ptr<ShaderProgram> shaderProgram;
+
+        std::unique_ptr<DrawApi> drawApi;
 
         void createVetexBuffer();
 
@@ -62,5 +61,7 @@ namespace engine {
         void loadShaders();
 
         void setupShaderUniforms();
+
+        void performDrawCall();
     };
 }

@@ -2,6 +2,10 @@
 
 namespace engine {
 
+	// arbitrary values for now
+	const unsigned int maxVertices = 10000;
+	const unsigned int maxIndices = 10000;
+
 	Renderer3D::Renderer3D() {
 		this->vertexCount = 0;
 		this->indexCount = 0;
@@ -29,19 +33,18 @@ namespace engine {
 
 	void Renderer3D::startDrawing(glm::mat4 mvp) {
 		this->shaderProgram->setUniformMat4f("Mvp", mvp);
-
-		this->vertices = this->verticesPtrStart;
-		this->vertexCount = 0;
-		this->indexCount = 0;
+		this->drawCallsCount = 0;
 	}
 
 	void Renderer3D::endDrawing() {
-		this->vertexBuffer->pushData(this->verticesPtrStart, sizeof(Vertex) * this->vertexCount);
-		this->indexBuffer->pushData(this->indices, sizeof(unsigned int) * this->indexCount);
-		this->drawApi->drawWithIdexes(this->vertexArray, this->indexCount);
+		this->performDrawCall();
 	}
 
 	void Renderer3D::drawMesh(Mesh* mesh,Texture* texture, glm::mat4 transform) {
+
+		if (this->vertexCount + mesh->vertices.size() > maxVertices) {
+			this->performDrawCall();
+		}
 
 		float textureSlot;
 
@@ -74,8 +77,12 @@ namespace engine {
 
 	void Renderer3D::setViewPortSize(float width, float height) {
 		this->drawApi->setViewPortSize(width, height);
-	} 
+	}
 
+	unsigned int Renderer3D::getDrawCallsCount() {
+		return this->drawCallsCount;
+	}
+	
 	void Renderer3D::createVetexBuffer() {
 		this->vertexBuffer = std::make_unique<VertexBuffer>(sizeof(Vertex) * maxVertices);
 		this->vertexBuffer->addLayout(0, 3, sizeof(Vertex), offsetof(Vertex, position));
@@ -104,4 +111,15 @@ namespace engine {
 		this->shaderProgram->setUniform1iv("textureSlots", maxTextures, textureSlots);
 	}
 
+	void Renderer3D::performDrawCall() {
+		this->vertexBuffer->pushData(this->verticesPtrStart, sizeof(Vertex) * this->vertexCount);
+		this->indexBuffer->pushData(this->indices, sizeof(unsigned int) * this->indexCount);
+		this->drawApi->drawWithIdexes(this->vertexArray, this->indexCount);
+
+		this->vertices = this->verticesPtrStart;
+		this->vertexCount = 0;
+		this->indexCount = 0;
+
+		this->drawCallsCount++;
+	}
 }
