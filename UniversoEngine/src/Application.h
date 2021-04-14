@@ -30,6 +30,8 @@ namespace engine {
 			this->windowHeight = height;
 			this->windowName = windowName;
 			this->initializeGlfwWindow();
+			
+			this->initializeImGui();
 
 			Input::init(this->window);
 
@@ -56,5 +58,7 @@ namespace engine {
 		bool isRunning();
 
 		void initializeGlfwWindow();
+
+		void initializeImGui();
 	};
 }

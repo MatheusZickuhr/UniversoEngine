@@ -3,6 +3,9 @@
 #include "Components.h"
 #include "Entity.h"
 #include "../debug/Assert.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 namespace engine {
 
@@ -52,6 +55,24 @@ namespace engine {
 			this->renderer->drawMesh(meshComp.mesh, textComp.texture, transComp.transform.getTransformMatrix());
 		}
 		this->renderer->endDrawing();
+	}
+
+	void Scene::renderDebugData() {
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Begin("Debug data", false, ImGuiWindowFlags_AlwaysAutoResize);
+	
+		ImGui::Text("Frametime: %.1f", 1000.0f / ImGui::GetIO().Framerate);
+		ImGui::Text("Fps: %.1f", ImGui::GetIO().Framerate);
+
+		ImGui::Text("Draw calls: %d", this->renderer->getDrawCallsCount());
+
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void Scene::onUpdateCallBack(float deltaTime) {

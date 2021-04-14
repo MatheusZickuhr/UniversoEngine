@@ -27,6 +27,8 @@ namespace engine {
 
 		void render(float windowWidth, float windowHeight);
 
+		void renderDebugData();
+		
 		void updatePhysicsWorld(float deltaTime);
 		
 		void updatePhysics(float timeInterpolationFactor);

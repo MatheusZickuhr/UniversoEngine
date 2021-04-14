@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 namespace engine {
 
@@ -57,13 +60,18 @@ namespace engine {
 
 			// in the end just render the current scene
 			this->currentScene->render(this->windowWidth, this->windowHeight);
-		
+
+#ifdef _DEBUG
+			this->currentScene->renderDebugData();
+#endif
+
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, true);
 
 			glfwSwapBuffers(this->window);
 			glfwPollEvents();
 		}
+
 	}
 
 	bool Application::isRunning() {
@@ -75,8 +83,10 @@ namespace engine {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
+#ifdef _DEBUG
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
 		this->window = glfwCreateWindow(this->windowWidth, this->windowHeight, this->windowName, NULL, NULL);
 
 		ASSERT(this->window != NULL, "Failed to create GLFW window");
@@ -84,9 +94,20 @@ namespace engine {
 		glfwMakeContextCurrent(this->window);
 		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 
 		ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Failed to initialize GLAD");
+	}
+
+	void Application::initializeImGui() {
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+
+		ImGui::StyleColorsDark();
+
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init("#version 460 core");
+
 	}
 
 }
