@@ -45,14 +45,14 @@ namespace engine {
 	}
 
 	void Scene::render(float windowWidth, float windowHeight) {
-		auto view = this->registry.view<MeshComponent, TextureComponent, TransformComponent>();
+		auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
 
 		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
 		this->renderer->clear(0.2f, 0.3f, 0.3f, 1.0f);
 		this->renderer->startDrawing(mvp);
 
-		for (auto [entity, meshComp, textComp, transComp] : view.each()) {
-			this->renderer->drawMesh(meshComp.mesh, textComp.texture, transComp.transform.getTransformMatrix());
+		for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+			this->renderer->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
 		}
 		this->renderer->endDrawing();
 	}

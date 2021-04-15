@@ -1,22 +1,22 @@
 #include "FpsScene.h"
 
 FpsScene::~FpsScene() {
-	delete boxTexture;
+	delete boxMaterial;
 	delete boxMesh;
-	delete grassCubeTexture;
+	delete grassCubeMaterial;
 	delete grassCubeMesh;
 }
 
 void FpsScene::onStart() {
-	boxTexture = new Texture("res/textures/crate/crate.jpg");
+	boxMaterial = new Material("res/textures/crate/crate.jpg");
 	boxMesh = new Mesh("res/models/crate/crate.obj");
 
-	grassCubeTexture = new Texture("res/textures/grass_cube_texture/grass_cube_texture.png");
+	grassCubeMaterial = new Material("res/textures/grass_cube_texture/grass_cube_texture.png");
 	grassCubeMesh = new Mesh("res/models/grass_cube/grass_cube.obj");
 
 	// create a player entity
 	auto player = createEntity();
-	player->addComponent<TextureComponent>(boxTexture);
+	player->addComponent<MaterialComponent>(boxMaterial);
 	player->addComponent<MeshComponent>(boxMesh);
 	player->addComponent<TransformComponent>();
 	player->addComponent<CollisionShapeComponent>(CollisionShape::Box);
@@ -26,7 +26,7 @@ void FpsScene::onStart() {
 
 	// create a floor entity
 	auto floor = createEntity();
-	floor->addComponent<TextureComponent>(boxTexture);
+	floor->addComponent<MaterialComponent>(boxMaterial);
 	floor->addComponent<MeshComponent>(boxMesh);
 	floor->addComponent<TransformComponent>();
 
@@ -39,7 +39,7 @@ void FpsScene::onStart() {
 
 	// create a obstacle entity
 	auto obstacle1 = createEntity();
-	obstacle1->addComponent<TextureComponent>(grassCubeTexture);
+	obstacle1->addComponent<MaterialComponent>(grassCubeMaterial);
 	obstacle1->addComponent<MeshComponent>(grassCubeMesh);
 	obstacle1->addComponent<TransformComponent>();
 	
@@ -51,7 +51,7 @@ void FpsScene::onStart() {
 	
 	// create other obstacle entity
 	auto obstacle2 = createEntity();
-	obstacle2->addComponent<TextureComponent>(boxTexture);
+	obstacle2->addComponent<MaterialComponent>(boxMaterial);
 	obstacle2->addComponent<MeshComponent>(boxMesh);
 	obstacle2->addComponent<TransformComponent>();
 

@@ -6,10 +6,10 @@ using namespace engine;
 
 class FpsScene : public Scene {
 private:
-    Texture* boxTexture;
+    Material* boxMaterial;
     Mesh* boxMesh;
 
-    Texture* grassCubeTexture;
+    Material* grassCubeMaterial;
     Mesh* grassCubeMesh;
 
 public:

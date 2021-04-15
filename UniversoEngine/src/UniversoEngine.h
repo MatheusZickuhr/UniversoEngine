@@ -10,6 +10,7 @@
 #include "physics/RigidBody.h"
 
 #include "renderer/renderer_api/Texture.h"
+#include "renderer/Material.h"
 #include "renderer/Mesh.h"
 #include "renderer/Camera.h"
 

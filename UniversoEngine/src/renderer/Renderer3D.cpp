@@ -39,7 +39,9 @@ namespace engine {
 		this->performDrawCall();
 	}
 
-	void Renderer3D::drawMesh(Mesh* mesh, Texture* texture, glm::mat4 transform) {
+	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
+
+		Texture* texture = material->getTexture();
 
 		if (this->vertexCount + mesh->getVertexCount() > maxVertices)
 			this->performDrawCall();

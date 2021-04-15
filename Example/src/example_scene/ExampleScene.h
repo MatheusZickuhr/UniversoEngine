@@ -9,7 +9,7 @@ class ExampleScene : public Scene {
 private:
 	CameraController* cameraInput;
 
-	Texture* boxTexture;
+	Material* boxMaterial;
 	Mesh* boxMesh;
 
 public:

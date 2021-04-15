@@ -9,6 +9,7 @@
 #include "renderer_api/ShaderProgram.h"
 #include "renderer_api/DrawApi.h"
 #include "renderer_api/Texture.h"
+#include "Material.h"
 #include "Mesh.h"
 
 namespace engine {
@@ -29,7 +30,7 @@ namespace engine {
 
         void endDrawing();
 
-        void drawMesh(Mesh* mesh, Texture* texture, glm::mat4 transform);
+        void drawMesh(Mesh* mesh, Material* material, glm::mat4 transform);
 
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 

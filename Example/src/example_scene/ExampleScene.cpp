@@ -1,7 +1,7 @@
 #include "ExampleScene.h"
 
 ExampleScene::~ExampleScene() {
-	delete this->boxTexture;
+	delete this->boxMaterial;
 	delete this->boxMesh;
 	delete cameraInput;
 }
@@ -11,7 +11,7 @@ void ExampleScene::onStart() {
 	this->camera.position = { 0.0f, -3.0f, 20.0f };
 
 	cameraInput = new CameraController(this->camera);
-	boxTexture = new Texture("res/textures/crate/crate.jpg");
+	boxMaterial = new Material("res/textures/crate/crate.jpg");
 	boxMesh = new Mesh("res/models/crate/crate.obj");
 	
 	Random random;
@@ -23,7 +23,7 @@ void ExampleScene::onStart() {
 		for (float z = -6.0f; z <= 6.0f; z += 2.0f) {
 			auto box = createEntity();
 			box->addComponent<MeshComponent>(boxMesh);
-			box->addComponent<TextureComponent>(boxTexture);
+			box->addComponent<MaterialComponent>(boxMaterial);
 			box->addComponent<TransformComponent>();
 			
 			auto& boxTransformComponent = box->getComponent<TransformComponent>();
@@ -39,7 +39,7 @@ void ExampleScene::onStart() {
 	// create a floor entity
 	auto floor = createEntity();
 	floor->addComponent<MeshComponent>(boxMesh);
-	floor->addComponent<TextureComponent>(boxTexture);
+	floor->addComponent<MaterialComponent>(boxMaterial);
 	floor->addComponent<TransformComponent>();
 	
 	auto& floorTransformComponent = floor->getComponent<TransformComponent>();

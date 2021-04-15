@@ -5,6 +5,7 @@
 #include "../physics/RigidBody.h"
 
 #include "../renderer/renderer_api/Texture.h"
+#include "../renderer/Material.h"
 #include "../renderer/Mesh.h"
 
 #include "../math/Transform.h"
@@ -19,8 +20,8 @@ namespace engine {
         Mesh* mesh;
     };
 
-    struct TextureComponent {
-        Texture* texture;
+    struct MaterialComponent {
+        Material* material;
     };
 
     struct CollisionShapeComponent {
