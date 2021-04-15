@@ -20,11 +20,6 @@ namespace engine {
 	Application::Application() : windowWidth(800), windowHeight(600), windowName("Universo Application"),
 		window(nullptr), currentScene(nullptr) {}
 
-	Application::~Application() {
-		delete this->currentScene;
-		glfwTerminate();
-	}
-
 	void Application::setViewPortSize(float newWindowWidth, float newWindowHeight) {
 		this->windowWidth = newWindowWidth;
 		this->windowHeight = newWindowHeight;
@@ -72,6 +67,8 @@ namespace engine {
 			glfwPollEvents();
 		}
 
+		delete this->currentScene;
+		glfwTerminate();
 	}
 
 	bool Application::isRunning() {

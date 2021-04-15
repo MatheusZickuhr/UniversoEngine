@@ -18,8 +18,6 @@ namespace engine {
 
 		void operator=(Application const&) = delete;
 
-		~Application();
-
 		void run();
 
 		void setViewPortSize(float newWindowWidth, float newWindowHeight);
