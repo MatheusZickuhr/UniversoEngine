@@ -10,10 +10,15 @@ namespace engine {
 
 	public:
 
-		std::vector<Vertex> vertices;
 
 		Mesh(const std::string& filepath);
 
-		std::vector<glm::vec3> getVeticesPositions();
+		int getVertexCount();
+
+		const std::vector<Vertex>& getVertices();
+
+	private:
+		std::vector<Vertex> vertices;
+
 	};
 }

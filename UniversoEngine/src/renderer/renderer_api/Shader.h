@@ -5,12 +5,9 @@
 
 namespace engine {
 
-	enum ShaderType { FragmentShader, VertexShader };
+	enum class ShaderType { FragmentShader, VertexShader };
 
 	class Shader {
-
-	private:
-		unsigned int id;
 
 	public:
 
@@ -23,6 +20,8 @@ namespace engine {
 		void unbind();
 
 	private:
+
+		unsigned int id;
 
 		std::string readFile(std::string filePath);
 	};

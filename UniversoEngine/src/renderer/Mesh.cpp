@@ -20,7 +20,7 @@ namespace engine {
 
 		ASSERT(objFileLoaded, "Mesh file is invalid or is already open");
 
-		for (const objl::Vertex otherVertex : loader.LoadedVertices) {
+		for (const objl::Vertex& otherVertex : loader.LoadedVertices) {
 			Vertex myVertex;
 			std::memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position));
 			std::memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
@@ -29,14 +29,12 @@ namespace engine {
 		}
 	}
 
-	std::vector<glm::vec3> Mesh::getVeticesPositions() {
-		std::vector<glm::vec3> verticesPositions;
+	int Mesh::getVertexCount() {
+		return this->vertices.size();
+	}
 
-		for (auto vertex : this->vertices) {
-		 	verticesPositions.push_back(vertex.position);
-		}
-
-		return verticesPositions;
+	const std::vector<Vertex>& Mesh::getVertices() {
+		return this->vertices;
 	}
 
 }

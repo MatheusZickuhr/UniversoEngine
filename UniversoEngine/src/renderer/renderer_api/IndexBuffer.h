@@ -3,9 +3,6 @@
 namespace engine {
 
 	class IndexBuffer {
-	private:
-		unsigned int id;
-		unsigned int count;
 
 	public:
 
@@ -14,6 +11,7 @@ namespace engine {
 		IndexBuffer(unsigned int count);
 
 		~IndexBuffer();
+		
 		void pushData(unsigned int* data, unsigned int size);
 
 		void bind();
@@ -21,5 +19,10 @@ namespace engine {
 		void unbind();
 
 		unsigned int getCount();
+
+	private:
+
+		unsigned int id;
+		unsigned int count;
 	};
 }

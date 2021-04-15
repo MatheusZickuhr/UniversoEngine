@@ -15,10 +15,10 @@ namespace engine {
 
 		//crete shader 
 		switch (shaderType) {
-		case FragmentShader:
+		case ShaderType::FragmentShader:
 			this->id = glCreateShader(GL_FRAGMENT_SHADER);
 			break;
-		case VertexShader:
+		case ShaderType::VertexShader:
 			this->id = glCreateShader(GL_VERTEX_SHADER);
 			break;
 		default:

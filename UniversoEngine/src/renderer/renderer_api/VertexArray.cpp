@@ -19,4 +19,14 @@ namespace engine {
 		glBindVertexArray(0);
 	}
 
+	void VertexArray::addIndexBuffer(IndexBuffer& indexBuffer) {
+		this->bind();
+		indexBuffer.bind();
+	}
+
+	void VertexArray::addVertexBuffer(VertexBuffer& vertexBuffer) {
+		this->bind();
+		vertexBuffer.bind();
+	}
+
 }

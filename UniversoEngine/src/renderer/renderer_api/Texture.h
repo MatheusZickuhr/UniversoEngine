@@ -6,13 +6,9 @@ namespace engine {
 
     class Texture {
 
-    private:
-
-        unsigned int id, slot;
-        int width, height, bitsPerPixel;
-
-        static unsigned int currentAvailableTextureSlot;
     public:
+
+        const static unsigned int maxTextureSlot = 32;
 
         Texture(const std::string& filepath);
 
@@ -28,6 +24,13 @@ namespace engine {
 
         int getHeight();
 
+    private:
+
+        unsigned int id, slot;
+        int width, height, bitsPerPixel;
+
+        static unsigned int currentTextureSlot;
+        
     };
 
 }

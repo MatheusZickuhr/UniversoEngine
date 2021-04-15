@@ -3,35 +3,56 @@
 
 namespace engine {
 
-	VertexBuffer::VertexBuffer(unsigned int size, void* data) {
+	VertexBuffer::VertexBuffer(unsigned int vertexSize, unsigned int count, void* data) {
+		this->stride = vertexSize;
+
 		glGenBuffers(1, &this->id);
 		glBindBuffer(GL_ARRAY_BUFFER, this->id);
 
-		// add the data to the vertex buffer
-		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+		const unsigned int bufferSize = vertexSize * count;
+		glBufferData(GL_ARRAY_BUFFER, bufferSize, data, GL_STATIC_DRAW);
 	}
 
-	VertexBuffer::VertexBuffer(unsigned int size) {
+	VertexBuffer::VertexBuffer(unsigned int vertexSize, unsigned int count) {
+		this->stride = vertexSize;
+
 		glGenBuffers(1, &this->id);
 		glBindBuffer(GL_ARRAY_BUFFER, this->id);
 
-		// alocate memory in the gpu
-		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+		const unsigned int bufferSize = vertexSize * count;
+		glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, GL_DYNAMIC_DRAW);
 	}
 
 	VertexBuffer::~VertexBuffer() {
 		glDeleteBuffers(1, &this->id);
 	}
+	
 	void VertexBuffer::bind() {
 		glBindBuffer(GL_ARRAY_BUFFER, this->id);
 	}
+
 	void VertexBuffer::unbind() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void VertexBuffer::addLayout(unsigned int location, unsigned int count, unsigned int stride, unsigned int offset) {
-		glVertexAttribPointer(location, count, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-		glEnableVertexAttribArray(location);
+	void VertexBuffer::addAttributePointer(AttriuteType attriuteType, unsigned int offset) {
+
+		switch (attriuteType) {
+
+		case AttriuteType::Float:
+			glVertexAttribPointer(currentLocation, 1, GL_FLOAT, GL_FALSE, this->stride, (void*)offset);
+			break;
+		case AttriuteType::Vec2:
+			glVertexAttribPointer(currentLocation, 2, GL_FLOAT, GL_FALSE, this->stride, (void*)offset);
+			break;
+		case AttriuteType::Vec3:
+			glVertexAttribPointer(currentLocation, 3, GL_FLOAT, GL_FALSE, this->stride, (void*)offset);
+			break;
+		}
+		
+		glEnableVertexAttribArray(currentLocation);
+
+		this->currentLocation++;
 	}
 
 	void VertexBuffer::pushData(void* data, unsigned int size) {

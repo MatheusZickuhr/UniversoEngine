@@ -21,8 +21,8 @@ namespace engine {
 		printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
 	}
 
-	void DrawApi::drawWithIdexes(std::shared_ptr<VertexArray> vertexArray, unsigned int IndexCount) {
-		vertexArray->bind();
+	void DrawApi::drawWithIdexes(VertexArray& vertexArray, unsigned int IndexCount) {
+		vertexArray.bind();
 		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 

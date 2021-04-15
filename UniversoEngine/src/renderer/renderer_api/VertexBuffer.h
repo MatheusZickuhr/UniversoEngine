@@ -2,15 +2,17 @@
 
 namespace engine {
 
+	enum class AttriuteType {Float, Vec2, Vec3 };
+
 	class VertexBuffer {
 
-	private:
-		unsigned int id;
-
 	public:
-		VertexBuffer(unsigned int size, void* data);
 
-		VertexBuffer(unsigned int size);
+		// use this contructor for a static buffer
+		VertexBuffer(unsigned int vertexSize, unsigned int count, void* data);
+
+		// use this contructor for a dynamic buffer
+		VertexBuffer(unsigned int vertexSize, unsigned int count);
 
 		~VertexBuffer();
 		
@@ -18,9 +20,15 @@ namespace engine {
 		
 		void unbind();
 
-		void addLayout(unsigned int location, unsigned int count, unsigned int stride, unsigned int offset);
+		void addAttributePointer(AttriuteType attributeType, unsigned int offset);
 
 		void pushData(void* data, unsigned int size);
+
+	private:
+
+		unsigned int id;
+		unsigned int stride;
+		unsigned int currentLocation = 0;
 	};
 
 

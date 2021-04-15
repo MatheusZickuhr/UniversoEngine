@@ -8,15 +8,17 @@
 
 namespace engine {
 
-	unsigned int Texture::currentAvailableTextureSlot = 0;
+	unsigned int Texture::currentTextureSlot = 0;
 
 	Texture::Texture(const std::string& filepath) {
 		ASSERT_FILE_EXISTS(filepath);
 
 		ASSERT_FILE_EXTENSION(filepath, { ".png", ".jpg" });
 		
-		this->slot = currentAvailableTextureSlot;
-		currentAvailableTextureSlot++;
+		ASSERT(currentTextureSlot < Texture::maxTextureSlot, "Maximum texture slot exceeded");
+
+		this->slot = currentTextureSlot;
+		currentTextureSlot++;
 
 		stbi_set_flip_vertically_on_load(1);
 
@@ -32,7 +34,6 @@ namespace engine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, localBuffer);
-		glBindTexture(GL_TEXTURE_2D, 0);
 
 		if (localBuffer)
 			stbi_image_free(localBuffer);

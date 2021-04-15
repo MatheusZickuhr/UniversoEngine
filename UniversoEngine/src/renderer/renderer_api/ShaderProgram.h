@@ -7,8 +7,6 @@ namespace engine {
 
 	class ShaderProgram {
 
-	private:
-		unsigned int id;
 	public:
 
 		ShaderProgram();
@@ -28,5 +26,9 @@ namespace engine {
 		void setUniform1i(const char* uniformName, const int value);
 
 		void setUniform1iv(const char* uniformName, int size, int data[]);
+
+	private:
+
+		unsigned int id;
 	};
 }

@@ -2,15 +2,12 @@
 
 namespace engine {
 
-	Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) {
-		this->front = glm::vec3(0.0f, 0.0f, -1.0f);
-		this->zoom = ZOOM;
-		this->position = position;
-		this->worldUp = up;
-		this->yaw = yaw;
-		this->pitch = pitch;
-
+	Camera::Camera() {
 		this->updateVectors();
+	}
+
+	Camera::Camera(glm::vec3 position) : position(position) {
+		this->updateVectors();	
 	}
 
 	void Camera::updateVectors() {
@@ -30,7 +27,7 @@ namespace engine {
 
 	glm::mat4 Camera::getMvp(float width, float height) {
 		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 projection = glm::perspective(glm::radians(this->zoom), width / height, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(this->fov), width / height, 0.1f, 100.0f);
 		glm::mat4 view = this->getViewMatrix();
 
 		return projection * view * model;

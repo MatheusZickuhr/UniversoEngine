@@ -1,11 +1,11 @@
 #pragma once
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+
 
 namespace engine {
 	
 	class VertexArray {
-
-	private:
-		unsigned int id;
 
 	public:
 		VertexArray();
@@ -15,5 +15,14 @@ namespace engine {
 		void bind();
 
 		void unbind();
+
+		void addIndexBuffer(IndexBuffer& indexBuffer);
+
+		void addVertexBuffer(VertexBuffer& vertexBuffer);
+
+	private:
+
+		unsigned int id;
+
 	};
 }
