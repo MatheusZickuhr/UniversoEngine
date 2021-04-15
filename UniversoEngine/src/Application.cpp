@@ -61,7 +61,7 @@ namespace engine {
 			// in the end just render the current scene
 			this->currentScene->render(this->windowWidth, this->windowHeight);
 
-#ifdef _DEBUG
+#ifdef DEBUG
 			this->currentScene->renderDebugData();
 #endif
 
@@ -84,7 +84,7 @@ namespace engine {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#ifdef _DEBUG
+#ifdef DEBUG
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif
 		this->window = glfwCreateWindow(this->windowWidth, this->windowHeight, this->windowName, NULL, NULL);

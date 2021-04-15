@@ -5,7 +5,7 @@
 #include <vector>
 #include <filesystem>
 
-#ifdef _DEBUG
+#ifdef DEBUG
 
 void assertFileExists(
 	const std::string& filePath,
