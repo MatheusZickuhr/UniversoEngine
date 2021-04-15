@@ -62,7 +62,7 @@ namespace engine {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::Begin("Debug data", false, ImGuiWindowFlags_AlwaysAutoResize);
+		ImGui::Begin("Debug data", 0, ImGuiWindowFlags_AlwaysAutoResize);
 	
 		ImGui::Text("Frametime: %.1f", 1000.0f / ImGui::GetIO().Framerate);
 		ImGui::Text("Fps: %.1f", ImGui::GetIO().Framerate);
