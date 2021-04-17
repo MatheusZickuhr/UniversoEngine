@@ -50,7 +50,7 @@ namespace engine {
 		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
 		this->renderer->clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-		this->renderer->startDrawing(mvp);
+		this->renderer->startDrawing(mvp, camera.position);
 
 		for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
 			this->renderer->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());

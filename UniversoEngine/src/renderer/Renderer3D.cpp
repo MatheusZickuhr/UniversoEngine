@@ -46,6 +46,7 @@ namespace engine {
 
 		shaderProgram.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
 		shaderProgram.setUniform3f("lightPosition", lightPosition.x, lightPosition.y, lightPosition.z);
+		
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -78,9 +79,10 @@ namespace engine {
 
 	}
 
-	void Renderer3D::startDrawing(glm::mat4 mvp) {
+	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition) {
 		shaderProgram.bind();
 		this->shaderProgram.setUniformMat4f("Mvp", mvp);
+		this->shaderProgram.setUniform3f("viewPosition", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 		this->drawCallsCount = 0;
 	}
 

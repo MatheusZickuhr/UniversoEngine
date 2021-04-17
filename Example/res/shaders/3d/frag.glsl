@@ -10,6 +10,7 @@ in vec3 vFragPosition;
 uniform sampler2D textureSlots[32];
 uniform vec3 lightColor;
 uniform vec3 lightPosition;
+uniform vec3 viewPosition;
 
 void main() {
     // difuse lighting
@@ -26,8 +27,19 @@ void main() {
 
     vec3 ambient = ambientLightStrength * lightColor;
     
+    // specular lighting
+    float specularLightStrength = 0.5;
+
+    vec3 viewDir = normalize(viewPosition - vFragPosition);
+    // here again on the example was -lightDirection, but Im using lightDirection instead,
+    // sience I inverted early
+    vec3 reflectDir = reflect(lightDirection, normalizedNormal);
+
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular = specularLightStrength * spec * lightColor;  
+
     // result
-    vec3 result = (ambient + diffuse) * vColor;
+    vec3 result = (ambient + diffuse + specular) * vColor;
 
     if (vTextureSlot == -1) {
         FragColor = vec4(result, 1.0f);

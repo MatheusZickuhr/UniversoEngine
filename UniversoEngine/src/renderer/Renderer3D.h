@@ -33,7 +33,7 @@ namespace engine {
 
         void drawLightSource(glm::mat4 mvp);
 
-        void startDrawing(glm::mat4 mvp);
+        void startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition);
 
         void endDrawing();
 
