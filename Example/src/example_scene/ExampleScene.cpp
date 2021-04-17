@@ -3,6 +3,7 @@
 ExampleScene::~ExampleScene() {
 	delete this->boxMaterial;
 	delete this->boxMesh;
+	delete redMaterial;
 	delete cameraInput;
 }
 
@@ -14,6 +15,8 @@ void ExampleScene::onStart() {
 	boxMaterial = new Material("res/textures/crate/crate.jpg");
 	boxMesh = new Mesh("res/models/crate/crate.obj");
 	
+	redMaterial = new Material(glm::vec3(1.0f, 0.5f, 0.31f));
+
 	Random random;
 
 	const float PI = 3.14f;
@@ -23,7 +26,7 @@ void ExampleScene::onStart() {
 		for (float z = -6.0f; z <= 6.0f; z += 2.0f) {
 			auto box = createEntity();
 			box->addComponent<MeshComponent>(boxMesh);
-			box->addComponent<MaterialComponent>(boxMaterial);
+			box->addComponent<MaterialComponent>(redMaterial);
 			box->addComponent<TransformComponent>();
 			
 			auto& boxTransformComponent = box->getComponent<TransformComponent>();

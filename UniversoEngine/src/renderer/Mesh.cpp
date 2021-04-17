@@ -23,8 +23,8 @@ namespace engine {
 		for (const objl::Vertex& otherVertex : loader.LoadedVertices) {
 			Vertex myVertex;
 			std::memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position));
+			std::memcpy(&myVertex.normal, &otherVertex.Normal, sizeof(myVertex.normal));
 			std::memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
-
 			this->vertices.push_back(myVertex);
 		}
 	}

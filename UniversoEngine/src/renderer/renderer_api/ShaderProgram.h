@@ -17,6 +17,8 @@ namespace engine {
 
 		void attachShader(unsigned int shaderId);
 
+		void setUniform3f(const char* uniformName, float float1, float float2, float float3);
+
 		void setUniform4f(const char* uniformName, float float1, float float2, float float3, float float4);
 
 		void setUniformMat4f(const char* uniformName, const glm::mat4& matrix);
@@ -30,5 +32,6 @@ namespace engine {
 	private:
 
 		unsigned int id;
+		bool linked = false;
 	};
 }

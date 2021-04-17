@@ -48,13 +48,17 @@ namespace engine {
 		auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
 
 		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
-		this->renderer->clear(0.2f, 0.3f, 0.3f, 1.0f);
+		this->renderer->clear(0.0f, 0.0f, 0.0f, 1.0f);
+
 		this->renderer->startDrawing(mvp);
 
 		for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
 			this->renderer->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
 		}
 		this->renderer->endDrawing();
+
+		this->renderer->drawLightSource(mvp);
+
 	}
 
 	void Scene::renderDebugData() {

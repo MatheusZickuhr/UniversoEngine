@@ -21,14 +21,13 @@ namespace engine {
 		printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
 	}
 
-	void DrawApi::drawWithIdexes(VertexArray& vertexArray, unsigned int IndexCount) {
-		vertexArray.bind();
+	void DrawApi::drawWithIdexes(unsigned int IndexCount) {
 		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 
 	void DrawApi::clear(float r, float g, float b, float a) {
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(r, g, b, a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 

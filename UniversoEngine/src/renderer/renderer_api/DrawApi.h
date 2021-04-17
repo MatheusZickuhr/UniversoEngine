@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "VertexArray.h"
 #include <iostream>
 
 namespace engine {
@@ -12,7 +11,7 @@ namespace engine {
 
 		DrawApi();
 
-		void drawWithIdexes(VertexArray& vertexArray, unsigned int IndexCount);
+		void drawWithIdexes(unsigned int IndexCount);
 
 		void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 

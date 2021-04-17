@@ -12,6 +12,8 @@ private:
 	Material* boxMaterial;
 	Mesh* boxMesh;
 
+	Material* redMaterial;
+
 public:
 
 	~ExampleScene();
