@@ -8,24 +8,66 @@ in float vTextureSlot;
 in vec3 vFragPosition;
 
 uniform sampler2D textureSlots[32];
-uniform vec3 lightColor;
-uniform vec3 lightPosition;
 uniform vec3 viewPosition;
 
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+uniform Material material;
+
+struct PointLight {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+struct DirectionalLight {
+    vec3 direction;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform PointLight light;
+
+vec3 pointLight();
+
 void main() {
+
+    vec3 outputColor = vec3(0.0f);
+
+    outputColor += pointLight();
+
+    if (vTextureSlot == -1) {
+        FragColor = vec4(outputColor, 1.0f);
+    } else {
+        FragColor = vec4(outputColor, 1.0f) * texture(textureSlots[int(vTextureSlot)], vTextureCoords);
+    }
+} 
+
+vec3 pointLight() {
     // difuse lighting
     vec3 normalizedNormal = normalize(vNormal);
     // I inrverted that expression from the example,
     //and looks more correct (the example was  lightPosition - vFragPosition)
-    vec3 lightDirection = normalize(vFragPosition - lightPosition);
+    vec3 lightDirection = normalize(vFragPosition - light.position);
 
     float diff = max(dot(normalizedNormal, lightDirection), 0.0);
-    vec3 diffuse = diff * lightColor;
+    vec3 diffuse = light.diffuse * (diff * material.diffuse);
     
     // ambient lighting
     float ambientLightStrength = 0.1;
 
-    vec3 ambient = ambientLightStrength * lightColor;
+    vec3 ambient = light.ambient * material.ambient;
     
     // specular lighting
     float specularLightStrength = 0.5;
@@ -35,15 +77,18 @@ void main() {
     // sience I inverted early
     vec3 reflectDir = reflect(lightDirection, normalizedNormal);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec3 specular = specularLightStrength * spec * lightColor;  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = light.specular * (spec * material.specular);
+
+    // calculate light attenuation
+    float distance = length(light.position - vFragPosition);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + 
+    		    light.quadratic * (distance * distance)); 
+
+    ambient  *= attenuation; 
+    diffuse  *= attenuation;
+    specular *= attenuation;   
 
     // result
-    vec3 result = (ambient + diffuse + specular) * vColor;
-
-    if (vTextureSlot == -1) {
-        FragColor = vec4(result, 1.0f);
-    } else {
-        FragColor = vec4(result, 1.0f) * texture(textureSlots[int(vTextureSlot)], vTextureCoords);
-    }
-} 
+    return ambient + diffuse + specular;
+}

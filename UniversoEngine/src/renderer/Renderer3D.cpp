@@ -45,7 +45,22 @@ namespace engine {
 		this->shaderProgram.setUniform1iv("textureSlots", Texture::maxTextureSlot, textureSlots);
 
 		shaderProgram.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
-		shaderProgram.setUniform3f("lightPosition", lightPosition.x, lightPosition.y, lightPosition.z);
+		
+
+		shaderProgram.setUniform3f("material.ambient", 1.0f, 0.5f, 0.31f);
+		shaderProgram.setUniform3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+		shaderProgram.setUniform3f("material.specular", 0.5f, 0.5f, 0.5f);
+		shaderProgram.setUniform1f("material.shininess", 32.0f);
+
+		
+		shaderProgram.setUniform3f("light.position", lightPosition.x, lightPosition.y, lightPosition.z);
+		shaderProgram.setUniform3f("light.ambient", 0.2f, 0.2f, 0.2f);
+		shaderProgram.setUniform3f("light.diffuse", 0.5f, 0.5f, 0.5f);
+		shaderProgram.setUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+
+		shaderProgram.setUniform1f("light.constant", 1.0f);
+		shaderProgram.setUniform1f("light.linear", 0.09f);
+		shaderProgram.setUniform1f("light.quadratic", 0.032f);
 		
 	}
 
