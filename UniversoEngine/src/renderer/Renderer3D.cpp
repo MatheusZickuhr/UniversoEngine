@@ -214,10 +214,10 @@ namespace engine {
 
 			auto& directionalLight = directionalLights[i];
 			
-			shaderProgram.setUniform3f("directionalLights[0].direction", directionalLight.direction.x, directionalLight.direction.y, directionalLight.direction.z);
-			shaderProgram.setUniform3f("directionalLights[0].ambient", directionalLight.ambient.x, directionalLight.ambient.y, directionalLight.ambient.z);
-			shaderProgram.setUniform3f("directionalLights[0].diffuse", directionalLight.diffuse.x, directionalLight.diffuse.y, directionalLight.diffuse.z);
-			shaderProgram.setUniform3f("directionalLights[0].specular", directionalLight.specular.x, directionalLight.specular.y, directionalLight.specular.z);
+			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].direction", directionalLight.direction.x, directionalLight.direction.y, directionalLight.direction.z);
+			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].ambient", directionalLight.ambient.x, directionalLight.ambient.y, directionalLight.ambient.z);
+			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].diffuse", directionalLight.diffuse.x, directionalLight.diffuse.y, directionalLight.diffuse.z);
+			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].specular", directionalLight.specular.x, directionalLight.specular.y, directionalLight.specular.z);
 		}
 
 		directionalLights.clear();
