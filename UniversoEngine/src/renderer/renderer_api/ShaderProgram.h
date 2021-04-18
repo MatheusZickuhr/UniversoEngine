@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <glm/glm.hpp>
-
+#include <string>
 namespace engine {
 
 	class ShaderProgram {
@@ -17,17 +17,17 @@ namespace engine {
 
 		void attachShader(unsigned int shaderId);
 
-		void setUniform3f(const char* uniformName, float float1, float float2, float float3);
+		void setUniform3f(const std::string& uniformName, float float1, float float2, float float3);
 
-		void setUniform4f(const char* uniformName, float float1, float float2, float float3, float float4);
+		void setUniform4f(const std::string& uniformName, float float1, float float2, float float3, float float4);
 
-		void setUniformMat4f(const char* uniformName, const glm::mat4& matrix);
+		void setUniformMat4f(const std::string& uniformName, const glm::mat4& matrix);
 
-		void setUniform1f(const char* uniformName, const float value);
+		void setUniform1f(const std::string& uniformName, const float value);
 
-		void setUniform1i(const char* uniformName, const int value);
+		void setUniform1i(const std::string& uniformName, const int value);
 
-		void setUniform1iv(const char* uniformName, int size, int data[]);
+		void setUniform1iv(const std::string& uniformName, int size, int data[]);
 
 	private:
 

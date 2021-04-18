@@ -45,16 +45,37 @@ namespace engine {
 	}
 
 	void Scene::render(float windowWidth, float windowHeight) {
-		auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+		
 
 		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
 		this->renderer->clear(0.0f, 0.0f, 0.0f, 1.0f);
 
 		this->renderer->startDrawing(mvp, camera.position);
 
-		for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-			this->renderer->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
+		{
+			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+
+			for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+				this->renderer->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
+			}
 		}
+
+		{
+			auto view = this->registry.view<PointLightComponent, TransformComponent>();
+
+			for (auto [entity, lightComp, transComp] : view.each()) {
+				this->renderer->drawPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
+			}
+		}
+
+		{
+			auto view = this->registry.view<DirectionalLightComponent>();
+
+			for (auto [entity, lightComp] : view.each()) {
+				this->renderer->drawDirectionalLight(lightComp.directionalLight);
+			}
+		}
+		
 		this->renderer->endDrawing();
 
 		this->renderer->drawLightSource(mvp);

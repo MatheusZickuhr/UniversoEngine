@@ -11,6 +11,8 @@
 #include "renderer_api/Texture.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "PointLight.h"
+#include "DirectionalLight.h"
 
 namespace engine {
 
@@ -45,6 +47,10 @@ namespace engine {
 
         unsigned int getDrawCallsCount();
 
+        void drawPointLight(PointLight light, glm::mat4 transform);
+
+        void drawDirectionalLight(DirectionalLight light);
+
     private:
 
         unsigned int vertexCount    = 0;
@@ -65,6 +71,9 @@ namespace engine {
         ShaderProgram shaderProgram;
 
         // light stuff
+
+        std::vector<PointLight> pointLights;
+        std::vector<DirectionalLight> directionalLights;
 
         VertexArray lightVertexArray;
         VertexBuffer lightVertexBuffer {sizeof(LightVertex), 36 };
@@ -87,5 +96,7 @@ namespace engine {
         DrawApi drawApi;
 
         void performDrawCall();
+        
+        void updateLightsUniforms();
     };
 }

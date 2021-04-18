@@ -37,16 +37,28 @@ struct DirectionalLight {
     vec3 specular;
 };
 
-uniform PointLight light;
+uniform int numberOfPointLights;
+uniform PointLight pointLights[4];
 
-vec3 pointLight();
+uniform int numberOfDirectionalLights;
+uniform DirectionalLight directionalLights[4];
+
+vec3 calcPointLight(PointLight light);
+
+vec3 calcDirectionalLight(DirectionalLight light); 
 
 void main() {
 
     vec3 outputColor = vec3(0.0f);
 
-    outputColor += pointLight();
+    for (int i = 0; i < numberOfDirectionalLights; i++) {
+        outputColor += calcDirectionalLight(directionalLights[i]);
+    }
 
+    for (int i = 0; i < numberOfPointLights; i++) {
+        outputColor += calcPointLight(pointLights[i]);
+    }
+    
     if (vTextureSlot == -1) {
         FragColor = vec4(outputColor, 1.0f);
     } else {
@@ -54,7 +66,7 @@ void main() {
     }
 } 
 
-vec3 pointLight() {
+vec3 calcPointLight(PointLight light) {
     // difuse lighting
     vec3 normalizedNormal = normalize(vNormal);
     // I inrverted that expression from the example,
@@ -88,6 +100,36 @@ vec3 pointLight() {
     ambient  *= attenuation; 
     diffuse  *= attenuation;
     specular *= attenuation;   
+
+    // result
+    return ambient + diffuse + specular;
+}
+
+vec3 calcDirectionalLight(DirectionalLight light) {
+    // difuse lighting
+    vec3 normalizedNormal = normalize(vNormal);
+    // I inrverted that expression from the example,
+    //and looks more correct (the example was  lightPosition - vFragPosition)
+    vec3 lightDirection = normalize(light.direction);
+
+    float diff = max(dot(normalizedNormal, lightDirection), 0.0);
+    vec3 diffuse = light.diffuse * (diff * material.diffuse);
+    
+    // ambient lighting
+    float ambientLightStrength = 0.1;
+
+    vec3 ambient = light.ambient * material.ambient;
+    
+    // specular lighting
+    float specularLightStrength = 0.5;
+
+    vec3 viewDir = normalize(viewPosition - vFragPosition);
+    // here again on the example was -lightDirection, but Im using lightDirection instead,
+    // sience I inverted early
+    vec3 reflectDir = reflect(lightDirection, normalizedNormal);
+
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = light.specular * (spec * material.specular);
 
     // result
     return ambient + diffuse + specular;

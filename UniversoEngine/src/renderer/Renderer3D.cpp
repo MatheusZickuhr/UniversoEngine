@@ -44,23 +44,36 @@ namespace engine {
 		for (int i = 0; i < Texture::maxTextureSlot; i++) textureSlots[i] = i;
 		this->shaderProgram.setUniform1iv("textureSlots", Texture::maxTextureSlot, textureSlots);
 
-		shaderProgram.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
-		
 
-		shaderProgram.setUniform3f("material.ambient", 1.0f, 0.5f, 0.31f);
-		shaderProgram.setUniform3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+		shaderProgram.setUniform3f("material.ambient", 1.0f, 1.0f, 1.0f);
+		shaderProgram.setUniform3f("material.diffuse", 1.0f, 1.0f, 1.0f);
 		shaderProgram.setUniform3f("material.specular", 0.5f, 0.5f, 0.5f);
 		shaderProgram.setUniform1f("material.shininess", 32.0f);
 
-		
-		shaderProgram.setUniform3f("light.position", lightPosition.x, lightPosition.y, lightPosition.z);
-		shaderProgram.setUniform3f("light.ambient", 0.2f, 0.2f, 0.2f);
-		shaderProgram.setUniform3f("light.diffuse", 0.5f, 0.5f, 0.5f);
-		shaderProgram.setUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+		shaderProgram.setUniform1i("numberOfPointLights", 0);
 
-		shaderProgram.setUniform1f("light.constant", 1.0f);
-		shaderProgram.setUniform1f("light.linear", 0.09f);
-		shaderProgram.setUniform1f("light.quadratic", 0.032f);
+		shaderProgram.setUniform1i("numberOfDirectionalLights", 0);
+
+		// add a sun light
+		//shaderProgram.setUniform1i("numberOfDirectionalLights", 1);
+		//DirectionalLight sunLight;
+		//sunLight.direction = { -0.2f, -1.0f, -0.3f };
+		//
+		//shaderProgram.setUniform3f("directionalLights[0].direction", sunLight.direction.x, sunLight.direction.y, sunLight.direction.z);
+		//shaderProgram.setUniform3f("directionalLights[0].ambient", sunLight.ambient.x, sunLight.ambient.y, sunLight.ambient.z);
+		//shaderProgram.setUniform3f("directionalLights[0].diffuse", sunLight.diffuse.x, sunLight.diffuse.y, sunLight.diffuse.z);
+		//shaderProgram.setUniform3f("directionalLights[0].specular", sunLight.specular.x, sunLight.specular.y, sunLight.specular.z);
+
+	/*	shaderProgram.setUniform1i("numberOfPointLights", 1);
+
+		shaderProgram.setUniform3f("pointLights[0].position", lightPosition.x, lightPosition.y, lightPosition.z);
+		shaderProgram.setUniform3f("pointLights[0].ambient", 0.2f, 0.2f, 0.2f);
+		shaderProgram.setUniform3f("pointLights[0].diffuse", 0.5f, 0.5f, 0.5f);
+		shaderProgram.setUniform3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+
+		shaderProgram.setUniform1f("pointLights[0].constant", 1.0f);
+		shaderProgram.setUniform1f("pointLights[0].linear", 0.09f);
+		shaderProgram.setUniform1f("pointLights[0].quadratic", 0.032f);*/
 		
 	}
 
@@ -99,6 +112,8 @@ namespace engine {
 		this->shaderProgram.setUniformMat4f("Mvp", mvp);
 		this->shaderProgram.setUniform3f("viewPosition", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 		this->drawCallsCount = 0;
+
+		this->updateLightsUniforms();
 	}
 
 	void Renderer3D::endDrawing() {
@@ -141,6 +156,15 @@ namespace engine {
 		return this->drawCallsCount;
 	}
 
+	void Renderer3D::drawPointLight(PointLight light, glm::mat4 transform) {
+		light.position = transform * glm::vec4(1.0f);
+		this->pointLights.push_back(light);
+	}
+
+	void Renderer3D::drawDirectionalLight(DirectionalLight light) {
+		this->directionalLights.push_back(light);
+	}
+
 	void Renderer3D::performDrawCall() {
 		vertexArray.bind();
 
@@ -153,5 +177,49 @@ namespace engine {
 		this->indexCount = 0;
 
 		this->drawCallsCount++;
+	}
+
+	void Renderer3D::updateLightsUniforms() {
+		// update point lights uniforms
+		shaderProgram.setUniform1i("numberOfPointLights", pointLights.size());
+
+		for (int i = 0; i < pointLights.size(); i++) {
+			
+			auto& pointLight = pointLights[i];
+
+			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].position",
+				pointLight.position.x, pointLight.position.y, pointLight.position.z);
+
+			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].ambient",
+				pointLight.ambient.x, pointLight.ambient.y, pointLight.ambient.z);
+
+			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].diffuse",
+				pointLight.diffuse.x, pointLight.diffuse.y, pointLight.diffuse.z);
+
+			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].specular",
+				pointLight.specular.x, pointLight.specular.y, pointLight.specular.z);
+
+			shaderProgram.setUniform1f("pointLights[" + std::to_string(i) + "].constant", pointLight.constant);
+			shaderProgram.setUniform1f("pointLights[" + std::to_string(i) + "].linear", pointLight.linear);
+			shaderProgram.setUniform1f("pointLights[" + std::to_string(i) + "].quadratic", pointLight.quadratic);
+		}
+
+		pointLights.clear();
+
+		//update directional lights uniforms
+
+		shaderProgram.setUniform1i("numberOfDirectionalLights", directionalLights.size());
+
+		for (int i = 0; i < directionalLights.size(); i++) {
+
+			auto& directionalLight = directionalLights[i];
+			
+			shaderProgram.setUniform3f("directionalLights[0].direction", directionalLight.direction.x, directionalLight.direction.y, directionalLight.direction.z);
+			shaderProgram.setUniform3f("directionalLights[0].ambient", directionalLight.ambient.x, directionalLight.ambient.y, directionalLight.ambient.z);
+			shaderProgram.setUniform3f("directionalLights[0].diffuse", directionalLight.diffuse.x, directionalLight.diffuse.y, directionalLight.diffuse.z);
+			shaderProgram.setUniform3f("directionalLights[0].specular", directionalLight.specular.x, directionalLight.specular.y, directionalLight.specular.z);
+		}
+
+		directionalLights.clear();
 	}
 }
