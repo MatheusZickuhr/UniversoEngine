@@ -52,14 +52,26 @@ void ExampleScene::onStart() {
 	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
 
-	//auto pointLight = createEntity();
-	//pointLight->addComponent<TransformComponent>();
-	//pointLight->addComponent<PointLightComponent>();
+	{
+		auto pointLight = createEntity();
+		pointLight->addComponent<TransformComponent>();
+		auto& transComp = pointLight->getComponent<TransformComponent>();
+		transComp.transform.position = { -12.0f, 0.0f, 0.0f };
+		pointLight->addComponent<PointLightComponent>();
+	}
+	
+	{
+		auto otherPointLight = createEntity();
+		otherPointLight->addComponent<TransformComponent>();
+		auto& transComp = otherPointLight->getComponent<TransformComponent>();
+		transComp.transform.position = { 12.0f, 0.0f, 0.0f };
+		otherPointLight->addComponent<PointLightComponent>();
+	}
 
 	// sun light
-	auto directionalLight = createEntity();
-	directionalLight->addComponent<DirectionalLightComponent>();
-	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.direction = { -0.2f, -1.0f, -0.3f };
+	//auto directionalLight = createEntity();
+	//directionalLight->addComponent<DirectionalLightComponent>();
+	//directionalLight->getComponent<DirectionalLightComponent>().directionalLight.direction = { -0.2f, -1.0f, -0.3f };
 }
 
 void ExampleScene::onUpdate(float deltaTime) {

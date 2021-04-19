@@ -6,6 +6,7 @@
 
 #include "../renderer/Camera.h"
 #include "../renderer/Renderer3D.h"
+#include "../renderer/Renderer2D.h"
 #include "../physics/ReactPhysics3dPhysicsWorld.h"
 #include "../physics/RigidBody.h"
 
@@ -28,6 +29,8 @@ namespace engine {
 		void render(float windowWidth, float windowHeight);
 
 		void renderDebugData();
+
+		void renderDebugLightPositions(float windowWidth, float windowHeight);
 		
 		void updatePhysicsWorld(float deltaTime);
 		
@@ -48,9 +51,11 @@ namespace engine {
 	private:
 
 		PhysicsWorld* physicsWorld;
-		Renderer3D* renderer;
+		Renderer3D* renderer3d;
+		Renderer2D* renderer2d;
 		entt::registry registry;
 		std::vector<Entity*> entities;
+		Texture debugPointLightTexture { "res/textures/lamp.png" };
 
 		void onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity);
 

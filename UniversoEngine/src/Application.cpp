@@ -58,6 +58,7 @@ namespace engine {
 
 #ifdef DEBUG
 			this->currentScene->renderDebugData();
+			this->currentScene->renderDebugLightPositions(this->windowWidth, this->windowHeight);
 #endif
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
