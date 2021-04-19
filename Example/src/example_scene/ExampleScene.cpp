@@ -52,9 +52,9 @@ void ExampleScene::onStart() {
 	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
 
-	/*auto pointLight = createEntity();
-	pointLight->addComponent<TransformComponent>();
-	pointLight->addComponent<PointLightComponent>();*/
+	//auto pointLight = createEntity();
+	//pointLight->addComponent<TransformComponent>();
+	//pointLight->addComponent<PointLightComponent>();
 
 	// sun light
 	auto directionalLight = createEntity();

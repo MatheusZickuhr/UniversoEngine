@@ -35,38 +35,38 @@ namespace engine {
 		glAttachShader(this->id, shaderId);
 	}
 
-	void ShaderProgram::setUniform3f(const std::string& uniformName, float float1, float float2, float float3) {
+	void ShaderProgram::setVec3Uniform(const std::string& uniformName, const glm::vec3& vec) {
 		this->bind();
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniform3f(uniformLocation, float1, float2, float3);
+		glUniform3f(uniformLocation, vec.x, vec.y, vec.z);
 	}
 
-	void ShaderProgram::setUniform4f(const std::string& uniformName, float float1, float float2, float float3, float float4) {
+	void ShaderProgram::setVec4Uniform(const std::string& uniformName, const glm::vec4& vec) {
 		this->bind();
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniform4f(uniformLocation, float1, float2, float3, float4);
+		glUniform4f(uniformLocation, vec.x, vec.y, vec.z, vec.w);
 	}
 
-	void ShaderProgram::setUniformMat4f(const std::string& uniformName, const glm::mat4& matrix) {
+	void ShaderProgram::setMat4Uniform(const std::string& uniformName, const glm::mat4& matrix) {
 		this->bind();
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
 		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix[0][0]);
 
 	}
 
-	void ShaderProgram::setUniform1f(const std::string& uniformName, const float value) {
+	void ShaderProgram::setFloatUniform(const std::string& uniformName, const float value) {
 		this->bind();
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
 		glUniform1f(uniformLocation, value);
 	}
 
-	void ShaderProgram::setUniform1i(const std::string& uniformName, const int value) {
+	void ShaderProgram::setIntUniform(const std::string& uniformName, const int value) {
 		this->bind();
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
 		glUniform1i(uniformLocation, value);
 	}
 
-	void ShaderProgram::setUniform1iv(const std::string& uniformName, int size, int data[]) {
+	void ShaderProgram::setIntArrayUniform(const std::string& uniformName, int size, int data[]) {
 		this->bind();
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
 		glUniform1iv(uniformLocation, size, data);

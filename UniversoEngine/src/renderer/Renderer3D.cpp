@@ -1,4 +1,5 @@
 #include "Renderer3D.h"
+#include "../utils/Format.h"
 
 namespace engine {
 
@@ -42,17 +43,17 @@ namespace engine {
 		// add the textures slots to the shader
 		int textureSlots[Texture::maxTextureSlot];
 		for (int i = 0; i < Texture::maxTextureSlot; i++) textureSlots[i] = i;
-		this->shaderProgram.setUniform1iv("textureSlots", Texture::maxTextureSlot, textureSlots);
+		this->shaderProgram.setIntArrayUniform("textureSlots", Texture::maxTextureSlot, textureSlots);
 
 
-		shaderProgram.setUniform3f("material.ambient", 1.0f, 1.0f, 1.0f);
-		shaderProgram.setUniform3f("material.diffuse", 1.0f, 1.0f, 1.0f);
-		shaderProgram.setUniform3f("material.specular", 0.5f, 0.5f, 0.5f);
-		shaderProgram.setUniform1f("material.shininess", 32.0f);
+		shaderProgram.setVec3Uniform("material.ambient", { 1.0f, 1.0f, 1.0f });
+		shaderProgram.setVec3Uniform("material.diffuse", { 1.0f, 1.0f, 1.0f });
+		shaderProgram.setVec3Uniform("material.specular", { 0.5f, 0.5f, 0.5f });
+		shaderProgram.setFloatUniform("material.shininess", 32.0f);
 
-		shaderProgram.setUniform1i("numberOfPointLights", 0);
+		shaderProgram.setIntUniform("numberOfPointLights", 0);
 
-		shaderProgram.setUniform1i("numberOfDirectionalLights", 0);
+		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);
 
 		// add a sun light
 		//shaderProgram.setUniform1i("numberOfDirectionalLights", 1);
@@ -87,7 +88,7 @@ namespace engine {
 	void Renderer3D::drawLightSource(glm::mat4 mvp) {
 
 		
-		this->lightShaderProgram.setUniformMat4f("Mvp", mvp);
+		this->lightShaderProgram.setMat4Uniform("Mvp", mvp);
 
 		lightVertices = lightVerticesBegin;
 
@@ -109,8 +110,8 @@ namespace engine {
 
 	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition) {
 		shaderProgram.bind();
-		this->shaderProgram.setUniformMat4f("Mvp", mvp);
-		this->shaderProgram.setUniform3f("viewPosition", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+		this->shaderProgram.setMat4Uniform("Mvp", mvp);
+		this->shaderProgram.setVec3Uniform("viewPosition", cameraPosition);
 		this->drawCallsCount = 0;
 
 		this->updateLightsUniforms();
@@ -181,43 +182,36 @@ namespace engine {
 
 	void Renderer3D::updateLightsUniforms() {
 		// update point lights uniforms
-		shaderProgram.setUniform1i("numberOfPointLights", pointLights.size());
+		shaderProgram.setIntUniform("numberOfPointLights", pointLights.size());
 
 		for (int i = 0; i < pointLights.size(); i++) {
 			
 			auto& pointLight = pointLights[i];
 
-			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].position",
-				pointLight.position.x, pointLight.position.y, pointLight.position.z);
-
-			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].ambient",
-				pointLight.ambient.x, pointLight.ambient.y, pointLight.ambient.z);
-
-			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].diffuse",
-				pointLight.diffuse.x, pointLight.diffuse.y, pointLight.diffuse.z);
-
-			shaderProgram.setUniform3f("pointLights[" + std::to_string(i) + "].specular",
-				pointLight.specular.x, pointLight.specular.y, pointLight.specular.z);
-
-			shaderProgram.setUniform1f("pointLights[" + std::to_string(i) + "].constant", pointLight.constant);
-			shaderProgram.setUniform1f("pointLights[" + std::to_string(i) + "].linear", pointLight.linear);
-			shaderProgram.setUniform1f("pointLights[" + std::to_string(i) + "].quadratic", pointLight.quadratic);
+			shaderProgram.setVec3Uniform(format("pointLights[%d].position", i), pointLight.position);
+			shaderProgram.setVec3Uniform(format("pointLights[%d].ambient",  i), pointLight.ambient);
+			shaderProgram.setVec3Uniform(format("pointLights[%d].diffuse",  i), pointLight.diffuse);
+			shaderProgram.setVec3Uniform(format("pointLights[%d].specular", i), pointLight.specular);
+			
+			shaderProgram.setFloatUniform(format("pointLights[%d].constant", i), pointLight.constant);
+			shaderProgram.setFloatUniform(format("pointLights[%d].linear",   i), pointLight.linear);
+			shaderProgram.setFloatUniform(format("pointLights[%d].quadratic",i), pointLight.quadratic);
 		}
 
 		pointLights.clear();
 
 		//update directional lights uniforms
 
-		shaderProgram.setUniform1i("numberOfDirectionalLights", directionalLights.size());
+		shaderProgram.setIntUniform("numberOfDirectionalLights", directionalLights.size());
 
 		for (int i = 0; i < directionalLights.size(); i++) {
 
 			auto& directionalLight = directionalLights[i];
 			
-			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].direction", directionalLight.direction.x, directionalLight.direction.y, directionalLight.direction.z);
-			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].ambient", directionalLight.ambient.x, directionalLight.ambient.y, directionalLight.ambient.z);
-			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].diffuse", directionalLight.diffuse.x, directionalLight.diffuse.y, directionalLight.diffuse.z);
-			shaderProgram.setUniform3f("directionalLights[" + std::to_string(i) + "].specular", directionalLight.specular.x, directionalLight.specular.y, directionalLight.specular.z);
+			shaderProgram.setVec3Uniform(format("directionalLights[%d].direction", i), directionalLight.direction);
+			shaderProgram.setVec3Uniform(format("directionalLights[%d].ambient",   i), directionalLight.ambient);
+			shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse",   i), directionalLight.diffuse);
+			shaderProgram.setVec3Uniform(format("directionalLights[%d].specular",  i), directionalLight.specular);
 		}
 
 		directionalLights.clear();

@@ -17,17 +17,17 @@ namespace engine {
 
 		void attachShader(unsigned int shaderId);
 
-		void setUniform3f(const std::string& uniformName, float float1, float float2, float float3);
+		void setVec3Uniform(const std::string& uniformName, const glm::vec3& vec);
 
-		void setUniform4f(const std::string& uniformName, float float1, float float2, float float3, float float4);
+		void setVec4Uniform(const std::string& uniformName, const glm::vec4& vec);
 
-		void setUniformMat4f(const std::string& uniformName, const glm::mat4& matrix);
+		void setMat4Uniform(const std::string& uniformName, const glm::mat4& matrix);
 
-		void setUniform1f(const std::string& uniformName, const float value);
+		void setFloatUniform(const std::string& uniformName, const float value);
 
-		void setUniform1i(const std::string& uniformName, const int value);
+		void setIntUniform(const std::string& uniformName, const int value);
 
-		void setUniform1iv(const std::string& uniformName, int size, int data[]);
+		void setIntArrayUniform(const std::string& uniformName, int size, int data[]);
 
 	private:
 
