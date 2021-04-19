@@ -13,12 +13,15 @@ namespace engine {
 		const void* data
 	);
 
-	DrawApi::DrawApi() {
+	void DrawApi::init() {
+		glEnable(GL_DEPTH_TEST);
+		printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
+	}
+
+	void DrawApi::initDebugMode() {
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(GLDebugMessageCallback, NULL);
-		glEnable(GL_DEPTH_TEST);
-		printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
 	}
 
 	void DrawApi::drawWithIdexes(unsigned int IndexCount) {

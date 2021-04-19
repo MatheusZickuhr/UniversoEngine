@@ -71,8 +71,6 @@ namespace engine {
         std::vector<PointLight> pointLights;
         std::vector<DirectionalLight> directionalLights;
 
-        DrawApi drawApi;
-
         void performDrawCall();
         
         void updatePointLightsUniforms();

@@ -84,11 +84,11 @@ namespace engine {
 	}
 
 	void Renderer3D::clear(float r, float g, float b, float a) {
-		this->drawApi.clear(r, g, b, a);
+		DrawApi::clear(r, g, b, a);
 	}
 
 	void Renderer3D::setViewPortSize(float width, float height) {
-		this->drawApi.setViewPortSize(width, height);
+		DrawApi::setViewPortSize(width, height);
 	}
 
 	unsigned int Renderer3D::getDrawCallsCount() {
@@ -109,7 +109,7 @@ namespace engine {
 
 		this->vertexBuffer.pushData(this->verticesBegin, sizeof(Vertex) * this->vertexCount);
 		this->indexBuffer.pushData(this->indices, sizeof(unsigned int) * this->indexCount);
-		this->drawApi.drawWithIdexes(this->indexCount);
+		DrawApi::drawWithIdexes(this->indexCount);
 
 		this->vertices = this->verticesBegin;
 		this->vertexCount = 0;

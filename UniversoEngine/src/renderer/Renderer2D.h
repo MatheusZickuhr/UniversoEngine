@@ -53,8 +53,6 @@ namespace engine {
         Shader fragShader{ ShaderType::FragmentShader, "res/shaders/2d/frag.glsl" };
         ShaderProgram shaderProgram;
 
-        DrawApi drawApi;
-
         bool drawingStarted = false;
 
         unsigned int vertexCount = 0;

@@ -91,14 +91,14 @@ namespace engine {
     }
 
     void Renderer2D::clear(float r, float g, float b, float a) {
-        this->drawApi.clear(r, g, b, a);
+        DrawApi::clear(r, g, b, a);
     }
     void Renderer2D::performDrawcall() {
         this->shaderProgram.bind();
         this->vertexArray.bind();
 
         this->vertexBuffer.pushData(this->verticesBegin, sizeof(QuadVertex) * this->vertexCount);
-        this->drawApi.drawWithIdexes(indexCount);
+        DrawApi::drawWithIdexes(indexCount);
 
         this->vertices = this->verticesBegin;
         this->vertexCount = 0;
