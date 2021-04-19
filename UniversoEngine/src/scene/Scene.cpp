@@ -78,8 +78,6 @@ namespace engine {
 		
 		this->renderer->endDrawing();
 
-		this->renderer->drawLightSource(mvp);
-
 	}
 
 	void Scene::renderDebugData() {

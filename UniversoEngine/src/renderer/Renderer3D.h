@@ -33,8 +33,6 @@ namespace engine {
 
         ~Renderer3D();
 
-        void drawLightSource(glm::mat4 mvp);
-
         void startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition);
 
         void endDrawing();
@@ -70,33 +68,16 @@ namespace engine {
         Shader fragShader { ShaderType::FragmentShader, "res/shaders/3d/frag.glsl" };
         ShaderProgram shaderProgram;
 
-        // light stuff
-
+        // lighting
         std::vector<PointLight> pointLights;
         std::vector<DirectionalLight> directionalLights;
-
-        VertexArray lightVertexArray;
-        VertexBuffer lightVertexBuffer {sizeof(LightVertex), 36 };
-        IndexBuffer lightIndexBuffer { 36 };
-
-        Shader lightVertexShader { ShaderType::VertexShader, "res/shaders/3d/lightvert.glsl" };
-        Shader lightFragShader { ShaderType::FragmentShader, "res/shaders/3d/lightfrag.glsl" };
-        ShaderProgram  lightShaderProgram;
-
-        // light source will be a cube for now 
-        Mesh lightMesh{ "res/models/crate/crate.obj" };
-
-        LightVertex* lightVertices;
-        LightVertex* lightVerticesBegin;
-        unsigned int* lightIndices;
-
-        // just a single light for now
-        glm::vec3 lightPosition = { 0.0f, 0.0f, 0.0f };
 
         DrawApi drawApi;
 
         void performDrawCall();
         
-        void updateLightsUniforms();
+        void updatePointLightsUniforms();
+
+        void updateDirectionalLightsUniforms();
     };
 }

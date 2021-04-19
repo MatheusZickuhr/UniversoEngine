@@ -4,25 +4,6 @@
 namespace engine {
 
 	Renderer3D::Renderer3D() {
-		// light
-		this->lightVerticesBegin = new LightVertex[36];
-		this->lightVertices = this->lightVerticesBegin;
-		this->lightIndices = new unsigned int[36];
-
-		for (int i = 0; i < 36; i++)
-			lightIndices[i] = i;
-
-		lightVertexArray.addVertexBuffer(lightVertexBuffer);
-		lightVertexArray.addIndexBuffer(lightIndexBuffer);
-
-		lightVertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(LightVertex, position));
-
-		lightShaderProgram.attachShader(lightVertexShader.getId());
-		lightShaderProgram.attachShader(lightFragShader.getId());
-		lightShaderProgram.bind();
-
-		// rest
-
 		this->verticesBegin = new Vertex[maxVertices];
 		this->vertices = this->verticesBegin;
 		this->indices = new unsigned int[maxIndices];
@@ -53,59 +34,12 @@ namespace engine {
 
 		shaderProgram.setIntUniform("numberOfPointLights", 0);
 
-		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);
-
-		// add a sun light
-		//shaderProgram.setUniform1i("numberOfDirectionalLights", 1);
-		//DirectionalLight sunLight;
-		//sunLight.direction = { -0.2f, -1.0f, -0.3f };
-		//
-		//shaderProgram.setUniform3f("directionalLights[0].direction", sunLight.direction.x, sunLight.direction.y, sunLight.direction.z);
-		//shaderProgram.setUniform3f("directionalLights[0].ambient", sunLight.ambient.x, sunLight.ambient.y, sunLight.ambient.z);
-		//shaderProgram.setUniform3f("directionalLights[0].diffuse", sunLight.diffuse.x, sunLight.diffuse.y, sunLight.diffuse.z);
-		//shaderProgram.setUniform3f("directionalLights[0].specular", sunLight.specular.x, sunLight.specular.y, sunLight.specular.z);
-
-	/*	shaderProgram.setUniform1i("numberOfPointLights", 1);
-
-		shaderProgram.setUniform3f("pointLights[0].position", lightPosition.x, lightPosition.y, lightPosition.z);
-		shaderProgram.setUniform3f("pointLights[0].ambient", 0.2f, 0.2f, 0.2f);
-		shaderProgram.setUniform3f("pointLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-		shaderProgram.setUniform3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-
-		shaderProgram.setUniform1f("pointLights[0].constant", 1.0f);
-		shaderProgram.setUniform1f("pointLights[0].linear", 0.09f);
-		shaderProgram.setUniform1f("pointLights[0].quadratic", 0.032f);*/
-		
+		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);		
 	}
 
 	Renderer3D::~Renderer3D() {
 		delete[] this->verticesBegin;
 		delete[] this->indices;
-		delete[] this->lightVerticesBegin;
-		delete[] this->lightIndices;
-	}
-
-	void Renderer3D::drawLightSource(glm::mat4 mvp) {
-
-		
-		this->lightShaderProgram.setMat4Uniform("Mvp", mvp);
-
-		lightVertices = lightVerticesBegin;
-
-		for (auto& vertex : lightMesh.getVertices()) {
-			lightVertices->position = lightPosition +  vertex.position;
-			lightVertices++;
-		}
-			
-		lightShaderProgram.bind();
-		lightVertexArray.bind();
-
-		lightVertexBuffer.pushData(this->lightVerticesBegin, sizeof(LightVertex) * 36);
-		lightIndexBuffer.pushData(this->lightIndices, sizeof(unsigned int) * 36);
-		
-		
-		this->drawApi.drawWithIdexes(36);
-
 	}
 
 	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition) {
@@ -114,7 +48,11 @@ namespace engine {
 		this->shaderProgram.setVec3Uniform("viewPosition", cameraPosition);
 		this->drawCallsCount = 0;
 
-		this->updateLightsUniforms();
+		this->updatePointLightsUniforms();
+		this->updateDirectionalLightsUniforms();
+
+		pointLights.clear();
+		directionalLights.clear();
 	}
 
 	void Renderer3D::endDrawing() {
@@ -180,40 +118,39 @@ namespace engine {
 		this->drawCallsCount++;
 	}
 
-	void Renderer3D::updateLightsUniforms() {
-		// update point lights uniforms
+	void Renderer3D::updatePointLightsUniforms() {
 		shaderProgram.setIntUniform("numberOfPointLights", pointLights.size());
 
 		for (int i = 0; i < pointLights.size(); i++) {
-			
+
 			auto& pointLight = pointLights[i];
 
 			shaderProgram.setVec3Uniform(format("pointLights[%d].position", i), pointLight.position);
-			shaderProgram.setVec3Uniform(format("pointLights[%d].ambient",  i), pointLight.ambient);
-			shaderProgram.setVec3Uniform(format("pointLights[%d].diffuse",  i), pointLight.diffuse);
+			shaderProgram.setVec3Uniform(format("pointLights[%d].ambient", i), pointLight.ambient);
+			shaderProgram.setVec3Uniform(format("pointLights[%d].diffuse", i), pointLight.diffuse);
 			shaderProgram.setVec3Uniform(format("pointLights[%d].specular", i), pointLight.specular);
-			
+
 			shaderProgram.setFloatUniform(format("pointLights[%d].constant", i), pointLight.constant);
-			shaderProgram.setFloatUniform(format("pointLights[%d].linear",   i), pointLight.linear);
-			shaderProgram.setFloatUniform(format("pointLights[%d].quadratic",i), pointLight.quadratic);
+			shaderProgram.setFloatUniform(format("pointLights[%d].linear", i), pointLight.linear);
+			shaderProgram.setFloatUniform(format("pointLights[%d].quadratic", i), pointLight.quadratic);
 		}
 
-		pointLights.clear();
+		
+	}
 
-		//update directional lights uniforms
-
+	void Renderer3D::updateDirectionalLightsUniforms() {
 		shaderProgram.setIntUniform("numberOfDirectionalLights", directionalLights.size());
 
 		for (int i = 0; i < directionalLights.size(); i++) {
 
 			auto& directionalLight = directionalLights[i];
-			
+
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].direction", i), directionalLight.direction);
-			shaderProgram.setVec3Uniform(format("directionalLights[%d].ambient",   i), directionalLight.ambient);
-			shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse",   i), directionalLight.diffuse);
-			shaderProgram.setVec3Uniform(format("directionalLights[%d].specular",  i), directionalLight.specular);
+			shaderProgram.setVec3Uniform(format("directionalLights[%d].ambient", i), directionalLight.ambient);
+			shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse", i), directionalLight.diffuse);
+			shaderProgram.setVec3Uniform(format("directionalLights[%d].specular", i), directionalLight.specular);
 		}
 
-		directionalLights.clear();
 	}
+
 }
