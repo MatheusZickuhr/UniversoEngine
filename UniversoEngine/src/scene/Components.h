@@ -7,8 +7,7 @@
 #include "../renderer/renderer_api/Texture.h"
 #include "../renderer/Material.h"
 #include "../renderer/Mesh.h"
-#include "../renderer/PointLight.h"
-#include "../renderer/DirectionalLight.h"
+#include "../renderer/Lighting.h"
 
 #include "../math/Transform.h"
 

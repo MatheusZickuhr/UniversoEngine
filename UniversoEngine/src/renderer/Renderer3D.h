@@ -11,8 +11,7 @@
 #include "renderer_api/Texture.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "PointLight.h"
-#include "DirectionalLight.h"
+#include "Lighting.h"
 
 namespace engine {
 
