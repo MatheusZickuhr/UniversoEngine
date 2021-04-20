@@ -15,7 +15,9 @@ void ExampleScene::onStart() {
 	boxMaterial = new Material("res/textures/crate/crate.jpg");
 	boxMesh = new Mesh("res/models/crate/crate.obj");
 	
-	redMaterial = new Material(glm::vec3(1.0f, 0.5f, 0.31f));
+	redMaterial = new Material();
+	redMaterial->ambient = { 1.0f, 0.0f, 0.0f };
+	redMaterial->diffuse = { 1.0f, 0.0f, 0.0f };
 
 	Random random;
 

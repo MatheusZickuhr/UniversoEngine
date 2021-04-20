@@ -1,23 +1,4 @@
 #version 460 core
-out vec4 FragColor;
-
-in vec3 vColor;
-in vec3 vNormal;
-in vec2 vTextureCoords;
-in float vTextureSlot;
-in vec3 vFragPosition;
-
-uniform sampler2D textureSlots[32];
-uniform vec3 viewPosition;
-
-struct Material {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float shininess;
-};
-
-uniform Material material;
 
 struct PointLight {
     vec3 position;
@@ -37,9 +18,21 @@ struct DirectionalLight {
     vec3 specular;
 };
 
-uniform int numberOfPointLights;
-uniform PointLight pointLights[4];
+out vec4 FragColor;
 
+in vec3 vNormal;
+in vec3 vAmbient;
+in vec3 vDiffuse;
+in vec3 vSpecular;
+in float vShininess;
+in vec2 vTextureCoords;
+in float vTextureSlot;
+in vec3 vFragPosition;
+
+uniform sampler2D textureSlots[32];
+uniform vec3 viewPosition;
+uniform int numberOfPointLights;
+uniform PointLight pointLights[256];
 uniform int numberOfDirectionalLights;
 uniform DirectionalLight directionalLights[4];
 
@@ -74,12 +67,12 @@ vec3 calcPointLight(PointLight light) {
     vec3 lightDirection = normalize(vFragPosition - light.position);
 
     float diff = max(dot(normalizedNormal, lightDirection), 0.0);
-    vec3 diffuse = light.diffuse * (diff * material.diffuse);
+    vec3 diffuse = light.diffuse * (diff * vDiffuse);
     
     // ambient lighting
     float ambientLightStrength = 0.1;
 
-    vec3 ambient = light.ambient * material.ambient;
+    vec3 ambient = light.ambient * vAmbient;
     
     // specular lighting
     float specularLightStrength = 0.5;
@@ -89,8 +82,8 @@ vec3 calcPointLight(PointLight light) {
     // sience I inverted early
     vec3 reflectDir = reflect(lightDirection, normalizedNormal);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), vShininess);
+    vec3 specular = light.specular * (spec * vSpecular);
 
     // calculate light attenuation
     float distance = length(light.position - vFragPosition);
@@ -113,12 +106,12 @@ vec3 calcDirectionalLight(DirectionalLight light) {
     vec3 lightDirection = normalize(light.direction);
 
     float diff = max(dot(normalizedNormal, lightDirection), 0.0);
-    vec3 diffuse = light.diffuse * (diff * material.diffuse);
+    vec3 diffuse = light.diffuse * (diff * vDiffuse);
     
     // ambient lighting
     float ambientLightStrength = 0.1;
 
-    vec3 ambient = light.ambient * material.ambient;
+    vec3 ambient = light.ambient * vAmbient;
     
     // specular lighting
     float specularLightStrength = 0.5;
@@ -128,8 +121,8 @@ vec3 calcDirectionalLight(DirectionalLight light) {
     // sience I inverted early
     vec3 reflectDir = reflect(lightDirection, normalizedNormal);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), vShininess);
+    vec3 specular = light.specular * (spec * vSpecular);
 
     // result
     return ambient + diffuse + specular;

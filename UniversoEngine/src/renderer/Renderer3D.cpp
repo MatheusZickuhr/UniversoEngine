@@ -12,8 +12,11 @@ namespace engine {
 		vertexArray.addIndexBuffer(indexBuffer);
 
 		vertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, position));
-		vertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, color));
 		vertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, normal));
+		vertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, ambient));
+		vertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, diffuse));
+		vertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, specular));
+		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, shininess));
 		vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(Vertex, textureCoords));
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlot));
 
@@ -25,12 +28,6 @@ namespace engine {
 		int textureSlots[Texture::maxTextureSlot];
 		for (int i = 0; i < Texture::maxTextureSlot; i++) textureSlots[i] = i;
 		this->shaderProgram.setIntArrayUniform("textureSlots", Texture::maxTextureSlot, textureSlots);
-
-
-		shaderProgram.setVec3Uniform("material.ambient", { 1.0f, 1.0f, 1.0f });
-		shaderProgram.setVec3Uniform("material.diffuse", { 1.0f, 1.0f, 1.0f });
-		shaderProgram.setVec3Uniform("material.specular", { 0.5f, 0.5f, 0.5f });
-		shaderProgram.setFloatUniform("material.shininess", 32.0f);
 
 		shaderProgram.setIntUniform("numberOfPointLights", 0);
 
@@ -62,15 +59,17 @@ namespace engine {
 	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
 
 		Texture* texture = material->getTexture();
-		glm::vec3 color = material->getColor();
-
+		
 		if (this->vertexCount + mesh->getVertexCount() > maxVertices)
 			this->performDrawCall();
 		
 		for (const Vertex& vertex : mesh->getVertices()) {
 			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
-			this->vertices->color = color;
 			this->vertices->normal = glm::mat3(glm::transpose(glm::inverse(transform))) * vertex.normal;
+			this->vertices->ambient = material->ambient;
+			this->vertices->diffuse = material->diffuse;
+			this->vertices->specular = material->specular;
+			this->vertices->shininess = material->shininess;
 			this->vertices->textureCoords = vertex.textureCoords;
 			this->vertices->textureSlot = texture != nullptr ? texture->getSlot() : -1.0f;
 			this->vertices++;
