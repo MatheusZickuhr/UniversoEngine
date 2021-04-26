@@ -1,5 +1,6 @@
 #include "Renderer3D.h"
 #include "../utils/Format.h"
+#include <glad/glad.h>
 
 namespace engine {
 
@@ -31,7 +32,40 @@ namespace engine {
 
 		shaderProgram.setIntUniform("numberOfPointLights", 0);
 
-		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);		
+		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);
+
+
+		// shadow stuff
+		float near_plane = 1.0f, far_plane = 7.5f;
+		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		glm::mat4 lightView = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f));
+
+		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+		
+		shaderProgram.setMat4Uniform("lightSpaceMatrix", lightSpaceMatrix);
+		
+
+		shaderProgram.setIntUniform("shadowMapTextureSlot", (int) depthMapTexture.getSlot());
+
+
+		this->depthVerticesBegin = new DepthVertex[maxVertices];
+		this->depthVertices = this->depthVerticesBegin;
+		this->depthIndices = new unsigned int[maxIndices];
+
+		depthVertexArray.addVertexBuffer(depthVertexBuffer);
+		depthVertexArray.addIndexBuffer(depthIndexBuffer);
+
+		depthVertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(DepthVertex, position));
+
+		depthshaderProgram.attachShader(depthVertexShader.getId());
+		depthshaderProgram.attachShader(depthFragShader.getId());
+
+		depthshaderProgram.setMat4Uniform("lightSpaceMatrix", lightSpaceMatrix);
+
+		this->depthMapFrameBuffer.addTextureAsDepthBuffer(this->depthMapTexture);
+
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -39,7 +73,42 @@ namespace engine {
 		delete[] this->indices;
 	}
 
-	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition) {
+	void Renderer3D::startDepthDrawing(glm::mat4 mvp) {
+
+		depthshaderProgram.bind();
+		
+		
+		DrawApi::setViewPortSize(depthMapTexture.getWidth(), depthMapTexture.getHeight());
+
+		depthMapFrameBuffer.bind();
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
+	void Renderer3D::drawDepthMesh(Mesh* mesh, glm::mat4 transform) {
+		
+		//if (this->vertexCount + mesh->getVertexCount() > maxVertices)
+		//	this->performDepthDrawCall();
+
+		for (const Vertex& vertex : mesh->getVertices()) {
+			this->depthVertices->position = transform * glm::vec4(vertex.position, 1.0f);
+			this->depthVertices++;
+		}
+
+		for (int i = this->indexCount; i < mesh->getVertexCount() + this->indexCount; i++)
+			this->depthIndices[i] = i;
+
+		this->vertexCount += mesh->getVertexCount();
+		this->indexCount += mesh->getVertexCount();
+	}
+
+	void Renderer3D::endDepthDrawing() {
+		this->performDepthDrawCall();
+		depthMapFrameBuffer.unbind();
+	}
+
+	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height) {
+		DrawApi::setViewPortSize(width, height);
+
 		shaderProgram.bind();
 		this->shaderProgram.setMat4Uniform("Mvp", mvp);
 		this->shaderProgram.setVec3Uniform("viewPosition", cameraPosition);
@@ -150,6 +219,18 @@ namespace engine {
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].specular", i), directionalLight.specular);
 		}
 
+	}
+
+	void Renderer3D::performDepthDrawCall() {
+		depthVertexArray.bind();
+
+		this->depthVertexBuffer.pushData(this->depthVerticesBegin, sizeof(DepthVertex) * this->vertexCount);
+		this->depthIndexBuffer.pushData(this->depthIndices, sizeof(unsigned int) * this->indexCount);
+		DrawApi::drawWithIdexes(this->indexCount);
+
+		this->depthVertices = this->depthVerticesBegin;
+		this->vertexCount = 0;
+		this->indexCount = 0;
 	}
 
 }

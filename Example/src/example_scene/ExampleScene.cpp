@@ -9,7 +9,7 @@ ExampleScene::~ExampleScene() {
 
 void ExampleScene::onStart() {
 
-	this->camera.position = { 0.0f, -3.0f, 20.0f };
+	this->camera.position = { 0.0f, 0.0f, 4.0f };
 
 	cameraInput = new CameraController(this->camera);
 	boxMaterial = new Material("res/textures/crate/crate.jpg");
@@ -23,23 +23,13 @@ void ExampleScene::onStart() {
 
 	const float PI = 3.14f;
 
-	// create some boxes
-	for (float x = -6.0f; x <= 6.0f; x+= 2.0f) {
-		for (float z = -6.0f; z <= 6.0f; z += 2.0f) {
-			auto box = createEntity();
-			box->addComponent<MeshComponent>(boxMesh);
-			box->addComponent<MaterialComponent>(redMaterial);
-			box->addComponent<TransformComponent>();
+	auto box = createEntity();
+	box->addComponent<MeshComponent>(boxMesh);
+	box->addComponent<MaterialComponent>(redMaterial);
+	box->addComponent<TransformComponent>();
 			
-			auto& boxTransformComponent = box->getComponent<TransformComponent>();
-			boxTransformComponent.transform.scale *= 0.5f;
-			boxTransformComponent.transform.position = { x, random.random() * 5.0f, z };
-			boxTransformComponent.transform.rotation = { random.random() * PI, 0.0f, 0.0f };
-
-			box->addComponent<CollisionShapeComponent>(CollisionShape::Box);
-			box->addComponent<RigidBodyComponent>();
-		}
-	}
+	auto& boxTransformComponent = box->getComponent<TransformComponent>();
+	boxTransformComponent.transform.position = { 0.0f, 0.0f, 0.0f };
 
 	// create a floor entity
 	auto floor = createEntity();
@@ -54,26 +44,10 @@ void ExampleScene::onStart() {
 	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
 
-	{
-		auto pointLight = createEntity();
-		pointLight->addComponent<TransformComponent>();
-		auto& transComp = pointLight->getComponent<TransformComponent>();
-		transComp.transform.position = { -12.0f, 0.0f, 0.0f };
-		pointLight->addComponent<PointLightComponent>();
-	}
-	
-	{
-		auto otherPointLight = createEntity();
-		otherPointLight->addComponent<TransformComponent>();
-		auto& transComp = otherPointLight->getComponent<TransformComponent>();
-		transComp.transform.position = { 12.0f, 0.0f, 0.0f };
-		otherPointLight->addComponent<PointLightComponent>();
-	}
-
 	// sun light
-	//auto directionalLight = createEntity();
-	//directionalLight->addComponent<DirectionalLightComponent>();
-	//directionalLight->getComponent<DirectionalLightComponent>().directionalLight.direction = { -0.2f, -1.0f, -0.3f };
+	auto directionalLight = createEntity();
+	directionalLight->addComponent<DirectionalLightComponent>();
+	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.direction = { -0.2f, -1.0f, -0.3f };
 }
 
 void ExampleScene::onUpdate(float deltaTime) {

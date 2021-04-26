@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Vertex.h"
 #include "renderer_api/VertexArray.h"
 #include "renderer_api/VertexBuffer.h"
@@ -9,6 +10,7 @@
 #include "renderer_api/ShaderProgram.h"
 #include "renderer_api/DrawApi.h"
 #include "renderer_api/Texture.h"
+#include "renderer_api/FrameBuffer.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "Lighting.h"
@@ -19,9 +21,11 @@ namespace engine {
     const unsigned int maxVertices = 10000;
     const unsigned int maxIndices  = 10000;
 
-    struct LightVertex {
+    struct DepthVertex {
         glm::vec3 position;
     };
+
+   
 
 
     class Renderer3D {
@@ -32,7 +36,13 @@ namespace engine {
 
         ~Renderer3D();
 
-        void startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition);
+        void startDepthDrawing(glm::mat4 mvp);
+        
+        void drawDepthMesh(Mesh* mesh, glm::mat4 transform);
+
+        void endDepthDrawing();
+
+        void startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height);
 
         void endDrawing();
 
@@ -47,6 +57,8 @@ namespace engine {
         void drawPointLight(PointLight light, glm::mat4 transform);
 
         void drawDirectionalLight(DirectionalLight light);
+
+        Texture& getDepthTexture() { return depthMapTexture; }
 
     private:
 
@@ -71,7 +83,26 @@ namespace engine {
         std::vector<PointLight> pointLights;
         std::vector<DirectionalLight> directionalLights;
 
+        // shadows
+
+        DepthVertex* depthVerticesBegin;
+        DepthVertex* depthVertices;
+        unsigned int* depthIndices;
+
+        VertexArray depthVertexArray;
+        VertexBuffer depthVertexBuffer{ sizeof(DepthVertex), maxVertices };
+        IndexBuffer depthIndexBuffer{ maxIndices };
+
+        FrameBuffer depthMapFrameBuffer;
+        Texture depthMapTexture { 1024.0f, 1024.0f };
+
+        ShaderProgram depthshaderProgram;
+        Shader depthVertexShader{ ShaderType::VertexShader, "res/shaders/3d/depthVert.glsl" };
+        Shader depthFragShader{ ShaderType::FragmentShader, "res/shaders/3d/depthFrag.glsl" };
+
         void performDrawCall();
+
+        void performDepthDrawCall();
         
         void updatePointLightsUniforms();
 

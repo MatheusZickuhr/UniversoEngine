@@ -12,6 +12,8 @@ namespace engine {
 
         Texture(const std::string& filepath);
 
+        Texture(const float width, const float height);
+
         ~Texture();
 
         void bind();
@@ -19,6 +21,8 @@ namespace engine {
         void unbind() const;
 
         unsigned int getSlot();
+        
+        unsigned int getId();
 
         int getWidth();
 

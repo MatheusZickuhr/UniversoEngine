@@ -8,6 +8,6 @@ in float vTextureSlot;
 uniform sampler2D TextureSlots[32];
 
 void main() {
-    vec4 texColor = texture(TextureSlots[int(vTextureSlot)], vTextureCoords);
-    FragColor = texColor;
+    float depthValue = texture(TextureSlots[int(vTextureSlot)], vTextureCoords).r;
+    FragColor = vec4(vec3(depthValue), 1.0);
 } 
