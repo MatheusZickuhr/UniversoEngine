@@ -50,29 +50,8 @@ namespace engine {
 		
 		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
 
-		// for shadows 
-		this->renderer3d->startDepthDrawing(mvp);
-		{	
-			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
-
-			for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-				this->renderer3d->drawDepthMesh(meshComp.mesh, transComp.transform.getTransformMatrix());
-			}
-		}
-		this->renderer3d->endDepthDrawing();
-		// for shadows end
-
-		this->renderer3d->clear(0.0f, 0.0f, 0.0f, 1.0f);
-
-		this->renderer3d->startDrawing(mvp, camera.position, windowWidth, windowHeight);
-
-		{
-			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
-
-			for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-				this->renderer3d->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
-			}
-		}
+		// draw/ update lights
+		this->renderer3d->startLightsDrawing();
 
 		{
 			auto view = this->registry.view<PointLightComponent, TransformComponent>();
@@ -89,8 +68,40 @@ namespace engine {
 				this->renderer3d->drawDirectionalLight(lightComp.directionalLight);
 			}
 		}
+
+		this->renderer3d->endLightsDrawing();
+		// end update/draw lights
+
+
+		// for shadows 
+		this->renderer3d->startDepthDrawing(mvp);
+		{	
+			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+
+			for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+				this->renderer3d->drawDepthMesh(meshComp.mesh, transComp.transform.getTransformMatrix());
+			}
+		}
+		this->renderer3d->endDepthDrawing();
+		// for shadows end
+
+
+		// draw the scene normaly
+		this->renderer3d->clear(0.0f, 0.0f, 0.0f, 1.0f);
+
+		this->renderer3d->startDrawing(mvp, camera.position, windowWidth, windowHeight);
+
+		{
+			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+
+			for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+				this->renderer3d->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
+			}
+		}
 		
 		this->renderer3d->endDrawing();
+		// end draw scene
+
 
 	}
 

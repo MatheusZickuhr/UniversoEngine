@@ -12,10 +12,11 @@ struct PointLight {
 };
 
 struct DirectionalLight {
-    vec3 direction;
+    vec3 position;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+    mat4 viewProjection;
 };
 
 out vec4 FragColor;
@@ -28,7 +29,6 @@ in float vShininess;
 in vec2 vTextureCoords;
 in float vTextureSlot;
 in vec3 vFragPosition;
-in vec4 vFragPosLightSpace;
 
 uniform sampler2D textureSlots[32];
 uniform vec3 viewPosition;
@@ -43,9 +43,10 @@ vec3 calcPointLight(PointLight light);
 
 vec3 calcDirectionalLight(DirectionalLight light); 
 
-float shadowCalculation(vec4 fragPosLightSpace);
+float shadowCalculation(vec3 lightPosition, vec4 fragPosLightSpace);
 
 void main() {
+
     vec3 outputColor = vec3(0.0f);
 
     for (int i = 0; i < numberOfDirectionalLights; i++) {
@@ -107,7 +108,7 @@ vec3 calcDirectionalLight(DirectionalLight light) {
     vec3 normalizedNormal = normalize(vNormal);
     // I inrverted that expression from the example,
     //and looks more correct (the example was  lightPosition - vFragPosition)
-    vec3 lightDirection = normalize(light.direction);
+    vec3 lightDirection = normalize(vec3(0, 0, 0) - light.position);
 
     float diff = max(dot(normalizedNormal, lightDirection), 0.0);
     vec3 diffuse = light.diffuse * (diff * vDiffuse);
@@ -129,16 +130,15 @@ vec3 calcDirectionalLight(DirectionalLight light) {
     vec3 specular = light.specular * (spec * vSpecular);
 
     // calculate shadow
-    float shadow = shadowCalculation(vFragPosLightSpace);       
+    float shadow = shadowCalculation(light.position, light.viewProjection * vec4(vFragPosition, 1.0));       
 
     // result
     return (ambient + (1.0 - shadow) * (diffuse + specular));  
 }
 
-float shadowCalculation(vec4 fragPosLightSpace) {
+float shadowCalculation(vec3 lightPosition, vec4 fragPosLightSpace) {
     // hardcoded light pos, change this later
-    vec3 lightPosition = vec3(-2.0f, 4.0f, -1.0f);
-
+    
     vec3 lightDirection = normalize(vFragPosition - lightPosition);
    
      // perform perspective divide
@@ -150,7 +150,7 @@ float shadowCalculation(vec4 fragPosLightSpace) {
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     //check whether current frag pos is in shadow
-    float bias = max(0.5 * (1.0 - dot(normalize(vNormal), lightDirection)), 0.005);  
+    float bias = max(0.05 * (1.0 - dot(normalize(vNormal), lightDirection)), 0.005);  
     //float bias = 0.005;
 
     //float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0; 

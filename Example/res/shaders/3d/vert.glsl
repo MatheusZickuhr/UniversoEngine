@@ -20,7 +20,6 @@ out vec3 vFragPosition;
 out vec4 vFragPosLightSpace;
 
 uniform mat4 Mvp;
-uniform mat4 lightSpaceMatrix;
 
 void main() {
     
@@ -32,8 +31,6 @@ void main() {
     vTextureCoords = textureCoords;
     vTextureSlot   = textureSlot;
     vFragPosition  = position;
-
-    vFragPosLightSpace = lightSpaceMatrix * vec4(position, 1.0);
 
     gl_Position = Mvp * vec4(position, 1.0);
 }

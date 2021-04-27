@@ -10,6 +10,8 @@ namespace engine {
 
 		FrameBuffer();
 
+		~FrameBuffer();
+
 		void bind();
 
 		void unbind();

@@ -47,7 +47,7 @@ void ExampleScene::onStart() {
 	// sun light
 	auto directionalLight = createEntity();
 	directionalLight->addComponent<DirectionalLightComponent>();
-	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.direction = { -0.2f, -1.0f, -0.3f };
+	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { -2.0f, 4.0f, -1.0f };
 }
 
 void ExampleScene::onUpdate(float deltaTime) {

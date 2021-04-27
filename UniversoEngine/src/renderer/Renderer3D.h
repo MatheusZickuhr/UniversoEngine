@@ -21,13 +21,7 @@ namespace engine {
     const unsigned int maxVertices = 10000;
     const unsigned int maxIndices  = 10000;
 
-    struct DepthVertex {
-        glm::vec3 position;
-    };
-
    
-
-
     class Renderer3D {
 
     public:
@@ -47,6 +41,10 @@ namespace engine {
         void endDrawing();
 
         void drawMesh(Mesh* mesh, Material* material, glm::mat4 transform);
+
+        void startLightsDrawing();
+
+        void endLightsDrawing();
 
         void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 
@@ -84,15 +82,6 @@ namespace engine {
         std::vector<DirectionalLight> directionalLights;
 
         // shadows
-
-        DepthVertex* depthVerticesBegin;
-        DepthVertex* depthVertices;
-        unsigned int* depthIndices;
-
-        VertexArray depthVertexArray;
-        VertexBuffer depthVertexBuffer{ sizeof(DepthVertex), maxVertices };
-        IndexBuffer depthIndexBuffer{ maxIndices };
-
         FrameBuffer depthMapFrameBuffer;
         Texture depthMapTexture { 1024.0f, 1024.0f };
 
@@ -101,8 +90,6 @@ namespace engine {
         Shader depthFragShader{ ShaderType::FragmentShader, "res/shaders/3d/depthFrag.glsl" };
 
         void performDrawCall();
-
-        void performDepthDrawCall();
         
         void updatePointLightsUniforms();
 
