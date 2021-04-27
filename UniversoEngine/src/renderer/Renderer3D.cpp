@@ -82,6 +82,8 @@ namespace engine {
 
 		depthMapFrameBuffer.bind();
 		glClear(GL_DEPTH_BUFFER_BIT);
+
+		glCullFace(GL_FRONT);
 	}
 
 	void Renderer3D::drawDepthMesh(Mesh* mesh, glm::mat4 transform) {
@@ -104,6 +106,8 @@ namespace engine {
 	void Renderer3D::endDepthDrawing() {
 		this->performDepthDrawCall();
 		depthMapFrameBuffer.unbind();
+
+		glCullFace(GL_BACK);
 	}
 
 	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height) {

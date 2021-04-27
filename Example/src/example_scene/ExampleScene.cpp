@@ -23,7 +23,7 @@ void ExampleScene::onStart() {
 
 	const float PI = 3.14f;
 
-	auto box = createEntity();
+	box = createEntity();
 	box->addComponent<MeshComponent>(boxMesh);
 	box->addComponent<MaterialComponent>(redMaterial);
 	box->addComponent<TransformComponent>();
@@ -38,7 +38,7 @@ void ExampleScene::onStart() {
 	floor->addComponent<TransformComponent>();
 	
 	auto& floorTransformComponent = floor->getComponent<TransformComponent>();
-	floorTransformComponent.transform.position.y = -5.0f;
+	floorTransformComponent.transform.position.y = -2.0f;
 	floorTransformComponent.transform.scale = { 10.0f, 0.5f, 10.0f };
 
 	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
@@ -52,4 +52,7 @@ void ExampleScene::onStart() {
 
 void ExampleScene::onUpdate(float deltaTime) {
 	cameraInput->update(deltaTime);
+
+	auto& boxTransformComponent = box->getComponent<TransformComponent>();
+	boxTransformComponent.transform.rotation.x += 0.1f * deltaTime;
 }

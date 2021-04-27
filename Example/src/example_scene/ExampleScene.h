@@ -14,6 +14,8 @@ private:
 
 	Material* redMaterial;
 
+	Entity* box;
+
 public:
 
 	~ExampleScene();
