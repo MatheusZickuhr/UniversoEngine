@@ -35,31 +35,33 @@ namespace engine {
 
 		// shadow stuff
 		
-
-		shaderProgram.setIntUniform("shadowMapTextureSlot", (int) depthMapTexture.getSlot());
-
 		depthshaderProgram.attachShader(depthVertexShader.getId());
 		depthshaderProgram.attachShader(depthFragShader.getId());
 
-		this->depthMapFrameBuffer.addTextureAsDepthBuffer(this->depthMapTexture);
+		
 
 	}
 
 	void Renderer3D::updateDepthBuffers() {
 		depthshaderProgram.bind();
 
-		DrawApi::setViewPortSize(depthMapTexture.getWidth(), depthMapTexture.getHeight());
+		for (int i = 0; i < directionalLights.size(); i++) {
 
-		depthMapFrameBuffer.bind();
-		glClear(GL_DEPTH_BUFFER_BIT);
+			auto& directionalLight = directionalLights[i];
 
-		glCullFace(GL_FRONT);
+			DrawApi::setViewPortSize(directionalLight.depthMapTexture->getWidth(), directionalLight.depthMapTexture->getHeight());
 
-		this->render();
+			directionalLight.depthMapFrameBuffer->bind();
+			glClear(GL_DEPTH_BUFFER_BIT);
 
-		depthMapFrameBuffer.unbind();
+			glCullFace(GL_FRONT);
 
-		glCullFace(GL_BACK);
+			this->render();
+
+			directionalLight.depthMapFrameBuffer->unbind();
+
+			glCullFace(GL_BACK);
+		}
 
 	}
 
@@ -179,6 +181,7 @@ namespace engine {
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse", i), directionalLight.diffuse);
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].specular", i), directionalLight.specular);
 			shaderProgram.setMat4Uniform(format("directionalLights[%d].viewProjection", i), directionalLight.getViewProjectionMatrix());
+			shaderProgram.setIntUniform(format("directionalLights[%d].shadowMapTextureSlot", i), directionalLight.depthMapTexture->getSlot());
 		}
 
 	}

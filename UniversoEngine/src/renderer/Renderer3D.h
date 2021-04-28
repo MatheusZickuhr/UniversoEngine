@@ -51,8 +51,6 @@ namespace engine {
 
         unsigned int getDrawCallsCount();
 
-        Texture& getDepthTexture() { return depthMapTexture; }
-
     private:
 
         unsigned int drawCallsCount = 0;
@@ -74,9 +72,6 @@ namespace engine {
         std::vector<DirectionalLight> directionalLights;
 
         // shadows
-        FrameBuffer depthMapFrameBuffer;
-        Texture depthMapTexture { 1024.0f, 1024.0f };
-
         ShaderProgram depthshaderProgram;
         Shader depthVertexShader{ ShaderType::VertexShader, "res/shaders/3d/depthVert.glsl" };
         Shader depthFragShader{ ShaderType::FragmentShader, "res/shaders/3d/depthFrag.glsl" };

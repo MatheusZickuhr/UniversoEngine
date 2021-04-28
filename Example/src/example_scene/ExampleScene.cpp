@@ -45,9 +45,19 @@ void ExampleScene::onStart() {
 	floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
 
 	// sun light
-	auto directionalLight = createEntity();
-	directionalLight->addComponent<DirectionalLightComponent>();
-	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { -2.0f, 4.0f, -1.0f };
+
+	{
+		auto directionalLight = createEntity();
+		directionalLight->addComponent<DirectionalLightComponent>();
+		directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { -2.0f, 4.0f, -1.0f };
+	}
+
+	//{
+	//	auto directionalLight = createEntity();
+	//	directionalLight->addComponent<DirectionalLightComponent>();
+	//	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { 2.0f, 4.0f, 1.0f };
+	//}
+
 }
 
 void ExampleScene::onUpdate(float deltaTime) {

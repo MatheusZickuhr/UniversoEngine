@@ -16,6 +16,7 @@ struct DirectionalLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+    int shadowMapTextureSlot;
     mat4 viewProjection;
 };
 
@@ -36,14 +37,13 @@ uniform int numberOfPointLights;
 uniform PointLight pointLights[256];
 uniform int numberOfDirectionalLights;
 uniform DirectionalLight directionalLights[4];
-uniform int shadowMapTextureSlot;
 
 
 vec3 calcPointLight(PointLight light);
 
 vec3 calcDirectionalLight(DirectionalLight light); 
 
-float shadowCalculation(vec3 lightPosition, vec4 fragPosLightSpace);
+float shadowCalculation(vec3 lightPosition, int shadowMapTextureSlot, vec4 fragPosLightSpace);
 
 void main() {
 
@@ -130,13 +130,13 @@ vec3 calcDirectionalLight(DirectionalLight light) {
     vec3 specular = light.specular * (spec * vSpecular);
 
     // calculate shadow
-    float shadow = shadowCalculation(light.position, light.viewProjection * vec4(vFragPosition, 1.0));       
+    float shadow = shadowCalculation(light.position, light.shadowMapTextureSlot, light.viewProjection * vec4(vFragPosition, 1.0));       
 
     // result
     return (ambient + (1.0 - shadow) * (diffuse + specular));  
 }
 
-float shadowCalculation(vec3 lightPosition, vec4 fragPosLightSpace) {
+float shadowCalculation(vec3 lightPosition, int shadowMapTextureSlot, vec4 fragPosLightSpace) {
     // hardcoded light pos, change this later
     
     vec3 lightDirection = normalize(vFragPosition - lightPosition);
@@ -150,7 +150,8 @@ float shadowCalculation(vec3 lightPosition, vec4 fragPosLightSpace) {
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     //check whether current frag pos is in shadow
-    float bias = max(0.05 * (1.0 - dot(normalize(vNormal), lightDirection)), 0.005);  
+    float bias = max(1 * (1.0 - dot(normalize(vNormal), lightDirection)), 0.005);  
+    //float bias = max(0.05 * (1.0 - dot(normalize(vNormal), lightDirection)), 0.005);  
     //float bias = 0.005;
 
     //float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0; 
