@@ -29,8 +29,6 @@ namespace engine {
 
         Renderer3D();
         
-        void updateDepthBuffers();
-
         void startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height);
 
         void endDrawing();
@@ -83,5 +81,7 @@ namespace engine {
         void updatePointLightsUniforms();
 
         void updateDirectionalLightsUniforms();
+
+        void updateDepthBuffers();
     };
 }

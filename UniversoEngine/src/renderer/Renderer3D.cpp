@@ -101,6 +101,7 @@ namespace engine {
 	}
 
 	void Renderer3D::endLightsDrawing() {
+		this->updateDepthBuffers();
 		this->updatePointLightsUniforms();
 		this->updateDirectionalLightsUniforms();
 	}

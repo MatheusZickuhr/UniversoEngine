@@ -72,12 +72,6 @@ namespace engine {
 		this->renderer3d->endLightsDrawing();
 		// end update/draw lights
 
-
-		// for shadows 
-		this->renderer3d->updateDepthBuffers();
-		// for shadows end
-
-
 		// draw the scene normaly
 		this->renderer3d->clear(0.0f, 0.0f, 0.0f, 1.0f);
 
