@@ -49,6 +49,8 @@ namespace engine {
 
 			auto& directionalLight = directionalLights[i];
 
+			depthshaderProgram.setMat4Uniform("lightSpaceMatrix", directionalLight.getViewProjectionMatrix());
+
 			DrawApi::setViewPortSize(directionalLight.depthMapTexture->getWidth(), directionalLight.depthMapTexture->getHeight());
 
 			directionalLight.depthMapFrameBuffer->bind();
@@ -174,8 +176,6 @@ namespace engine {
 		for (int i = 0; i < directionalLights.size(); i++) {
 
 			auto& directionalLight = directionalLights[i];
-
-			depthshaderProgram.setMat4Uniform("lightSpaceMatrix", directionalLight.getViewProjectionMatrix());
 
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].position", i), directionalLight.position);
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].ambient", i), directionalLight.ambient);
