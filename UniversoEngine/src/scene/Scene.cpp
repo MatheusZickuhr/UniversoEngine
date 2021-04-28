@@ -74,15 +74,7 @@ namespace engine {
 
 
 		// for shadows 
-		this->renderer3d->startDepthDrawing(mvp);
-		{	
-			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
-
-			for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-				this->renderer3d->drawDepthMesh(meshComp.mesh, transComp.transform.getTransformMatrix());
-			}
-		}
-		this->renderer3d->endDepthDrawing();
+		this->renderer3d->updateDepthBuffers();
 		// for shadows end
 
 

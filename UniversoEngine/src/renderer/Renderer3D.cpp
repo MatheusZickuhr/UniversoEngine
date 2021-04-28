@@ -1,13 +1,11 @@
 #include "Renderer3D.h"
 #include "../utils/Format.h"
 #include <glad/glad.h>
+#include <utility>
 
 namespace engine {
 
 	Renderer3D::Renderer3D() {
-		this->verticesBegin = new Vertex[maxVertices];
-		this->vertices = this->verticesBegin;
-		this->indices = new unsigned int[maxIndices];
 
 		vertexArray.addVertexBuffer(vertexBuffer);
 		vertexArray.addIndexBuffer(indexBuffer);
@@ -47,45 +45,22 @@ namespace engine {
 
 	}
 
-	Renderer3D::~Renderer3D() {
-		delete[] this->verticesBegin;
-		delete[] this->indices;
-	}
+	void Renderer3D::updateDepthBuffers() {
+		depthshaderProgram.bind();
 
-	void Renderer3D::startDepthDrawing(glm::mat4 mvp) {
-
-		depthshaderProgram.bind();		
-		
 		DrawApi::setViewPortSize(depthMapTexture.getWidth(), depthMapTexture.getHeight());
 
 		depthMapFrameBuffer.bind();
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		glCullFace(GL_FRONT);
-	}
 
-	void Renderer3D::drawDepthMesh(Mesh* mesh, glm::mat4 transform) {
-		
-		if (this->vertexCount + mesh->getVertexCount() > maxVertices)
-			this->performDrawCall();
+		this->render();
 
-		for (const Vertex& vertex : mesh->getVertices()) {
-			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
-			this->vertices++;
-		}
-
-		for (int i = this->indexCount; i < mesh->getVertexCount() + this->indexCount; i++)
-			this->indices[i] = i;
-
-		this->vertexCount += mesh->getVertexCount();
-		this->indexCount += mesh->getVertexCount();
-	}
-
-	void Renderer3D::endDepthDrawing() {
-		this->performDrawCall();
 		depthMapFrameBuffer.unbind();
 
 		glCullFace(GL_BACK);
+
 	}
 
 	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height) {
@@ -96,37 +71,26 @@ namespace engine {
 		this->shaderProgram.setVec3Uniform("viewPosition", cameraPosition);
 		this->drawCallsCount = 0;
 
+		this->currentDrawCallBuffer = new DrawCallBuffer{ maxVertices, maxIndices };
+
+		clearDrawCallBuffers();
 
 	}
 
 	void Renderer3D::endDrawing() {
-		this->performDrawCall();
+		drawCallBuffers.push_back(currentDrawCallBuffer);
+		this->render();
 	}
 
 	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
-
-		Texture* texture = material->getTexture();
 		
-		if (this->vertexCount + mesh->getVertexCount() > maxVertices)
-			this->performDrawCall();
-		
-		for (const Vertex& vertex : mesh->getVertices()) {
-			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
-			this->vertices->normal = glm::mat3(glm::transpose(glm::inverse(transform))) * vertex.normal;
-			this->vertices->ambient = material->ambient;
-			this->vertices->diffuse = material->diffuse;
-			this->vertices->specular = material->specular;
-			this->vertices->shininess = material->shininess;
-			this->vertices->textureCoords = vertex.textureCoords;
-			this->vertices->textureSlot = texture != nullptr ? texture->getSlot() : -1.0f;
-			this->vertices++;
+		if (!currentDrawCallBuffer->doesFit(mesh)) {
+			
+			drawCallBuffers.push_back(currentDrawCallBuffer);
+			this->currentDrawCallBuffer = new DrawCallBuffer{ maxVertices, maxIndices };
 		}
-
-		for (int i = this->indexCount; i < mesh->getVertexCount() + this->indexCount; i++)
-			this->indices[i] = i;
 		
-		this->vertexCount += mesh->getVertexCount();
-		this->indexCount += mesh->getVertexCount();
+		currentDrawCallBuffer->addMesh(mesh, material, transform);
 	}
 
 	void Renderer3D::startLightsDrawing() {
@@ -160,18 +124,25 @@ namespace engine {
 		this->directionalLights.push_back(light);
 	}
 
-	void Renderer3D::performDrawCall() {
+	void Renderer3D::render() {
 		vertexArray.bind();
 
-		this->vertexBuffer.pushData(this->verticesBegin, sizeof(Vertex) * this->vertexCount);
-		this->indexBuffer.pushData(this->indices, sizeof(unsigned int) * this->indexCount);
-		DrawApi::drawWithIdexes(this->indexCount);
+		for (auto& drawCallBuffer : this->drawCallBuffers) {
+			// execute the draw call with the data
+			this->vertexBuffer.pushData(drawCallBuffer->getVertices(), drawCallBuffer->getSizeOfVertives());
+			this->indexBuffer.pushData(drawCallBuffer->getIndices(), drawCallBuffer->getSizeOfIndices());
+			DrawApi::drawWithIdexes(drawCallBuffer->getIndexCount());
+			this->drawCallsCount++;
+		} 
 
-		this->vertices = this->verticesBegin;
-		this->vertexCount = 0;
-		this->indexCount = 0;
+	}
 
-		this->drawCallsCount++;
+	void Renderer3D::clearDrawCallBuffers() {
+		for (DrawCallBuffer* drawCallBuffer : this->drawCallBuffers) {
+			delete drawCallBuffer;
+		}
+
+		this->drawCallBuffers.clear();
 	}
 
 	void Renderer3D::updatePointLightsUniforms() {
