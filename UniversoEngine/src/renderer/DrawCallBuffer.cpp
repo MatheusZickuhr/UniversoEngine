@@ -54,7 +54,7 @@ namespace engine {
 	}
 
 	bool DrawCallBuffer::doesFit(Mesh* mesh) {
-		return this->vertexCount + mesh->getVertexCount() > this->maxVertices;
+		return this->vertexCount + mesh->getVertexCount() <= this->maxVertices;
 	}
 
 	void DrawCallBuffer::clear() {
