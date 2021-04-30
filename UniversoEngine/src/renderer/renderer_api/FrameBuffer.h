@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Texture.h"
+#include "DepthBufferTexture2D.h"
 
 namespace engine {
 
@@ -16,7 +16,7 @@ namespace engine {
 
 		void unbind();
 
-		void addTextureAsDepthBuffer(Texture& texture);
+		void addDepthBufferTexture(DepthBufferTexture2D& texture);
 
 	private:
 

@@ -11,6 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <map>
 #include <array>
+#include <vector>
 
 namespace engine {
 
@@ -42,6 +43,10 @@ namespace engine {
 
     private:
 
+        std::vector<Texture*> bindedTextures;
+
+        unsigned int currentTextureSlot = 0;
+
         QuadVertex* verticesBegin;
         QuadVertex* vertices;
 
@@ -59,6 +64,10 @@ namespace engine {
         unsigned int indexCount =  0;
 
         void performDrawcall();
+
+        void bindTexture(Texture* texture);
+
+        void clearBindedTextures();
     };
 
 }

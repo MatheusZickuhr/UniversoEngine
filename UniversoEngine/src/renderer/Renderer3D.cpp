@@ -2,6 +2,7 @@
 #include "../utils/Format.h"
 #include <glad/glad.h>
 #include <utility>
+#include "../debug/Assert.h"
 
 namespace engine {
 
@@ -49,6 +50,8 @@ namespace engine {
 
 			auto& directionalLight = directionalLights[i];
 
+			this->bindTexture(directionalLight.depthMapTexture.get());
+
 			depthshaderProgram.setMat4Uniform("lightSpaceMatrix", directionalLight.getViewProjectionMatrix());
 
 			DrawApi::setViewPortSize(directionalLight.depthMapTexture->getWidth(), directionalLight.depthMapTexture->getHeight());
@@ -65,6 +68,26 @@ namespace engine {
 			glCullFace(GL_BACK);
 		}
 
+	}
+
+	void Renderer3D::bindTexture(Texture* texture) {
+		ASSERT(currentTextureSlot + 1 < Texture::maxTextureSlot, "Maximum texture slot exceded");
+
+		if (texture == nullptr) return;
+
+		bool textureBinded = std::find(this->bindedTextures.begin(), this->bindedTextures.end(), texture)
+			!= this->bindedTextures.end();
+		
+		if (!textureBinded) {
+			texture->bind(this->currentTextureSlot);
+			this->bindedTextures.push_back(texture);
+			this->currentTextureSlot++;
+		}
+	}
+
+	void Renderer3D::clearBindedTextures() {
+		this->bindedTextures.clear();
+		this->currentTextureSlot = 0;
 	}
 
 	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height) {
@@ -84,6 +107,7 @@ namespace engine {
 	void Renderer3D::endDrawing() {
 		drawCallBuffers.push_back(currentDrawCallBuffer);
 		this->render();
+		this->clearBindedTextures();
 	}
 
 	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
@@ -94,6 +118,8 @@ namespace engine {
 			this->currentDrawCallBuffer = new DrawCallBuffer{ maxVertices, maxIndices };
 		}
 		
+		this->bindTexture(material->getTexture());
+
 		currentDrawCallBuffer->addMesh(mesh, material, transform);
 	}
 
@@ -132,7 +158,7 @@ namespace engine {
 	void Renderer3D::render() {
 		vertexArray.bind();
 
-		for (auto& drawCallBuffer : this->drawCallBuffers) {
+		for (DrawCallBuffer* drawCallBuffer : this->drawCallBuffers) {
 			// execute the draw call with the data
 			this->vertexBuffer.pushData(drawCallBuffer->getVertices(), drawCallBuffer->getSizeOfVertives());
 			this->indexBuffer.pushData(drawCallBuffer->getIndices(), drawCallBuffer->getSizeOfIndices());

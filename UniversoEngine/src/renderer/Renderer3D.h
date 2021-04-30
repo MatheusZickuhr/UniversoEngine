@@ -53,6 +53,10 @@ namespace engine {
 
         unsigned int drawCallsCount = 0;
 
+        std::vector<Texture*> bindedTextures;
+
+        unsigned int currentTextureSlot = 0;
+
         std::vector<DrawCallBuffer*> drawCallBuffers;
 
         DrawCallBuffer* currentDrawCallBuffer  = nullptr;
@@ -83,5 +87,9 @@ namespace engine {
         void updateDirectionalLightsUniforms();
 
         void updateDepthBuffers();
+
+        void bindTexture(Texture* texture);
+
+        void clearBindedTextures();
     };
 }

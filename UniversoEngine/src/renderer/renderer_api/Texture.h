@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 namespace engine {
 
     class Texture {
@@ -10,15 +8,11 @@ namespace engine {
 
         const static unsigned int maxTextureSlot = 32;
 
-        Texture(const std::string& filepath);
-
-        Texture(const float width, const float height);
-
         ~Texture();
 
-        void bind();
+        virtual void bind(unsigned int slot) = 0;
 
-        void unbind() const;
+        virtual void unbind() const = 0;
 
         unsigned int getSlot();
         
@@ -28,12 +22,10 @@ namespace engine {
 
         int getHeight();
 
-    private:
+    protected:
 
-        unsigned int id, slot;
-        int width, height, bitsPerPixel;
-
-        static unsigned int currentTextureSlot;
+        unsigned int id, slot = 0;
+        int width, height = 0;
         
     };
 

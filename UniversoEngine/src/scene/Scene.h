@@ -7,6 +7,7 @@
 #include "../renderer/Camera.h"
 #include "../renderer/Renderer3D.h"
 #include "../renderer/Renderer2D.h"
+#include "../renderer/renderer_api/Texture2D.h"
 #include "../physics/ReactPhysics3dPhysicsWorld.h"
 #include "../physics/RigidBody.h"
 
@@ -55,7 +56,7 @@ namespace engine {
 		Renderer2D* renderer2d;
 		entt::registry registry;
 		std::vector<Entity*> entities;
-		Texture debugPointLightTexture { "res/textures/lamp.png" };
+		Texture2D debugPointLightTexture { "res/textures/lamp.png" };
 
 		void onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity);
 

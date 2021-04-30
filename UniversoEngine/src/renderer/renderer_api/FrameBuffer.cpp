@@ -19,7 +19,7 @@ namespace engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void FrameBuffer::addTextureAsDepthBuffer(Texture& texture) {
+	void FrameBuffer::addDepthBufferTexture(DepthBufferTexture2D& texture) {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, this->id);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture.getId(), 0);

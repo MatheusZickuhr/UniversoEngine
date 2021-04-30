@@ -2,7 +2,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
-#include "renderer_api/Texture.h"
+#include "renderer_api/Texture2D.h"
 
 namespace engine {
 
@@ -23,11 +23,11 @@ namespace engine {
 
 		void setTexture(const std::string& textureFilePath);
 
-		Texture* getTexture();
+		Texture2D* getTexture();
 
 	private:
 
-		Texture* texture = nullptr;
+		Texture2D* texture = nullptr;
 
 	};
 }

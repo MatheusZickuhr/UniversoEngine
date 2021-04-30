@@ -57,6 +57,8 @@ namespace engine {
         drawingStarted = false;
 
         this->performDrawcall();
+
+        this->clearBindedTextures();
     }
 
     void Renderer2D::drawQuad(Texture* texture, glm::mat4 transform) {
@@ -64,6 +66,8 @@ namespace engine {
 
         if (this->vertexCount + 4 > maxQuadVertices)
             this->performDrawcall();
+
+        this->bindTexture(texture);
 
         this->vertices->position = transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
         this->vertices->textureCoords = { 0.0f, 0.0f };
@@ -103,5 +107,25 @@ namespace engine {
         this->vertices = this->verticesBegin;
         this->vertexCount = 0;
         this->indexCount = 0;
+    }
+
+    void Renderer2D::bindTexture(Texture* texture) {
+        ASSERT(currentTextureSlot + 1 < Texture::maxTextureSlot, "Maximum texture slot exceded");
+
+        if (texture == nullptr) return;
+
+        bool textureBinded = std::find(this->bindedTextures.begin(), this->bindedTextures.end(), texture)
+            != this->bindedTextures.end();
+
+        if (!textureBinded) {
+            texture->bind(this->currentTextureSlot);
+            this->bindedTextures.push_back(texture);
+            this->currentTextureSlot++;
+        }
+    }
+
+    void Renderer2D::clearBindedTextures() {
+        this->bindedTextures.clear();
+        this->currentTextureSlot = 0;
     }
 }

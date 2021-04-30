@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "renderer_api/FrameBuffer.h"
-#include "renderer_api/Texture.h"
+#include "renderer_api/DepthBufferTexture2D.h"
 
 namespace engine {
 
@@ -16,11 +16,11 @@ namespace engine {
 		glm::vec3 specular = { 1.0f, 1.0f, 1.0f };
 
 		std::shared_ptr<FrameBuffer> depthMapFrameBuffer = std::make_shared<FrameBuffer>();
-		std::shared_ptr<Texture> depthMapTexture = std::make_shared<Texture>(1024.0f, 1024.0f);
+		std::shared_ptr<DepthBufferTexture2D> depthMapTexture = std::make_shared<DepthBufferTexture2D>(1024.0f, 1024.0f);
 
 
 		DirectionalLight() {
-			this->depthMapFrameBuffer->addTextureAsDepthBuffer(*this->depthMapTexture.get());
+			this->depthMapFrameBuffer->addDepthBufferTexture(*this->depthMapTexture.get());
 		}
 		
 		glm::mat4 getViewProjectionMatrix() {
