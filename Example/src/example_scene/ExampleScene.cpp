@@ -12,8 +12,8 @@ void ExampleScene::onStart() {
 	this->camera.position = { 0.0f, 0.0f, 4.0f };
 
 	cameraInput = new CameraController(this->camera);
-	boxMaterial = new Material("res/textures/crate/crate.jpg");
-	boxMesh = new Mesh("res/models/crate/crate.obj");
+	boxMaterial = new Material("Example/resources/textures/crate/crate.jpg");
+	boxMesh = new Mesh("Example/resources/models/crate/crate.obj");
 	
 	redMaterial = new Material();
 	redMaterial->ambient = { 1.0f, 0.0f, 0.0f };

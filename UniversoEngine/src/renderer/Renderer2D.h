@@ -54,8 +54,8 @@ namespace engine {
         VertexBuffer vertexBuffer{ sizeof(QuadVertex), maxQuadVertices };
         IndexBuffer indexBuffer{ maxQuadIndices };
 
-        Shader vertexShader{ ShaderType::VertexShader, "res/shaders/2d/vert.glsl" };
-        Shader fragShader{ ShaderType::FragmentShader, "res/shaders/2d/frag.glsl" };
+        Shader vertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/2d/vertex.glsl" };
+        Shader fragShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/2d/fragment.glsl" };
         ShaderProgram shaderProgram;
 
         bool drawingStarted = false;

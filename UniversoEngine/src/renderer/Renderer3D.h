@@ -64,8 +64,8 @@ namespace engine {
         VertexBuffer vertexBuffer { sizeof(Vertex), maxVertices };
         IndexBuffer indexBuffer { maxIndices };
 
-        Shader vertexShader { ShaderType::VertexShader, "res/shaders/3d/vert.glsl" };
-        Shader fragShader { ShaderType::FragmentShader, "res/shaders/3d/frag.glsl" };
+        Shader vertexShader { ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/lightingVertex.glsl" };
+        Shader fragShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/lightingFragment.glsl" };
         ShaderProgram shaderProgram;
 
         // lighting
@@ -74,8 +74,8 @@ namespace engine {
 
         // shadows
         ShaderProgram depthshaderProgram;
-        Shader depthVertexShader{ ShaderType::VertexShader, "res/shaders/3d/depthVert.glsl" };
-        Shader depthFragShader{ ShaderType::FragmentShader, "res/shaders/3d/depthFrag.glsl" };
+        Shader depthVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/depthMapVertex.glsl" };
+        Shader depthFragShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/depthMapFragment.glsl" };
 
         void render();
         

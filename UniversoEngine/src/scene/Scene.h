@@ -56,7 +56,7 @@ namespace engine {
 		Renderer2D* renderer2d;
 		entt::registry registry;
 		std::vector<Entity*> entities;
-		Texture2D debugPointLightTexture { "res/textures/lamp.png" };
+		Texture2D debugPointLightTexture { "UniversoEngine/resources/textures/lamp.png" };
 
 		void onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity);
 
