@@ -28,15 +28,19 @@ namespace engine {
 		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
+	void DrawApi::setViewPortSize(float width, float height) { glViewport(0, 0, width, height); }
 
-	void DrawApi::clear(float r, float g, float b, float a) {
-		glClearColor(r, g, b, a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
+	void DrawApi::clearColor(float r, float g, float b, float a) { glClearColor(r, g, b, a); }
 
-	void DrawApi::setViewPortSize(float width, float height) {
-		glViewport(0, 0, width, height);
-	}
+	void DrawApi::clearDepthBuffer() { glClear(GL_DEPTH_BUFFER_BIT); }
+
+	void DrawApi::clearColorBuffer() { glClear(GL_COLOR_BUFFER_BIT); }
+
+	void DrawApi::clearDepthAndColorBuffer() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+
+	void DrawApi::cullFrontFace() { glCullFace(GL_FRONT); }
+
+	void DrawApi::cullBackFace() { glCullFace(GL_BACK); }
 
 	void APIENTRY GLDebugMessageCallback(
 		GLenum source,

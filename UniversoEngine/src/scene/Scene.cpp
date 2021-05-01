@@ -47,8 +47,6 @@ namespace engine {
 	}
 
 	void Scene::render(float windowWidth, float windowHeight) {
-		
-		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
 
 		// draw/ update lights
 		this->renderer3d->startLightsDrawing();
@@ -73,9 +71,9 @@ namespace engine {
 		// end update/draw lights
 
 		// draw the scene normaly
-		this->renderer3d->clear(0.0f, 0.0f, 0.0f, 1.0f);
+		this->renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		this->renderer3d->startDrawing(mvp, camera.position, windowWidth, windowHeight);
+		this->renderer3d->startDrawing(this->camera, windowWidth, windowHeight);
 
 		{
 			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
@@ -110,15 +108,6 @@ namespace engine {
 	}
 
 	void Scene::renderDebugLightPositions(float windowWidth, float windowHeight) {
-		//this->renderer2d->startDrawing(glm::mat4(1.0f));
-
-		//
-		//this->renderer2d->drawQuad(&this->renderer3d->getDepthTexture(), glm::mat4(1.0f));
-		//
-
-		//this->renderer2d->endDrawing();
-
-
 		auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
 		this->renderer2d->startDrawing(this->camera.getMvp(windowWidth, windowHeight));

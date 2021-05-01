@@ -39,7 +39,7 @@ namespace engine {
 
         void drawQuad(Texture* texture, glm::mat4 transform);
 
-        void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
+        void clearColor(float r, float g, float b, float a);
 
     private:
 

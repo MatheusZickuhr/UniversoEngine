@@ -54,6 +54,7 @@ namespace engine {
 			this->currentScene->onUpdateCallBack(deltaTime);
 
 			// in the end just render the current scene
+			DrawApi::clearDepthAndColorBuffer(); // clean the buffers in the main frame buffer
 			this->currentScene->render(this->windowWidth, this->windowHeight);
 
 #ifdef DEBUG

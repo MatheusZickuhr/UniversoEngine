@@ -1,7 +1,8 @@
 #include "Renderer3D.h"
-#include "../utils/Format.h"
-#include <glad/glad.h>
+
 #include <utility>
+
+#include "../utils/Format.h"
 #include "../debug/Assert.h"
 
 namespace engine {
@@ -57,15 +58,15 @@ namespace engine {
 			DrawApi::setViewPortSize(directionalLight.depthMapTexture->getWidth(), directionalLight.depthMapTexture->getHeight());
 
 			directionalLight.depthMapFrameBuffer->bind();
-			glClear(GL_DEPTH_BUFFER_BIT);
-
-			glCullFace(GL_FRONT);
+			DrawApi::clearDepthBuffer();
+			
+			DrawApi::cullFrontFace();
 
 			this->render();
 
 			directionalLight.depthMapFrameBuffer->unbind();
 
-			glCullFace(GL_BACK);
+			DrawApi::cullBackFace();
 		}
 
 	}
@@ -90,12 +91,13 @@ namespace engine {
 		this->currentTextureSlot = 0;
 	}
 
-	void Renderer3D::startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height) {
+	void Renderer3D::startDrawing(Camera& camera, const float width, const float height) {
+
 		DrawApi::setViewPortSize(width, height);
 
 		shaderProgram.bind();
-		this->shaderProgram.setMat4Uniform("Mvp", mvp);
-		this->shaderProgram.setVec3Uniform("viewPosition", cameraPosition);
+		this->shaderProgram.setMat4Uniform("Mvp", camera.getMvp(width, height));
+		this->shaderProgram.setVec3Uniform("viewPosition", camera.position);
 		this->drawCallsCount = 0;
 
 		this->currentDrawCallBuffer = new DrawCallBuffer{ maxVertices, maxIndices };
@@ -134,8 +136,8 @@ namespace engine {
 		this->updateDirectionalLightsUniforms();
 	}
 
-	void Renderer3D::clear(float r, float g, float b, float a) {
-		DrawApi::clear(r, g, b, a);
+	void Renderer3D::clearColor(float r, float g, float b, float a) {
+		DrawApi::clearColor(r, g, b, a);
 	}
 
 	void Renderer3D::setViewPortSize(float width, float height) {

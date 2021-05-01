@@ -1,7 +1,5 @@
 #pragma once
-#include <memory>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+
 #include "Vertex.h"
 #include "renderer_api/VertexArray.h"
 #include "renderer_api/VertexBuffer.h"
@@ -15,6 +13,7 @@
 #include "Mesh.h"
 #include "Lighting.h"
 #include "DrawCallBuffer.h"
+#include "Camera.h"
 
 namespace engine {
 
@@ -29,7 +28,7 @@ namespace engine {
 
         Renderer3D();
         
-        void startDrawing(glm::mat4 mvp, glm::vec3 cameraPosition, const float width, const float height);
+        void startDrawing(Camera& camera, const float width, const float height);
 
         void endDrawing();
 
@@ -43,7 +42,7 @@ namespace engine {
 
         void drawDirectionalLight(DirectionalLight light);
 
-        void clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
+        void clearColor(float r, float g, float b, float a);
 
         void setViewPortSize(float width, float height);
 

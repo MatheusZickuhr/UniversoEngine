@@ -45,7 +45,6 @@ namespace engine {
 
     void Renderer2D::startDrawing(glm::mat4 mvp) {
         ASSERT(!this->drawingStarted, "You need to call endDrawing before calling startDrawing angain");
-
         drawingStarted = true;
 
         this->shaderProgram.setMat4Uniform("Mvp", mvp);
@@ -94,9 +93,10 @@ namespace engine {
         this->indexCount += 6;
     }
 
-    void Renderer2D::clear(float r, float g, float b, float a) {
-        DrawApi::clear(r, g, b, a);
+    void Renderer2D::clearColor(float r, float g, float b, float a) {
+        DrawApi::clearColor(r, g, b, a);
     }
+
     void Renderer2D::performDrawcall() {
         this->shaderProgram.bind();
         this->vertexArray.bind();
