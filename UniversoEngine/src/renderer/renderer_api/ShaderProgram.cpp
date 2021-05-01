@@ -1,6 +1,8 @@
 #include "ShaderProgram.h"
 #include <glad/glad.h>
 
+#include "../../debug/Assert.h"
+
 namespace engine {
 
 	ShaderProgram::ShaderProgram() {
@@ -37,39 +39,39 @@ namespace engine {
 
 	void ShaderProgram::setVec3Uniform(const std::string& uniformName, const glm::vec3& vec) {
 		this->bind();
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniform3f(uniformLocation, vec.x, vec.y, vec.z);
+		glUniform3f(this->findUniformLocation(uniformName), vec.x, vec.y, vec.z);
 	}
 
 	void ShaderProgram::setVec4Uniform(const std::string& uniformName, const glm::vec4& vec) {
 		this->bind();
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniform4f(uniformLocation, vec.x, vec.y, vec.z, vec.w);
+		glUniform4f(this->findUniformLocation(uniformName), vec.x, vec.y, vec.z, vec.w);
 	}
 
 	void ShaderProgram::setMat4Uniform(const std::string& uniformName, const glm::mat4& matrix) {
 		this->bind();
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix[0][0]);
+		glUniformMatrix4fv(this->findUniformLocation(uniformName), 1, GL_FALSE, &matrix[0][0]);
 
 	}
 
 	void ShaderProgram::setFloatUniform(const std::string& uniformName, const float value) {
 		this->bind();
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniform1f(uniformLocation, value);
+		glUniform1f(this->findUniformLocation(uniformName), value);
 	}
 
 	void ShaderProgram::setIntUniform(const std::string& uniformName, const int value) {
 		this->bind();
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniform1i(uniformLocation, value);
+		glUniform1i(this->findUniformLocation(uniformName), value);
 	}
 
 	void ShaderProgram::setIntArrayUniform(const std::string& uniformName, int size, int data[]) {
 		this->bind();
+		glUniform1iv(this->findUniformLocation(uniformName), size, data);
+	}
+
+	int ShaderProgram::findUniformLocation(const std::string& uniformName) {
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
-		glUniform1iv(uniformLocation, size, data);
+		ASSERT(uniformLocation != -1, "Cannot find uniform `" + uniformName + "`");
+		return uniformLocation;
 	}
 
 }

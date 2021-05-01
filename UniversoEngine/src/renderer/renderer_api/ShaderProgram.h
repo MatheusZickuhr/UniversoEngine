@@ -33,5 +33,7 @@ namespace engine {
 
 		unsigned int id;
 		bool linked = false;
+
+		int findUniformLocation(const std::string& uniformName);
 	};
 }
