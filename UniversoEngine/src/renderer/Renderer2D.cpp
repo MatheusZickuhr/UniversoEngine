@@ -33,9 +33,9 @@ namespace engine {
         shaderProgram.attachShader(fragShader.getId());
         shaderProgram.bind();
 
-        int textureSlots[Texture::maxTextureSlot];
-        for (int i = 0; i < Texture::maxTextureSlot; i++) textureSlots[i] = i;
-        this->shaderProgram.setIntArrayUniform("TextureSlots", Texture::maxTextureSlot, textureSlots);
+        int textureSlots[Texture::maxTextures];
+        for (int i = 0; i < Texture::maxTextures; i++) textureSlots[i] = i;
+        this->shaderProgram.setIntArrayUniform("TextureSlots", Texture::maxTextures, textureSlots);
 
     }
 
@@ -110,7 +110,7 @@ namespace engine {
     }
 
     void Renderer2D::bindTexture(Texture* texture) {
-        ASSERT(currentTextureSlot + 1 < Texture::maxTextureSlot, "Maximum texture slot exceded");
+        ASSERT(currentTextureSlot + 1 < Texture::maxTextures, "Maximum texture slot exceded");
 
         if (texture == nullptr) return;
 

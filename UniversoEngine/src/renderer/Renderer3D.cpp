@@ -26,10 +26,19 @@ namespace engine {
 		shaderProgram.bind();
 
 		// add the textures slots to the shader
-		int textureSlots[Texture::maxTextureSlot];
-		for (int i = 0; i < Texture::maxTextureSlot; i++) textureSlots[i] = i;
-		this->shaderProgram.setIntArrayUniform("textureSlots", Texture::maxTextureSlot, textureSlots);
+		
+		{
+			int textureSlots[Texture::maxTextures];
+			for (int i = 0; i < Texture::maxTextures; i++) textureSlots[i] = i;
+			this->shaderProgram.setIntArrayUniform("textureSlots", Texture::maxTextures, textureSlots);
+		}
 
+		{
+			int cubeMapSlots[Texture::maxCubeMaps];
+			for (int i = 0; i < Texture::maxCubeMaps; i++) cubeMapSlots[i] = i + Texture::maxTextures;
+			this->shaderProgram.setIntArrayUniform("cubeMapSlots", Texture::maxCubeMaps, cubeMapSlots);
+		}
+		
 		shaderProgram.setIntUniform("numberOfPointLights", 0);
 
 		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);
@@ -40,11 +49,14 @@ namespace engine {
 		depthshaderProgram.attachShader(depthVertexShader.getId());
 		depthshaderProgram.attachShader(depthFragShader.getId());
 
-		
+		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapVertexShader.getId());
+		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader.getId());
+		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader.getId());
 
+		
 	}
 
-	void Renderer3D::updateDepthBuffers() {
+	void Renderer3D::updateDirectionalLightDepthBuffers() {
 		depthshaderProgram.bind();
 
 		for (int i = 0; i < directionalLights.size(); i++) {
@@ -72,7 +84,7 @@ namespace engine {
 	}
 
 	void Renderer3D::bindTexture(Texture* texture) {
-		ASSERT(currentTextureSlot + 1 < Texture::maxTextureSlot, "Maximum texture slot exceded");
+		ASSERT(currentTextureSlot < Texture::maxTextures, "Maximum texture slot exceded");
 
 		if (texture == nullptr) return;
 
@@ -86,9 +98,29 @@ namespace engine {
 		}
 	}
 
+	void Renderer3D::bindCubeMap(Texture* cubeMap) {
+		ASSERT(currentCubeMapSlot < Texture::maxCubeMaps, "Maximum cube map slot exceded");
+
+		if (cubeMap == nullptr) return;
+
+		bool cubeMapBinded = std::find(this->bindedCubeMaps.begin(), this->bindedCubeMaps.end(), cubeMap)
+			!= this->bindedCubeMaps.end();
+
+		if (!cubeMapBinded) {
+			cubeMap->bind(this->currentCubeMapSlot + Texture::maxTextures);
+			this->bindedCubeMaps.push_back(cubeMap);
+			this->currentCubeMapSlot++;
+		}
+	}
+
 	void Renderer3D::clearBindedTextures() {
 		this->bindedTextures.clear();
 		this->currentTextureSlot = 0;
+	}
+
+	void Renderer3D::clearBindedCubeMaps() {
+		this->bindedCubeMaps.clear();
+		this->currentCubeMapSlot = 0;
 	}
 
 	void Renderer3D::startDrawing(Camera& camera, const float width, const float height) {
@@ -110,6 +142,7 @@ namespace engine {
 		drawCallBuffers.push_back(currentDrawCallBuffer);
 		this->render();
 		this->clearBindedTextures();
+		this->clearBindedCubeMaps();
 	}
 
 	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
@@ -131,7 +164,8 @@ namespace engine {
 	}
 
 	void Renderer3D::endLightsDrawing() {
-		this->updateDepthBuffers();
+		this->updatePointLightsDepthBuffers();
+		this->updateDirectionalLightDepthBuffers();
 		this->updatePointLightsUniforms();
 		this->updateDirectionalLightsUniforms();
 	}
@@ -193,6 +227,9 @@ namespace engine {
 			shaderProgram.setFloatUniform(format("pointLights[%d].constant", i), pointLight.constant);
 			shaderProgram.setFloatUniform(format("pointLights[%d].linear", i), pointLight.linear);
 			shaderProgram.setFloatUniform(format("pointLights[%d].quadratic", i), pointLight.quadratic);
+
+			shaderProgram.setFloatUniform(format("pointLights[%d].farPlane", i), pointLight.farPlane);
+			shaderProgram.setIntUniform(format("pointLights[%d].cubeMapSlotIndex", i), pointLight.depthMapCubeMap->getSlot() - Texture::maxTextures);
 		}
 
 		
@@ -210,7 +247,40 @@ namespace engine {
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse", i), directionalLight.diffuse);
 			shaderProgram.setVec3Uniform(format("directionalLights[%d].specular", i), directionalLight.specular);
 			shaderProgram.setMat4Uniform(format("directionalLights[%d].viewProjection", i), directionalLight.getViewProjectionMatrix());
-			shaderProgram.setIntUniform(format("directionalLights[%d].shadowMapTextureSlot", i), directionalLight.depthMapTexture->getSlot());
+			shaderProgram.setIntUniform(format("directionalLights[%d].textureSlotIndex", i), directionalLight.depthMapTexture->getSlot());
+		}
+
+	}
+
+	void Renderer3D::updatePointLightsDepthBuffers() {
+		cubeMapDepthMapShaderProgram.bind();
+
+		for (int i = 0; i < pointLights.size(); i++) {
+
+			auto& pointLight = pointLights[i];
+
+			bindCubeMap(pointLight.depthMapCubeMap.get());
+
+			cubeMapDepthMapShaderProgram.setVec3Uniform("lightPos", pointLight.position);
+			cubeMapDepthMapShaderProgram.setFloatUniform("far_plane", pointLight.farPlane);
+
+			for (int j = 0; j < pointLight.getViewProjectionMatrices().size(); j++) {
+				auto shadowMatrix = pointLight.getViewProjectionMatrices()[j];
+				cubeMapDepthMapShaderProgram.setMat4Uniform(format("shadowMatrices[%d]", j), shadowMatrix);
+			}
+
+			DrawApi::setViewPortSize(pointLight.depthMapCubeMap->getWidth(), pointLight.depthMapCubeMap->getHeight());
+
+			pointLight.depthMapFrameBuffer->bind();
+			DrawApi::clearDepthBuffer();
+
+			DrawApi::cullFrontFace();
+
+			this->render();
+
+			pointLight.depthMapFrameBuffer->unbind();
+
+			DrawApi::cullBackFace();
 		}
 
 	}

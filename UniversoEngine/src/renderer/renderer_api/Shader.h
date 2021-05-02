@@ -5,7 +5,7 @@
 
 namespace engine {
 
-	enum class ShaderType { FragmentShader, VertexShader };
+	enum class ShaderType { FragmentShader, VertexShader, GeometryShader };
 
 	class Shader {
 

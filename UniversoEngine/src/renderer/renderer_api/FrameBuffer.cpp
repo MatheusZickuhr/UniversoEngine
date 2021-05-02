@@ -28,4 +28,12 @@ namespace engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	void FrameBuffer::addDepthBufferCubeMap(DepthBufferCubeMap& cubeMap) {
+		glBindFramebuffer(GL_FRAMEBUFFER, this->id);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubeMap.getId(), 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
 }

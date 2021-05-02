@@ -22,14 +22,37 @@ void ExampleScene::onStart() {
 	Random random;
 
 	const float PI = 3.14f;
+	
+	{
+		auto box = createEntity();
+		box->addComponent<MeshComponent>(boxMesh);
+		box->addComponent<MaterialComponent>(redMaterial);
+		box->addComponent<TransformComponent>();
 
-	box = createEntity();
-	box->addComponent<MeshComponent>(boxMesh);
-	box->addComponent<MaterialComponent>(redMaterial);
-	box->addComponent<TransformComponent>();
-			
-	auto& boxTransformComponent = box->getComponent<TransformComponent>();
-	boxTransformComponent.transform.position = { 0.0f, 0.0f, 0.0f };
+		auto& boxTransformComponent = box->getComponent<TransformComponent>();
+		boxTransformComponent.transform.position = { 3.0f, 0.0f, 0.0f };
+	}
+
+	{
+		auto box = createEntity();
+		box->addComponent<MeshComponent>(boxMesh);
+		box->addComponent<MaterialComponent>(redMaterial);
+		box->addComponent<TransformComponent>();
+
+		auto& boxTransformComponent = box->getComponent<TransformComponent>();
+		boxTransformComponent.transform.position = { -3.0f, 0.0f, 0.0f };
+	}
+
+	{
+		auto box = createEntity();
+		box->addComponent<MeshComponent>(boxMesh);
+		box->addComponent<MaterialComponent>(redMaterial);
+		box->addComponent<TransformComponent>();
+
+		auto& boxTransformComponent = box->getComponent<TransformComponent>();
+		boxTransformComponent.transform.position = { 0.0f, 0.0f, -3.0f };
+	}
+
 
 	// create a floor entity
 	auto floor = createEntity();
@@ -46,11 +69,11 @@ void ExampleScene::onStart() {
 
 	// sun light
 
-	{
-		auto directionalLight = createEntity();
-		directionalLight->addComponent<DirectionalLightComponent>();
-		directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { -2.0f, 4.0f, -1.0f };
-	}
+	//{
+	//	auto directionalLight = createEntity();
+	//	directionalLight->addComponent<DirectionalLightComponent>();
+	//	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { -2.0f, 4.0f, -1.0f };
+	//}
 
 	//{
 	//	auto directionalLight = createEntity();
@@ -58,11 +81,24 @@ void ExampleScene::onStart() {
 	//	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { 2.0f, 4.0f, 1.0f };
 	//}
 
+
+	{
+		auto pointLight = createEntity();
+		pointLight->addComponent<TransformComponent>();
+		auto& transComp = pointLight->getComponent<TransformComponent>();
+		transComp.transform.position = { 0.0f, 1.0f, 0.0f };
+		pointLight->addComponent<PointLightComponent>();
+	}
+
+	//{
+	//	auto pointLight = createEntity();
+	//	pointLight->addComponent<TransformComponent>();
+	//	auto& transComp = pointLight->getComponent<TransformComponent>();
+	//	transComp.transform.position = { -6.0f, 1.0f, 0.0f };
+	//	pointLight->addComponent<PointLightComponent>();
+	//}
 }
 
 void ExampleScene::onUpdate(float deltaTime) {
 	cameraInput->update(deltaTime);
-
-	auto& boxTransformComponent = box->getComponent<TransformComponent>();
-	boxTransformComponent.transform.rotation.x += 0.1f * deltaTime;
 }

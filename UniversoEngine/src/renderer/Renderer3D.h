@@ -53,8 +53,10 @@ namespace engine {
         unsigned int drawCallsCount = 0;
 
         std::vector<Texture*> bindedTextures;
-
         unsigned int currentTextureSlot = 0;
+
+        std::vector<Texture*> bindedCubeMaps;
+        unsigned int currentCubeMapSlot = 0;
 
         std::vector<DrawCallBuffer*> drawCallBuffers;
 
@@ -77,6 +79,11 @@ namespace engine {
         Shader depthVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/depthMapVertex.glsl" };
         Shader depthFragShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/depthMapFragment.glsl" };
 
+        ShaderProgram cubeMapDepthMapShaderProgram;
+        Shader cubeMapDepthMapVertexShader { ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapVertex.glsl" };
+        Shader cubeMapDepthMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
+        Shader cubeMapDepthMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
+
         void render();
         
         void clearDrawCallBuffers();
@@ -85,10 +92,16 @@ namespace engine {
 
         void updateDirectionalLightsUniforms();
 
-        void updateDepthBuffers();
+        void updatePointLightsDepthBuffers();
+
+        void updateDirectionalLightDepthBuffers();
 
         void bindTexture(Texture* texture);
 
+        void bindCubeMap(Texture* texture);
+
         void clearBindedTextures();
+
+        void clearBindedCubeMaps();
     };
 }

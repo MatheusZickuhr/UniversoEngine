@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DepthBufferTexture2D.h"
+#include "DepthBufferCubeMap.h"
 
 namespace engine {
 
@@ -17,6 +18,8 @@ namespace engine {
 		void unbind();
 
 		void addDepthBufferTexture(DepthBufferTexture2D& texture);
+
+		void addDepthBufferCubeMap(DepthBufferCubeMap& cubeMap);
 
 	private:
 

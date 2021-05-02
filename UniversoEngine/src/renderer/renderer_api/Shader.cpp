@@ -21,6 +21,9 @@ namespace engine {
 		case ShaderType::VertexShader:
 			this->id = glCreateShader(GL_VERTEX_SHADER);
 			break;
+		case ShaderType::GeometryShader:
+			this->id = glCreateShader(GL_GEOMETRY_SHADER);
+			break;
 		default:
 			std::cout << "invalid shader type" << std::endl;
 			break;
