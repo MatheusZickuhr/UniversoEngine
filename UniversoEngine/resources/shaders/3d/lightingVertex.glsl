@@ -17,7 +17,6 @@ out float vShininess;
 out vec2 vTextureCoords;
 out float vTextureSlot;
 out vec3 vFragPosition;
-out vec4 vFragPosLightSpace;
 
 uniform mat4 Mvp;
 
