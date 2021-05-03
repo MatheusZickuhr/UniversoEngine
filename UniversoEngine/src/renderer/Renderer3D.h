@@ -84,17 +84,13 @@ namespace engine {
         Shader cubeMapDepthMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
         Shader cubeMapDepthMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
 
-        void render();
-        
-        void clearDrawCallBuffers();
-
         void updatePointLightsUniforms();
 
         void updateDirectionalLightsUniforms();
 
         void updatePointLightsDepthBuffers();
 
-        void updateDirectionalLightDepthBuffers();
+        void updateDirectionalLightsDepthBuffers();
 
         void bindTexture(Texture* texture);
 
@@ -103,5 +99,9 @@ namespace engine {
         void clearBindedTextures();
 
         void clearBindedCubeMaps();
+        
+        void clearDrawCallBuffers();
+        
+        void render();
     };
 }
