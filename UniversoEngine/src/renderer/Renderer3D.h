@@ -28,15 +28,11 @@ namespace engine {
 
         Renderer3D();
         
-        void startDrawing(Camera& camera, const float width, const float height);
+        void startDrawing(Camera& camera);
 
         void endDrawing();
 
         void drawMesh(Mesh* mesh, Material* material, glm::mat4 transform);
-
-        void startLightsDrawing();
-
-        void endLightsDrawing();
 
         void drawPointLight(PointLight light, glm::mat4 transform);
 
@@ -44,7 +40,7 @@ namespace engine {
 
         void clearColor(float r, float g, float b, float a);
 
-        void setViewPortSize(float width, float height);
+        void setViewPortSize(int width, int height);
 
         unsigned int getDrawCallsCount();
 
@@ -83,6 +79,10 @@ namespace engine {
         Shader cubeMapDepthMapVertexShader { ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapVertex.glsl" };
         Shader cubeMapDepthMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
         Shader cubeMapDepthMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
+
+        void startLightsDrawing();
+
+        void endLightsDrawing();
 
         void updatePointLightsUniforms();
 

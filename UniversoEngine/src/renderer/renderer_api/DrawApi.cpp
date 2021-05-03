@@ -31,6 +31,20 @@ namespace engine {
 
 	void DrawApi::setViewPortSize(float width, float height) { glViewport(0, 0, width, height); }
 
+	int DrawApi::getViewPortWidth() {
+		GLint viewport[4];
+
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		return viewport[2];
+	}
+
+	int DrawApi::getViewPortHeight() {
+		GLint viewport[4];
+
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		return viewport[3];
+	}
+
 	void DrawApi::clearColor(float r, float g, float b, float a) { glClearColor(r, g, b, a); }
 
 	void DrawApi::clearDepthBuffer() { glClear(GL_DEPTH_BUFFER_BIT); }

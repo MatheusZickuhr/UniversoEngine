@@ -43,11 +43,14 @@ namespace engine {
         delete[] this->verticesBegin;
     }
 
-    void Renderer2D::startDrawing(glm::mat4 viewProjection) {
+    void Renderer2D::startDrawing(Camera& camera) {
         ASSERT(!this->drawingStarted, "You need to call endDrawing before calling startDrawing angain");
         drawingStarted = true;
 
-        this->shaderProgram.setMat4Uniform("viewProjection", viewProjection);
+        int currentViewPortWidth = DrawApi::getViewPortWidth();
+        int currentViewPortHeight = DrawApi::getViewPortHeight();
+
+        this->shaderProgram.setMat4Uniform("viewProjection", camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight));
     }
 
     void Renderer2D::endDrawing() {

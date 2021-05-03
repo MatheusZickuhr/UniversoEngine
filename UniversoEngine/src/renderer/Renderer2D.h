@@ -7,6 +7,7 @@
 #include "renderer_api/ShaderProgram.h"
 #include "renderer_api/Texture.h"
 #include "renderer_api/DrawApi.h"
+#include "Camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <map>
@@ -33,7 +34,7 @@ namespace engine {
 
         ~Renderer2D();
 
-        void startDrawing(glm::mat4 viewProjection);
+        void startDrawing(Camera& camera);
 
         void endDrawing();
 

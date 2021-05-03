@@ -48,21 +48,26 @@ namespace engine {
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader.getId());
 	}
 
-	void Renderer3D::startDrawing(Camera& camera, const float width, const float height) {
-		DrawApi::setViewPortSize(width, height);
+	void Renderer3D::startDrawing(Camera& camera) {
+		int currentViewPortWidth = DrawApi::getViewPortWidth();
+		int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-		this->shaderProgram.bind();
-		this->shaderProgram.setMat4Uniform("viewProjection", camera.getViewProjectionMatrix(width, height));
+		this->shaderProgram.setMat4Uniform("viewProjection",
+			camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight));
 		this->shaderProgram.setVec3Uniform("viewPosition", camera.position);
 		
 		this->drawCallsCount = 0;
 		this->currentDrawCallBuffer = new DrawCallBuffer{ maxVertices, maxIndices };
 
 		clearDrawCallBuffers();
+
+		startLightsDrawing();
 	}
 
 	void Renderer3D::endDrawing() {
 		drawCallBuffers.push_back(currentDrawCallBuffer);
+		this->endLightsDrawing();
+		this->shaderProgram.bind();
 		this->render();
 		this->clearBindedTextures();
 		this->clearBindedCubeMaps();
@@ -81,18 +86,6 @@ namespace engine {
 		currentDrawCallBuffer->addMesh(mesh, material, transform);
 	}
 
-	void Renderer3D::startLightsDrawing() {
-		pointLights.clear();
-		directionalLights.clear();
-	}
-
-	void Renderer3D::endLightsDrawing() {
-		this->updatePointLightsDepthBuffers();
-		this->updateDirectionalLightsDepthBuffers();
-		this->updatePointLightsUniforms();
-		this->updateDirectionalLightsUniforms();
-	}
-
 	void Renderer3D::drawPointLight(PointLight light, glm::mat4 transform) {
 		light.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		this->pointLights.push_back(light);
@@ -107,12 +100,24 @@ namespace engine {
 		DrawApi::clearColor(r, g, b, a);
 	}
 
-	void Renderer3D::setViewPortSize(float width, float height) {
+	void Renderer3D::setViewPortSize(int width, int height) {
 		DrawApi::setViewPortSize(width, height);
 	}
 
 	unsigned int Renderer3D::getDrawCallsCount() {
 		return this->drawCallsCount;
+	}
+
+	void Renderer3D::startLightsDrawing() {
+		pointLights.clear();
+		directionalLights.clear();
+	}
+
+	void Renderer3D::endLightsDrawing() {
+		this->updatePointLightsDepthBuffers();
+		this->updateDirectionalLightsDepthBuffers();
+		this->updatePointLightsUniforms();
+		this->updateDirectionalLightsUniforms();
 	}
 
 	void Renderer3D::updatePointLightsUniforms() {
@@ -172,6 +177,9 @@ namespace engine {
 
 			bindCubeMap(pointLight.depthMapCubeMap.get());
 
+			int currentViewPortWidth = DrawApi::getViewPortWidth();
+			int currentViewPortHeight = DrawApi::getViewPortHeight();
+
 			DrawApi::setViewPortSize(
 				pointLight.depthMapCubeMap->getWidth(),
 				pointLight.depthMapCubeMap->getHeight());
@@ -180,6 +188,8 @@ namespace engine {
 			DrawApi::clearDepthBuffer();
 			this->render();
 			pointLight.depthMapFrameBuffer->unbind();
+
+			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 
 	}
@@ -195,6 +205,9 @@ namespace engine {
 
 			bindTexture(directionalLight.depthMapTexture.get());
 
+			int currentViewPortWidth = DrawApi::getViewPortWidth();
+			int currentViewPortHeight = DrawApi::getViewPortHeight();
+
 			DrawApi::setViewPortSize(
 				directionalLight.depthMapTexture->getWidth(),
 				directionalLight.depthMapTexture->getHeight());
@@ -203,6 +216,8 @@ namespace engine {
 			DrawApi::clearDepthBuffer();
 			this->render();
 			directionalLight.depthMapFrameBuffer->unbind();
+
+			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 
 	}

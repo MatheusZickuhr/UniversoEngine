@@ -55,11 +55,11 @@ namespace engine {
 
 			// in the end just render the current scene
 			DrawApi::clearDepthAndColorBuffer(); // clean the buffers in the main frame buffer
-			this->currentScene->render(this->windowWidth, this->windowHeight);
+			this->currentScene->render();
 
 #ifdef DEBUG
 			this->currentScene->renderDebugData();
-			this->currentScene->renderDebugLightPositions(this->windowWidth, this->windowHeight);
+			this->currentScene->renderDebugLightPositions();
 #endif
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

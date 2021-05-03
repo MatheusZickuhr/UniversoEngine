@@ -17,6 +17,10 @@ namespace engine {
 
 		static void setViewPortSize(float width, float height);
 
+		static int getViewPortWidth();
+		
+		static int getViewPortHeight();
+
 		static void clearColor(float r, float g, float b, float a);
 
 		static void clearDepthBuffer();

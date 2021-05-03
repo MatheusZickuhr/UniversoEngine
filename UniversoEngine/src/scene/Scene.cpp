@@ -46,11 +46,13 @@ namespace engine {
 		}
 	}
 
-	void Scene::render(float windowWidth, float windowHeight) {
+	void Scene::render() {
 
+		
+		this->renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+		this->renderer3d->startDrawing(this->camera);
 		// draw/ update lights
-		this->renderer3d->startLightsDrawing();
-
 		{
 			auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
@@ -66,14 +68,7 @@ namespace engine {
 				this->renderer3d->drawDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
 			}
 		}
-
-		this->renderer3d->endLightsDrawing();
 		// end update/draw lights
-
-		// draw the scene normaly
-		this->renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-		this->renderer3d->startDrawing(this->camera, windowWidth, windowHeight);
 
 		{
 			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
@@ -82,11 +77,7 @@ namespace engine {
 				this->renderer3d->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
 			}
 		}
-		
 		this->renderer3d->endDrawing();
-		// end draw scene
-
-
 	}
 
 	void Scene::renderDebugData() {
@@ -107,10 +98,10 @@ namespace engine {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
-	void Scene::renderDebugLightPositions(float windowWidth, float windowHeight) {
+	void Scene::renderDebugLightPositions() {
 		auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
-		this->renderer2d->startDrawing(this->camera.getViewProjectionMatrix(windowWidth, windowHeight));
+		this->renderer2d->startDrawing(this->camera);
 
 		for (auto [entity, lightComp, transComp] : view.each()) {
 			this->renderer2d->drawQuad(&this->debugPointLightTexture, transComp.transform.getTransformMatrix());

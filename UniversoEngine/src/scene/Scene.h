@@ -27,11 +27,11 @@ namespace engine {
 
 		void onUpdateCallBack(float deltaTime);
 
-		void render(float windowWidth, float windowHeight);
+		void render();
 
 		void renderDebugData();
 
-		void renderDebugLightPositions(float windowWidth, float windowHeight);
+		void renderDebugLightPositions();
 		
 		void updatePhysicsWorld(float deltaTime);
 		
