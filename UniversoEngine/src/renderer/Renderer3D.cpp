@@ -183,11 +183,12 @@ namespace engine {
 	}
 
 	void Renderer3D::drawPointLight(PointLight light, glm::mat4 transform) {
-		light.position = transform * glm::vec4(1.0f);
+		light.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		this->pointLights.push_back(light);
 	}
 
-	void Renderer3D::drawDirectionalLight(DirectionalLight light) {
+	void Renderer3D::drawDirectionalLight(DirectionalLight light, glm::mat4 transform) {
+		light.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		this->directionalLights.push_back(light);
 	}
 

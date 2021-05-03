@@ -56,7 +56,7 @@ namespace engine {
 		}
 
 		std::vector<glm::mat4> getViewProjectionMatrices() {
-			float aspectRatio = 1.0f; // 1024 / 1024 for now
+			float aspectRatio = depthMapCubeMap->getWidth() / depthMapCubeMap->getHeight();
 			glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspectRatio, this->nearPlane, this->farPlane);
 
 			std::vector<glm::mat4> shadowTransforms;
