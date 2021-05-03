@@ -43,11 +43,11 @@ namespace engine {
         delete[] this->verticesBegin;
     }
 
-    void Renderer2D::startDrawing(glm::mat4 mvp) {
+    void Renderer2D::startDrawing(glm::mat4 viewProjection) {
         ASSERT(!this->drawingStarted, "You need to call endDrawing before calling startDrawing angain");
         drawingStarted = true;
 
-        this->shaderProgram.setMat4Uniform("Mvp", mvp);
+        this->shaderProgram.setMat4Uniform("viewProjection", viewProjection);
     }
 
     void Renderer2D::endDrawing() {

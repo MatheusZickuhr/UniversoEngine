@@ -18,7 +18,7 @@ out vec2 vTextureCoords;
 out float vTextureSlot;
 out vec3 vFragPosition;
 
-uniform mat4 Mvp;
+uniform mat4 viewProjection;
 
 void main() {
     
@@ -31,5 +31,5 @@ void main() {
     vTextureSlot   = textureSlot;
     vFragPosition  = position;
 
-    gl_Position = Mvp * vec4(position, 1.0);
+    gl_Position = viewProjection * vec4(position, 1.0);
 }

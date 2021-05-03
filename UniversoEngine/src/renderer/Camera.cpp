@@ -25,12 +25,11 @@ namespace engine {
 		return glm::lookAt(this->position, this->position + this->front, this->up);
 	}
 
-	glm::mat4 Camera::getMvp(float width, float height) {
-		glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 Camera::getViewProjectionMatrix(float width, float height) {
 		glm::mat4 projection = glm::perspective(glm::radians(this->fov), width / height, 0.1f, 100.0f);
 		glm::mat4 view = this->getViewMatrix();
 
-		return projection * view * model;
+		return projection * view;
 	}
 
 }

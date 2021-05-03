@@ -110,7 +110,7 @@ namespace engine {
 	void Scene::renderDebugLightPositions(float windowWidth, float windowHeight) {
 		auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
-		this->renderer2d->startDrawing(this->camera.getMvp(windowWidth, windowHeight));
+		this->renderer2d->startDrawing(this->camera.getViewProjectionMatrix(windowWidth, windowHeight));
 
 		for (auto [entity, lightComp, transComp] : view.each()) {
 			this->renderer2d->drawQuad(&this->debugPointLightTexture, transComp.transform.getTransformMatrix());

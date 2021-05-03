@@ -128,7 +128,7 @@ namespace engine {
 		DrawApi::setViewPortSize(width, height);
 
 		shaderProgram.bind();
-		this->shaderProgram.setMat4Uniform("Mvp", camera.getMvp(width, height));
+		this->shaderProgram.setMat4Uniform("viewProjection", camera.getViewProjectionMatrix(width, height));
 		this->shaderProgram.setVec3Uniform("viewPosition", camera.position);
 		this->drawCallsCount = 0;
 

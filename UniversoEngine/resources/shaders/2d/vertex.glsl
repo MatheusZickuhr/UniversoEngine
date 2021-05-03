@@ -7,10 +7,10 @@ layout (location = 2) in float textureSlot;
 out vec2 vTextureCoords;
 out float vTextureSlot;
 
-uniform mat4 Mvp;
+uniform mat4 viewProjection;
 
 void main() {
     vTextureCoords = textureCoords;
     vTextureSlot = textureSlot;
-    gl_Position = Mvp * vec4(position, 1.0);
+    gl_Position = viewProjection * vec4(position, 1.0);
 }

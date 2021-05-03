@@ -31,6 +31,6 @@ namespace engine {
 
         glm::mat4 getViewMatrix();
 
-        glm::mat4 getMvp(float width, float height);
+        glm::mat4 getViewProjectionMatrix(float width, float height);
     };
 }

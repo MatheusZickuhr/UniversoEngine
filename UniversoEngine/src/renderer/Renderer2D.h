@@ -33,7 +33,7 @@ namespace engine {
 
         ~Renderer2D();
 
-        void startDrawing(glm::mat4 mvp);
+        void startDrawing(glm::mat4 viewProjection);
 
         void endDrawing();
 
