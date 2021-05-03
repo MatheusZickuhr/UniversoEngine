@@ -16,7 +16,12 @@ namespace engine {
 	void DrawApi::init() {
 		glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_CULL_FACE);
-		printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		printf("Vendor: %s\n", glGetString(GL_VENDOR));
+		printf("Renderer: %s\n", glGetString(GL_RENDERER));
+		printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	}
 
 	void DrawApi::initDebugMode() {

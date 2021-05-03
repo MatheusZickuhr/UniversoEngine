@@ -58,8 +58,8 @@ namespace engine {
 			this->currentScene->render();
 
 #ifdef DEBUG
-			this->currentScene->renderDebugData();
 			this->currentScene->renderDebugLightPositions();
+			this->currentScene->renderDebugData();
 #endif
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
