@@ -11,7 +11,8 @@
 #include "renderer_api/FrameBuffer.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Lighting.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
 #include "DrawCallBuffer.h"
 #include "Camera.h"
 
