@@ -10,6 +10,15 @@ namespace engine {
 		this->updateVectors();	
 	}
 
+	glm::mat4 Camera::getViewProjectionMatrix(float width, float height) {
+		this->updateVectors();
+
+		glm::mat4 projection = glm::perspective(glm::radians(this->fov), width / height, 0.1f, 100.0f);
+		glm::mat4 view = glm::lookAt(this->position, this->position + this->front, this->up);
+
+		return projection * view;
+	}
+
 	void Camera::updateVectors() {
 		glm::vec3 newFront;
 		newFront.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
@@ -19,17 +28,6 @@ namespace engine {
 
 		this->right = glm::normalize(glm::cross(this->front, this->worldUp));
 		this->up = glm::normalize(glm::cross(this->right, this->front));
-	}
-
-	glm::mat4 Camera::getViewMatrix() {
-		return glm::lookAt(this->position, this->position + this->front, this->up);
-	}
-
-	glm::mat4 Camera::getViewProjectionMatrix(float width, float height) {
-		glm::mat4 projection = glm::perspective(glm::radians(this->fov), width / height, 0.1f, 100.0f);
-		glm::mat4 view = this->getViewMatrix();
-
-		return projection * view;
 	}
 
 }

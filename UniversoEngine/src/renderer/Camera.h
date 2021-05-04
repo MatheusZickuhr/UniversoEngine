@@ -27,10 +27,12 @@ namespace engine {
 
         Camera(glm::vec3 position);
 
-        void updateVectors();
-
-        glm::mat4 getViewMatrix();
 
         glm::mat4 getViewProjectionMatrix(float width, float height);
+
+    private:
+
+        void updateVectors();
+
     };
 }
