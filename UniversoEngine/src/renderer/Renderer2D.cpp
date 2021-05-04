@@ -29,8 +29,8 @@ namespace engine {
 
         this->indexBuffer.pushData(indices, sizeof(unsigned int) * maxQuadIndices);
 
-        shaderProgram.attachShader(vertexShader.getId());
-        shaderProgram.attachShader(fragShader.getId());
+        shaderProgram.attachShader(vertexShader);
+        shaderProgram.attachShader(fragShader);
         shaderProgram.bind();
 
         int textureSlots[Texture::maxTextures];

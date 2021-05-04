@@ -3,6 +3,9 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <string>
+
+#include "Shader.h"
+
 namespace engine {
 
 	class ShaderProgram {
@@ -11,11 +14,13 @@ namespace engine {
 
 		ShaderProgram();
 
+		ShaderProgram(const ShaderProgram& other) = delete;
+
 		void unbind();
 
 		void bind();
 
-		void attachShader(unsigned int shaderId);
+		void attachShader(Shader& shader);
 
 		void setVec3Uniform(const std::string& uniformName, const glm::vec3& vec);
 

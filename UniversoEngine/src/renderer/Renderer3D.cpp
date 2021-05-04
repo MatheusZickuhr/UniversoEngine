@@ -20,8 +20,8 @@ namespace engine {
 		vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(Vertex, textureCoords));
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlot));
 
-		shaderProgram.attachShader(vertexShader.getId());
-		shaderProgram.attachShader(fragShader.getId());
+		shaderProgram.attachShader(vertexShader);
+		shaderProgram.attachShader(fragShader);
 		shaderProgram.bind();
 
 		// add the textures/cubeMap slots to the shader
@@ -40,12 +40,12 @@ namespace engine {
 		shaderProgram.setIntUniform("numberOfPointLights", 0);
 		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);
 
-		depthshaderProgram.attachShader(depthVertexShader.getId());
-		depthshaderProgram.attachShader(depthFragShader.getId());
+		depthshaderProgram.attachShader(depthVertexShader);
+		depthshaderProgram.attachShader(depthFragShader);
 
-		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapVertexShader.getId());
-		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader.getId());
-		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader.getId());
+		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapVertexShader);
+		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader);
+		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader);
 	}
 
 	void Renderer3D::startDrawing(Camera& camera) {

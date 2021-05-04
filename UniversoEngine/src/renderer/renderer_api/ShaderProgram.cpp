@@ -33,8 +33,11 @@ namespace engine {
 
 	}
 
-	void ShaderProgram::attachShader(unsigned int shaderId) {
-		glAttachShader(this->id, shaderId);
+	void ShaderProgram::attachShader(Shader& shader) {
+
+		shader.compile();
+
+		glAttachShader(this->id, shader.getId());
 	}
 
 	void ShaderProgram::setVec3Uniform(const std::string& uniformName, const glm::vec3& vec) {
