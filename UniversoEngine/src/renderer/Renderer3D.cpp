@@ -20,6 +20,12 @@ namespace engine {
 		vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(Vertex, textureCoords));
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlot));
 
+		fragShader.defineInt("MAX_POINT_LIGHTS", PointLight::maxPointLights);
+		fragShader.defineInt("MAX_DIRECTIONAL_LIGHTS", DirectionalLight::maxDirectionalLights);
+		fragShader.defineInt("MAX_TEXTURES", Texture::maxTextures);
+		fragShader.defineInt("MAX_CUBE_MAPS", Texture::maxCubeMaps);
+
+
 		shaderProgram.attachShader(vertexShader);
 		shaderProgram.attachShader(fragShader);
 		shaderProgram.bind();
@@ -87,11 +93,15 @@ namespace engine {
 	}
 
 	void Renderer3D::drawPointLight(PointLight light, glm::mat4 transform) {
+		ASSERT(this->pointLights.size() + 1 <= PointLight::maxPointLights, "Maximum point lights exceded");
+
 		light.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		this->pointLights.push_back(light);
 	}
 
 	void Renderer3D::drawDirectionalLight(DirectionalLight light, glm::mat4 transform) {
+		ASSERT(this->directionalLights.size() + 1 <= DirectionalLight::maxDirectionalLights, "Maximum directional lights exceded");
+
 		light.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		this->directionalLights.push_back(light);
 	}

@@ -1,5 +1,21 @@
 #version 460 core
 
+#ifndef MAX_TEXTURES
+    #define MAX_TEXTURES 16
+#endif
+
+#ifndef MAX_CUBE_MAPS
+    #define MAX_CUBE_MAPS 16
+#endif
+
+#ifndef MAX_POINT_LIGHTS
+    #define MAX_POINT_LIGHTS 4
+#endif
+
+#ifndef MAX_DIRECTIONAL_LIGHTS
+    #define MAX_DIRECTIONAL_LIGHTS 2
+#endif
+
 struct PointLight {
     vec3 position;
     vec3 ambient;
@@ -35,13 +51,13 @@ in vec2 vTextureCoords;
 in float vTextureSlot;
 in vec3 vFragPosition;
 
-uniform samplerCube cubeMapSlots[16];
-uniform sampler2D textureSlots[16];
 uniform vec3 viewPosition;
 uniform int numberOfPointLights;
-uniform PointLight pointLights[256];
 uniform int numberOfDirectionalLights;
-uniform DirectionalLight directionalLights[4];
+uniform sampler2D textureSlots[MAX_TEXTURES];
+uniform samplerCube cubeMapSlots[MAX_CUBE_MAPS];
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
+uniform DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
 
 
 vec3 calcPointLight(PointLight light);
