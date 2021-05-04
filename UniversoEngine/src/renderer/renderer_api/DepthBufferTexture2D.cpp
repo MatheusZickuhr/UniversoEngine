@@ -1,4 +1,5 @@
 #include "DepthBufferTexture2D.h"
+#include <cstddef>
 #include <glad/glad.h>
 
 namespace engine {

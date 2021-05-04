@@ -1,4 +1,5 @@
 #include "DepthBufferCubeMap.h"
+#include <cstddef>
 #include <glad/glad.h>
 
 namespace engine {

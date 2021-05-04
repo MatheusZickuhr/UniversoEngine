@@ -1,4 +1,7 @@
 #include "Renderer2D.h"
+
+#include <algorithm>
+
 #include "../debug/Assert.h"
 
 namespace engine {
