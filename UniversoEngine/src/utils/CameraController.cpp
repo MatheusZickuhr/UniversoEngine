@@ -3,12 +3,7 @@
 
 namespace engine {
 
-	CameraController::CameraController(Camera& camera) :
-		camera(camera),
-		movementSpeed(SPEED),
-		mouseSensitivity(SENSITIVITY) {
-		
-	}
+	CameraController::CameraController(Camera& camera) : camera(camera) {}
 
 	void CameraController::update(float deltaTime) {
 		this->processKeybordInput(deltaTime);
@@ -16,63 +11,45 @@ namespace engine {
 	}
 
 	void CameraController::processKeybordInput(float deltaTime) {
-		if (engine::Input::keyPressed('W'))
-			this->updateCameraPosition(CameraMovement::FORWARD, deltaTime);
-		if (engine::Input::keyPressed('S'))
-			this->updateCameraPosition(CameraMovement::BACKWARD, deltaTime);
-		if (engine::Input::keyPressed('A'))
-			this->updateCameraPosition(CameraMovement::LEFT, deltaTime);
-		if (engine::Input::keyPressed('D'))
-			this->updateCameraPosition(CameraMovement::RIGHT, deltaTime);
-	}
-
-	void CameraController::processMouseInput() {
-		double xpos, ypos;
-		engine::Input::getCursorPos(&xpos, &ypos);
-
-		if (firstMouse) {
-			lastX = xpos;
-			lastY = ypos;
-			firstMouse = false;
-		}
-
-		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos;
-
-		lastX = xpos;
-		lastY = ypos;
-
-		this->updateCameraAngles(xoffset, yoffset);
-	}
-
-	void CameraController::updateCameraPosition(CameraMovement direction, float deltaTime) {
 		float velocity = this->movementSpeed * deltaTime;
-		if (direction == CameraMovement::FORWARD)
+
+		if (Input::keyPressed('W'))
 			this->camera.position += this->camera.front * velocity;
 
-		if (direction == CameraMovement::BACKWARD)
+		if (Input::keyPressed('S'))
 			this->camera.position -= this->camera.front * velocity;
 
-		if (direction == CameraMovement::LEFT)
+		if (Input::keyPressed('A'))
 			this->camera.position -= this->camera.right * velocity;
 
-		if (direction == CameraMovement::RIGHT)
+		if (Input::keyPressed('D'))
 			this->camera.position += this->camera.right * velocity;
 
 	}
 
-	void CameraController::updateCameraAngles(float xoffset, float yoffset, bool constrainPitch) {
+	void CameraController::processMouseInput() {
+		double xcurrent, ycurrent;
+		Input::getCursorPos(&xcurrent, &ycurrent);
+
+		if (isFirstMouseMovement) {
+			xlast = xcurrent;
+			ylast = ycurrent;
+			isFirstMouseMovement = false;
+		}
+
+		float xoffset = xcurrent - xlast;
+		float yoffset = ylast - ycurrent;
+
+		xlast = xcurrent;
+		ylast = ycurrent;
+
 		xoffset *= this->mouseSensitivity;
 		yoffset *= this->mouseSensitivity;
 
 		this->camera.yaw += xoffset;
 		this->camera.pitch += yoffset;
 
-		if (constrainPitch) {
-			if (this->camera.pitch > 89.0f)
-				this->camera.pitch = 89.0f;
-			if (this->camera.pitch < -89.0f)
-				this->camera.pitch = -89.0f;
-		}
+		this->camera.pitch = glm::clamp(this->camera.pitch, -89.0f, 89.0f);
 	}
+
 }
