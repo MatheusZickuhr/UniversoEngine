@@ -1,20 +1,17 @@
 #include "DrawCallBuffer.h"
+#include "../debug/Assert.h"
 
 namespace engine {
-	DrawCallBuffer::DrawCallBuffer(unsigned int maxVertices, unsigned int maxIndices)
+	DrawCallBuffer::DrawCallBuffer(DrawCallBufferAllocator& drawCallBufferAllocator, unsigned int maxVertices, unsigned int maxIndices)
 		: maxVertices(maxVertices), maxIndices(maxIndices) {
 
-		this->verticesBegin = new Vertex[maxVertices];
-		this->vertices = this->verticesBegin;
-		this->indices = new unsigned int[maxIndices];
-	}
-
-	DrawCallBuffer::~DrawCallBuffer() {
-		delete[] this->verticesBegin;
-		delete[] this->indices;
+		this->vertices = drawCallBufferAllocator.allocateVertices(maxVertices);
+		this->verticesBegin = vertices;
+		this->indices = drawCallBufferAllocator.allocateIndices(maxIndices);
 	}
 
 	void DrawCallBuffer::addMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
+		ASSERT(this->doesFit(mesh), "The mesh does not fit in the drawCall");
 
 		Texture* texture = material->getTexture();
 
@@ -55,12 +52,6 @@ namespace engine {
 
 	bool DrawCallBuffer::doesFit(Mesh* mesh) {
 		return this->vertexCount + mesh->getVertexCount() <= this->maxVertices;
-	}
-
-	void DrawCallBuffer::clear() {
-		this->indexCount = 0;
-		this->vertexCount = 0;
-		this->vertices = this->verticesBegin;
 	}
 
 	Vertex* DrawCallBuffer::getVertices() {

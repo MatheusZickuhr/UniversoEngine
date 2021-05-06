@@ -4,24 +4,22 @@
 #include "Vertex.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "DrawCallBufferAllocator.h"
 
 namespace engine {
 
+	//this class represents all the vertex/index data that will be send to gpu in a draw call
 	class DrawCallBuffer {
 
 	public:
 
-		DrawCallBuffer(unsigned int maxVertices, unsigned int maxIndices);
-
-		~DrawCallBuffer();
+		DrawCallBuffer(DrawCallBufferAllocator&, unsigned int, unsigned int);
 
 		void addMesh(Mesh* mesh, Material* material, glm::mat4 transform);
 
 		void addMesh(Mesh* mesh, glm::mat4 transform);
 
 		bool doesFit(Mesh* mesh);
-
-		void clear();
 
 		Vertex* getVertices();
 
@@ -41,9 +39,8 @@ namespace engine {
 		unsigned int vertexCount = 0;
 		unsigned int indexCount = 0;
 
-		// always points to the begining of the vertex buffer
-		Vertex* verticesBegin;
 		Vertex* vertices;
+		Vertex* verticesBegin;
 		unsigned int* indices;
 
 	};

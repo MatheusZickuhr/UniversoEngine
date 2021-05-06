@@ -15,12 +15,16 @@
 #include "PointLight.h"
 #include "DrawCallBuffer.h"
 #include "Camera.h"
+#include "DrawCallBufferAllocator.h"
 
 namespace engine {
 
     // arbitrary values for now
     const unsigned int maxVertices = 10000;
     const unsigned int maxIndices  = 10000;
+
+    const unsigned int maxVerticesPerDrawCall = 1000;
+    const unsigned int maxIndicesPerDrawCall  = 1000;
 
    
     class Renderer3D {
@@ -55,9 +59,11 @@ namespace engine {
         std::vector<Texture*> bindedCubeMaps;
         unsigned int currentCubeMapSlot = 0;
 
-        std::vector<DrawCallBuffer*> drawCallBuffers;
+        DrawCallBufferAllocator drawCallBufferAllocator { maxVertices, maxIndices };
 
-        DrawCallBuffer* currentDrawCallBuffer  = nullptr;
+        std::vector<DrawCallBuffer> drawCallBuffers;
+
+        unsigned int currentDrawCallBufferIndex = 0;
 
         VertexArray vertexArray;
         VertexBuffer vertexBuffer { sizeof(Vertex), maxVertices };
@@ -100,9 +106,7 @@ namespace engine {
         void clearBindedTextures();
 
         void clearBindedCubeMaps();
-        
-        void clearDrawCallBuffers();
-        
+                
         void render();
     };
 }

@@ -63,15 +63,15 @@ namespace engine {
 		this->shaderProgram.setVec3Uniform("viewPosition", camera.position);
 		
 		this->drawCallsCount = 0;
-		this->currentDrawCallBuffer = new DrawCallBuffer{ maxVertices, maxIndices };
-
-		clearDrawCallBuffers();
+		this->currentDrawCallBufferIndex = 0;
+		this->drawCallBufferAllocator.clear();
+		this->drawCallBuffers.clear();
+		this->drawCallBuffers.push_back(DrawCallBuffer{ this->drawCallBufferAllocator, maxVerticesPerDrawCall, maxIndicesPerDrawCall });
 
 		startLightsDrawing();
 	}
 
 	void Renderer3D::endDrawing() {
-		drawCallBuffers.push_back(currentDrawCallBuffer);
 		this->endLightsDrawing();
 		this->shaderProgram.bind();
 		this->render();
@@ -81,15 +81,14 @@ namespace engine {
 
 	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
 		
-		if (!currentDrawCallBuffer->doesFit(mesh)) {
-			
-			drawCallBuffers.push_back(currentDrawCallBuffer);
-			this->currentDrawCallBuffer = new DrawCallBuffer{ maxVertices, maxIndices };
+		if (!drawCallBuffers[currentDrawCallBufferIndex].doesFit(mesh)) {
+			drawCallBuffers.push_back(DrawCallBuffer{ this->drawCallBufferAllocator, maxVerticesPerDrawCall, maxIndicesPerDrawCall });
+			currentDrawCallBufferIndex++;
 		}
 		
 		this->bindTexture(material->getTexture());
 
-		currentDrawCallBuffer->addMesh(mesh, material, transform);
+		drawCallBuffers[currentDrawCallBufferIndex].addMesh(mesh, material, transform);
 	}
 
 	void Renderer3D::drawPointLight(PointLight light, glm::mat4 transform) {
@@ -272,22 +271,14 @@ namespace engine {
 		this->currentCubeMapSlot = 0;
 	}
 
-	void Renderer3D::clearDrawCallBuffers() {
-		for (DrawCallBuffer* drawCallBuffer : this->drawCallBuffers) {
-			delete drawCallBuffer;
-		}
-
-		this->drawCallBuffers.clear();
-	}
-
 	void Renderer3D::render() {
 		vertexArray.bind();
 
-		for (DrawCallBuffer* drawCallBuffer : this->drawCallBuffers) {
+		for (DrawCallBuffer& drawCallBuffer : this->drawCallBuffers) {
 			// execute the draw call with the data
-			this->vertexBuffer.pushData(drawCallBuffer->getVertices(), drawCallBuffer->getSizeOfVertives());
-			this->indexBuffer.pushData(drawCallBuffer->getIndices(), drawCallBuffer->getSizeOfIndices());
-			DrawApi::drawWithIdexes(drawCallBuffer->getIndexCount());
+			this->vertexBuffer.pushData(drawCallBuffer.getVertices(), drawCallBuffer.getSizeOfVertives());
+			this->indexBuffer.pushData(drawCallBuffer.getIndices(), drawCallBuffer.getSizeOfIndices());
+			DrawApi::drawWithIdexes(drawCallBuffer.getIndexCount());
 			this->drawCallsCount++;
 		}
 
