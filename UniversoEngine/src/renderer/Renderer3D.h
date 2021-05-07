@@ -26,6 +26,8 @@ namespace engine {
     public:
 
         Renderer3D();
+
+        ~Renderer3D();
         
         void startDrawing(Camera& camera);
 

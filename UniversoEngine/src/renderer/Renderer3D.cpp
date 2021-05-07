@@ -58,6 +58,11 @@ namespace engine {
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader);
 	}
 
+	Renderer3D::~Renderer3D() {
+		delete[] this->verticesBegin;
+		delete[] this->indices;
+	}
+
 	void Renderer3D::startDrawing(Camera& camera) {
 		int currentViewPortWidth = DrawApi::getViewPortWidth();
 		int currentViewPortHeight = DrawApi::getViewPortHeight();
