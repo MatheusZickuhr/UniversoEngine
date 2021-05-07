@@ -48,35 +48,44 @@ namespace engine {
 
 	void Scene::render() {
 
-		
 		this->renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+		this->renderer3d->startLightsDrawing();
+			// draw/ update lights
+			{
+				auto view = this->registry.view<PointLightComponent, TransformComponent>();
+
+				for (auto [entity, lightComp, transComp] : view.each()) {
+					this->renderer3d->drawPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
+				}
+			}
+
+			{
+				auto view = this->registry.view<DirectionalLightComponent, TransformComponent>();
+
+				for (auto [entity, lightComp, transComp] : view.each()) {
+					this->renderer3d->drawDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
+				}
+			}
+			// end update/draw lights
+
+			{
+				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+
+				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+					this->renderer3d->drawMeshShadowMap(meshComp.mesh, transComp.transform.getTransformMatrix());
+				}
+			}
+		this->renderer3d->endLightsDrawing();
+
 		this->renderer3d->startDrawing(this->camera);
-		// draw/ update lights
-		{
-			auto view = this->registry.view<PointLightComponent, TransformComponent>();
+			{
+				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
 
-			for (auto [entity, lightComp, transComp] : view.each()) {
-				this->renderer3d->drawPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
+				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+					this->renderer3d->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
+				}
 			}
-		}
-
-		{
-			auto view = this->registry.view<DirectionalLightComponent, TransformComponent>();
-
-			for (auto [entity, lightComp, transComp] : view.each()) {
-				this->renderer3d->drawDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
-			}
-		}
-		// end update/draw lights
-
-		{
-			auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
-
-			for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-				this->renderer3d->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
-			}
-		}
 		this->renderer3d->endDrawing();
 	}
 

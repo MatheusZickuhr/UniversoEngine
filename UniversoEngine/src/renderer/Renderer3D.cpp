@@ -8,6 +8,10 @@
 namespace engine {
 
 	Renderer3D::Renderer3D() {
+		vertices = new Vertex[maxVertices];
+		verticesBegin = vertices;
+		indices = new unsigned int[maxIndices];
+
 		vertexArray.addVertexBuffer(vertexBuffer);
 		vertexArray.addIndexBuffer(indexBuffer);
 
@@ -62,47 +66,134 @@ namespace engine {
 			camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight));
 		this->shaderProgram.setVec3Uniform("viewPosition", camera.position);
 		
-		this->drawCallsCount = 0;
-		this->currentDrawCallBufferIndex = 0;
-		this->drawCallBufferAllocator.clear();
-		this->drawCallBuffers.clear();
-		this->drawCallBuffers.push_back(DrawCallBuffer{ this->drawCallBufferAllocator, maxVerticesPerDrawCall, maxIndicesPerDrawCall });
-
-		startLightsDrawing();
 	}
 
 	void Renderer3D::endDrawing() {
-		this->endLightsDrawing();
-		this->shaderProgram.bind();
-		this->render();
+		this->performDrawCall();
+		
+		// unbind all the textures/ cubemaps
 		this->clearBindedTextures();
 		this->clearBindedCubeMaps();
 	}
 
 	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
-		
-		if (!drawCallBuffers[currentDrawCallBufferIndex].doesFit(mesh)) {
-			drawCallBuffers.push_back(DrawCallBuffer{ this->drawCallBufferAllocator, maxVerticesPerDrawCall, maxIndicesPerDrawCall });
-			currentDrawCallBufferIndex++;
+		ASSERT(mesh->getVertexCount() <= maxVertices, "Mesh does not fit in the drawcall");
+
+		if (mesh->getVertexCount() + this->vertexCount > maxVertices) {
+			this->performDrawCall();
 		}
 		
 		this->bindTexture(material->getTexture());
 
-		drawCallBuffers[currentDrawCallBufferIndex].addMesh(mesh, material, transform);
+		Texture* texture = material->getTexture();
+
+		for (const Vertex& vertex : mesh->getVertices()) {
+			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
+			this->vertices->normal = glm::mat3(glm::transpose(glm::inverse(transform))) * vertex.normal;
+			this->vertices->ambient = material->ambient;
+			this->vertices->diffuse = material->diffuse;
+			this->vertices->specular = material->specular;
+			this->vertices->shininess = material->shininess;
+			this->vertices->textureCoords = vertex.textureCoords;
+			this->vertices->textureSlot = texture != nullptr ? texture->getSlot() : -1.0f;
+			this->vertices++;
+		}
+
+		for (int i = this->indexCount; i < mesh->getVertexCount() + this->indexCount; i++)
+			this->indices[i] = i;
+
+		this->vertexCount += mesh->getVertexCount();
+		this->indexCount += mesh->getVertexCount();
 	}
 
-	void Renderer3D::drawPointLight(PointLight light, glm::mat4 transform) {
+	void Renderer3D::startLightsDrawing() {
+		this->drawCallsCount = 0;
+
+		// clear directional lights shadow maps
+		for (auto& light : directionalLights) {
+			light.depthMapFrameBuffer->bind();
+			DrawApi::clearDepthBuffer();
+			light.depthMapFrameBuffer->unbind();
+		}
+
+		//clear point lights shadow maps
+		for (auto& light : pointLights) {
+			light.depthMapFrameBuffer->bind();
+			DrawApi::clearDepthBuffer();
+			light.depthMapFrameBuffer->unbind();
+		}
+
+		// clear the lights vectors
+		pointLights.clear();
+		directionalLights.clear();
+	}
+
+	void Renderer3D::endLightsDrawing() {
+		this->performShadowMapDrawCalls();
+	}
+
+	void Renderer3D::drawMeshShadowMap(Mesh* mesh, glm::mat4 transform) {
+
+		ASSERT(mesh->getVertexCount() <= maxVertices, "Mesh does not fit in the drawcall");
+
+		if (mesh->getVertexCount() + this->vertexCount > maxVertices) {
+			this->performShadowMapDrawCalls();
+		}
+
+		for (const Vertex& vertex : mesh->getVertices()) {
+			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
+			this->vertices++;
+		}
+
+		for (int i = this->indexCount; i < mesh->getVertexCount() + this->indexCount; i++)
+			this->indices[i] = i;
+
+		this->vertexCount += mesh->getVertexCount();
+		this->indexCount += mesh->getVertexCount();
+	}
+
+	void Renderer3D::drawPointLight(PointLight pointLight, glm::mat4 transform) {
 		ASSERT(this->pointLights.size() + 1 <= PointLight::maxPointLights, "Maximum point lights exceded");
 
-		light.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		this->pointLights.push_back(light);
+		pointLight.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		this->pointLights.push_back(pointLight);
+
+		bindCubeMap(pointLight.depthMapCubeMap.get());
+
+		unsigned int lightIndex = this->pointLights.size() - 1;
+
+		shaderProgram.setIntUniform("numberOfPointLights", pointLights.size());
+
+		shaderProgram.setVec3Uniform(format("pointLights[%d].position", lightIndex), pointLight.position);
+		shaderProgram.setVec3Uniform(format("pointLights[%d].ambient", lightIndex), pointLight.ambient);
+		shaderProgram.setVec3Uniform(format("pointLights[%d].diffuse", lightIndex), pointLight.diffuse);
+		shaderProgram.setVec3Uniform(format("pointLights[%d].specular", lightIndex), pointLight.specular);
+		shaderProgram.setFloatUniform(format("pointLights[%d].constant", lightIndex), pointLight.constant);
+		shaderProgram.setFloatUniform(format("pointLights[%d].linear", lightIndex), pointLight.linear);
+		shaderProgram.setFloatUniform(format("pointLights[%d].quadratic", lightIndex), pointLight.quadratic);
+		shaderProgram.setFloatUniform(format("pointLights[%d].farPlane", lightIndex), pointLight.farPlane);
+		shaderProgram.setIntUniform(format("pointLights[%d].cubeMapSlotIndex", lightIndex),
+			pointLight.depthMapCubeMap->getSlot() - Texture::maxTextures);
 	}
 
-	void Renderer3D::drawDirectionalLight(DirectionalLight light, glm::mat4 transform) {
+	void Renderer3D::drawDirectionalLight(DirectionalLight directionalLight, glm::mat4 transform) {
 		ASSERT(this->directionalLights.size() + 1 <= DirectionalLight::maxDirectionalLights, "Maximum directional lights exceded");
 
-		light.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		this->directionalLights.push_back(light);
+		directionalLight.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		this->directionalLights.push_back(directionalLight);
+
+		bindTexture(directionalLight.depthMapTexture.get());
+
+		shaderProgram.setIntUniform("numberOfDirectionalLights", directionalLights.size());
+
+		unsigned int lightIndex = this->directionalLights.size() - 1;
+
+		shaderProgram.setVec3Uniform(format("directionalLights[%d].position", lightIndex), directionalLight.position);
+		shaderProgram.setVec3Uniform(format("directionalLights[%d].ambient", lightIndex), directionalLight.ambient);
+		shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse", lightIndex), directionalLight.diffuse);
+		shaderProgram.setVec3Uniform(format("directionalLights[%d].specular", lightIndex), directionalLight.specular);
+		shaderProgram.setMat4Uniform(format("directionalLights[%d].viewProjection", lightIndex), directionalLight.getViewProjectionMatrix());
+		shaderProgram.setIntUniform(format("directionalLights[%d].textureSlotIndex", lightIndex), directionalLight.depthMapTexture->getSlot());
 	}
 
 	void Renderer3D::clearColor(float r, float g, float b, float a) {
@@ -115,120 +206,6 @@ namespace engine {
 
 	unsigned int Renderer3D::getDrawCallsCount() {
 		return this->drawCallsCount;
-	}
-
-	void Renderer3D::startLightsDrawing() {
-		pointLights.clear();
-		directionalLights.clear();
-	}
-
-	void Renderer3D::endLightsDrawing() {
-		this->updatePointLightsDepthBuffers();
-		this->updateDirectionalLightsDepthBuffers();
-		this->updatePointLightsUniforms();
-		this->updateDirectionalLightsUniforms();
-	}
-
-	void Renderer3D::updatePointLightsUniforms() {
-		shaderProgram.setIntUniform("numberOfPointLights", pointLights.size());
-
-		for (int i = 0; i < pointLights.size(); i++) {
-
-			auto& pointLight = pointLights[i];
-
-			shaderProgram.setVec3Uniform(format("pointLights[%d].position", i), pointLight.position);
-			shaderProgram.setVec3Uniform(format("pointLights[%d].ambient", i), pointLight.ambient);
-			shaderProgram.setVec3Uniform(format("pointLights[%d].diffuse", i), pointLight.diffuse);
-			shaderProgram.setVec3Uniform(format("pointLights[%d].specular", i), pointLight.specular);
-			shaderProgram.setFloatUniform(format("pointLights[%d].constant", i), pointLight.constant);
-			shaderProgram.setFloatUniform(format("pointLights[%d].linear", i), pointLight.linear);
-			shaderProgram.setFloatUniform(format("pointLights[%d].quadratic", i), pointLight.quadratic);
-			shaderProgram.setFloatUniform(format("pointLights[%d].farPlane", i), pointLight.farPlane);
-			shaderProgram.setIntUniform(format("pointLights[%d].cubeMapSlotIndex", i),
-				pointLight.depthMapCubeMap->getSlot() - Texture::maxTextures);
-		}
-
-		
-	}
-
-	void Renderer3D::updateDirectionalLightsUniforms() {
-		shaderProgram.setIntUniform("numberOfDirectionalLights", directionalLights.size());
-
-		for (int i = 0; i < directionalLights.size(); i++) {
-
-			auto& directionalLight = directionalLights[i];
-
-			shaderProgram.setVec3Uniform(format("directionalLights[%d].position", i), directionalLight.position);
-			shaderProgram.setVec3Uniform(format("directionalLights[%d].ambient", i), directionalLight.ambient);
-			shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse", i), directionalLight.diffuse);
-			shaderProgram.setVec3Uniform(format("directionalLights[%d].specular", i), directionalLight.specular);
-			shaderProgram.setMat4Uniform(format("directionalLights[%d].viewProjection", i), directionalLight.getViewProjectionMatrix());
-			shaderProgram.setIntUniform(format("directionalLights[%d].textureSlotIndex", i), directionalLight.depthMapTexture->getSlot());
-		}
-
-	}
-
-	void Renderer3D::updatePointLightsDepthBuffers() {
-		cubeMapDepthMapShaderProgram.bind();
-
-		for (int i = 0; i < pointLights.size(); i++) {
-			auto& pointLight = pointLights[i];
-
-			cubeMapDepthMapShaderProgram.setVec3Uniform("lightPos", pointLight.position);
-			cubeMapDepthMapShaderProgram.setFloatUniform("far_plane", pointLight.farPlane);
-
-			auto pointLightProjectionMatrices = pointLight.getViewProjectionMatrices();
-			for (int j = 0; j < pointLightProjectionMatrices.size(); j++) {
-				cubeMapDepthMapShaderProgram.setMat4Uniform(
-					format("shadowMatrices[%d]", j),
-					pointLightProjectionMatrices[j]);
-			}
-
-			bindCubeMap(pointLight.depthMapCubeMap.get());
-
-			int currentViewPortWidth = DrawApi::getViewPortWidth();
-			int currentViewPortHeight = DrawApi::getViewPortHeight();
-
-			DrawApi::setViewPortSize(
-				pointLight.depthMapCubeMap->getWidth(),
-				pointLight.depthMapCubeMap->getHeight());
-
-			pointLight.depthMapFrameBuffer->bind();
-			DrawApi::clearDepthBuffer();
-			this->render();
-			pointLight.depthMapFrameBuffer->unbind();
-
-			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
-		}
-
-	}
-
-	void Renderer3D::updateDirectionalLightsDepthBuffers() {
-		depthshaderProgram.bind();
-
-		for (int i = 0; i < directionalLights.size(); i++) {
-			auto& directionalLight = directionalLights[i];
-			
-			depthshaderProgram.setMat4Uniform("lightSpaceMatrix",
-				directionalLight.getViewProjectionMatrix());
-
-			bindTexture(directionalLight.depthMapTexture.get());
-
-			int currentViewPortWidth = DrawApi::getViewPortWidth();
-			int currentViewPortHeight = DrawApi::getViewPortHeight();
-
-			DrawApi::setViewPortSize(
-				directionalLight.depthMapTexture->getWidth(),
-				directionalLight.depthMapTexture->getHeight());
-
-			directionalLight.depthMapFrameBuffer->bind();
-			DrawApi::clearDepthBuffer();
-			this->render();
-			directionalLight.depthMapFrameBuffer->unbind();
-
-			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
-		}
-
 	}
 
 	void Renderer3D::bindTexture(Texture* texture) {
@@ -271,16 +248,100 @@ namespace engine {
 		this->currentCubeMapSlot = 0;
 	}
 
-	void Renderer3D::render() {
-		vertexArray.bind();
+	void Renderer3D::performDrawCall() {
+		this->vertexArray.bind();
+		this->shaderProgram.bind();
 
-		for (DrawCallBuffer& drawCallBuffer : this->drawCallBuffers) {
-			// execute the draw call with the data
-			this->vertexBuffer.pushData(drawCallBuffer.getVertices(), drawCallBuffer.getSizeOfVertives());
-			this->indexBuffer.pushData(drawCallBuffer.getIndices(), drawCallBuffer.getSizeOfIndices());
-			DrawApi::drawWithIdexes(drawCallBuffer.getIndexCount());
+		// upload the data to vertex/index buffer in the gpu
+		this->vertexBuffer.pushData(this->verticesBegin, sizeof(Vertex) * this->vertexCount);
+		this->indexBuffer.pushData(this->indices, sizeof(unsigned int) * this->indexCount);
+
+		DrawApi::drawWithIdexes(this->indexCount);
+
+		this->vertices = this->verticesBegin;
+		this->vertexCount = 0;
+		this->indexCount  = 0;
+
+		this->drawCallsCount++;
+		
+	}
+
+	void Renderer3D::performShadowMapDrawCalls() {
+		this->vertexArray.bind();
+
+		// upload the data to vertex/index buffer in the gpu
+		this->vertexBuffer.pushData(this->verticesBegin, sizeof(Vertex) * this->vertexCount);
+		this->indexBuffer.pushData(this->indices, sizeof(unsigned int) * this->indexCount);
+
+		// update directional lights depth buffers
+		depthshaderProgram.bind();
+		for (int i = 0; i < directionalLights.size(); i++) {
+			auto& directionalLight = directionalLights[i];
+
+			depthshaderProgram.setMat4Uniform("lightSpaceMatrix",
+				directionalLight.getViewProjectionMatrix());
+
+			int currentViewPortWidth = DrawApi::getViewPortWidth();
+			int currentViewPortHeight = DrawApi::getViewPortHeight();
+
+			DrawApi::setViewPortSize(
+				directionalLight.depthMapTexture->getWidth(),
+				directionalLight.depthMapTexture->getHeight());
+
+			directionalLight.depthMapFrameBuffer->bind();
+
+			// drawcall
+			DrawApi::drawWithIdexes(this->indexCount);
 			this->drawCallsCount++;
+			// end drawcall
+
+			directionalLight.depthMapFrameBuffer->unbind();
+
+			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
+		}
+		// end update directional lights depth buffers
+
+		// update point lights depth buffers
+		cubeMapDepthMapShaderProgram.bind();
+
+		for (int i = 0; i < pointLights.size(); i++) {
+			auto& pointLight = pointLights[i];
+
+			cubeMapDepthMapShaderProgram.setVec3Uniform("lightPos", pointLight.position);
+			cubeMapDepthMapShaderProgram.setFloatUniform("far_plane", pointLight.farPlane);
+
+			auto pointLightProjectionMatrices = pointLight.getViewProjectionMatrices();
+			for (int j = 0; j < pointLightProjectionMatrices.size(); j++) {
+				cubeMapDepthMapShaderProgram.setMat4Uniform(
+					format("shadowMatrices[%d]", j),
+					pointLightProjectionMatrices[j]);
+			}
+
+			int currentViewPortWidth = DrawApi::getViewPortWidth();
+			int currentViewPortHeight = DrawApi::getViewPortHeight();
+
+			DrawApi::setViewPortSize(
+				pointLight.depthMapCubeMap->getWidth(),
+				pointLight.depthMapCubeMap->getHeight());
+
+			pointLight.depthMapFrameBuffer->bind();
+
+			// drawcall
+			DrawApi::drawWithIdexes(this->indexCount);
+			this->drawCallsCount++;
+			// end drawcall
+
+			pointLight.depthMapFrameBuffer->unbind();
+
+			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 
+		// end update point lights depth buffers
+
+		this->vertices = this->verticesBegin;
+		this->vertexCount = 0;
+		this->indexCount  = 0;
+
 	}
+
 }

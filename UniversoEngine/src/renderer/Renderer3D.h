@@ -13,19 +13,13 @@
 #include "Mesh.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
-#include "DrawCallBuffer.h"
 #include "Camera.h"
-#include "DrawCallBufferAllocator.h"
 
 namespace engine {
 
     // arbitrary values for now
     const unsigned int maxVertices = 10000;
     const unsigned int maxIndices  = 10000;
-
-    const unsigned int maxVerticesPerDrawCall = 1000;
-    const unsigned int maxIndicesPerDrawCall  = 1000;
-
    
     class Renderer3D {
 
@@ -38,6 +32,12 @@ namespace engine {
         void endDrawing();
 
         void drawMesh(Mesh* mesh, Material* material, glm::mat4 transform);
+
+        void startLightsDrawing();
+        
+        void endLightsDrawing();
+
+        void drawMeshShadowMap(Mesh* mesh, glm::mat4 transform);
 
         void drawPointLight(PointLight light, glm::mat4 transform);
 
@@ -59,11 +59,12 @@ namespace engine {
         std::vector<Texture*> bindedCubeMaps;
         unsigned int currentCubeMapSlot = 0;
 
-        DrawCallBufferAllocator drawCallBufferAllocator { maxVertices, maxIndices };
+        Vertex* vertices;
+        Vertex* verticesBegin;
+        unsigned int* indices;
 
-        std::vector<DrawCallBuffer> drawCallBuffers;
-
-        unsigned int currentDrawCallBufferIndex = 0;
+        unsigned int vertexCount = 0;
+        unsigned int indexCount =  0;
 
         VertexArray vertexArray;
         VertexBuffer vertexBuffer { sizeof(Vertex), maxVertices };
@@ -87,18 +88,6 @@ namespace engine {
         Shader cubeMapDepthMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
         Shader cubeMapDepthMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
 
-        void startLightsDrawing();
-
-        void endLightsDrawing();
-
-        void updatePointLightsUniforms();
-
-        void updateDirectionalLightsUniforms();
-
-        void updatePointLightsDepthBuffers();
-
-        void updateDirectionalLightsDepthBuffers();
-
         void bindTexture(Texture* texture);
 
         void bindCubeMap(Texture* texture);
@@ -107,6 +96,9 @@ namespace engine {
 
         void clearBindedCubeMaps();
                 
-        void render();
+        void performDrawCall();
+
+        void performShadowMapDrawCalls();
+
     };
 }
