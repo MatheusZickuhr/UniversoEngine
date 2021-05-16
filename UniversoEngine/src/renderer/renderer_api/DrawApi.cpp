@@ -13,28 +13,54 @@ namespace engine {
 		const void* data
 	);
 
-	DrawApi::DrawApi() {
+	void DrawApi::init() {
+		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		printf("Vendor: %s\n", glGetString(GL_VENDOR));
+		printf("Renderer: %s\n", glGetString(GL_RENDERER));
+		printf("OpenGL version: %s\n", glGetString(GL_VERSION));
+	}
+
+	void DrawApi::initDebugMode() {
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(GLDebugMessageCallback, NULL);
-		glEnable(GL_DEPTH_TEST);
-		printf("Using OpenGL version: %s \n", glGetString(GL_VERSION));
 	}
 
-	void DrawApi::drawWithIdexes(VertexArray& vertexArray, unsigned int IndexCount) {
-		vertexArray.bind();
+	void DrawApi::drawWithIdexes(unsigned int IndexCount) {
 		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
+	void DrawApi::setViewPortSize(float width, float height) { glViewport(0, 0, width, height); }
 
-	void DrawApi::clear(float r, float g, float b, float a) {
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	int DrawApi::getViewPortWidth() {
+		GLint viewport[4];
+
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		return viewport[2];
 	}
 
-	void DrawApi::setViewPortSize(float width, float height) {
-		glViewport(0, 0, width, height);
+	int DrawApi::getViewPortHeight() {
+		GLint viewport[4];
+
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		return viewport[3];
 	}
+
+	void DrawApi::clearColor(float r, float g, float b, float a) { glClearColor(r, g, b, a); }
+
+	void DrawApi::clearDepthBuffer() { glClear(GL_DEPTH_BUFFER_BIT); }
+
+	void DrawApi::clearColorBuffer() { glClear(GL_COLOR_BUFFER_BIT); }
+
+	void DrawApi::clearDepthAndColorBuffer() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+
+	void DrawApi::cullFrontFace() { glCullFace(GL_FRONT); }
+
+	void DrawApi::cullBackFace() { glCullFace(GL_BACK); }
 
 	void APIENTRY GLDebugMessageCallback(
 		GLenum source,

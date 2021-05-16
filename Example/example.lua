@@ -4,7 +4,7 @@ project "Example"
 	cppdialect "C++17"
 	architecture "x86_64"
 	staticruntime "on"
-
+	location "%{wks.location}"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	

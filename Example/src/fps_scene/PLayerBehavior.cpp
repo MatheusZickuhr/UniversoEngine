@@ -73,6 +73,4 @@ void PlayerBehavior::updateCameraAngles(float xoffset, float yoffset, bool const
         if (this->camera->pitch < -89.0f)
             this->camera->pitch = -89.0f;
     }
-
-    this->camera->updateVectors();
 }

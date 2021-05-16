@@ -1,6 +1,8 @@
 #include "ShaderProgram.h"
 #include <glad/glad.h>
 
+#include "../../debug/Assert.h"
+
 namespace engine {
 
 	ShaderProgram::ShaderProgram() {
@@ -12,49 +14,67 @@ namespace engine {
 	}
 
 	void ShaderProgram::bind() {
-		glLinkProgram(this->id);
+		if (!this->linked) {
+			this->linked = true;
+			
+			glLinkProgram(this->id);
+			
+			int  success;
+			char infoLog[512];
 
-		glUseProgram(this->id);
-
-		int  success;
-		char infoLog[512];
-
-		glGetProgramiv(this->id, GL_LINK_STATUS, &success);
-		if (!success) {
-			glGetProgramInfoLog(this->id, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+			glGetProgramiv(this->id, GL_LINK_STATUS, &success);
+			if (!success) {
+				glGetProgramInfoLog(this->id, 512, NULL, infoLog);
+				std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+			}
 		}
-	}
 
-	void ShaderProgram::attachShader(unsigned int shaderId) {
-		glAttachShader(this->id, shaderId);
-	}
-
-	void ShaderProgram::setUniform4f(const char* uniformName, float float1, float float2, float float3, float float4) {
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
 		glUseProgram(this->id);
-		glUniform4f(uniformLocation, float1, float2, float3, float4);
-	}
-
-	void ShaderProgram::setUniformMat4f(const char* uniformName, const glm::mat4& matrix) {
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
-		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix[0][0]);
 
 	}
 
-	void ShaderProgram::setUniform1f(const char* uniformName, const float value) {
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
-		glUniform1f(uniformLocation, value);
+	void ShaderProgram::attachShader(Shader& shader) {
+
+		shader.compile();
+
+		glAttachShader(this->id, shader.getId());
 	}
 
-	void ShaderProgram::setUniform1i(const char* uniformName, const int value) {
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
-		glUniform1i(uniformLocation, value);
+	void ShaderProgram::setVec3Uniform(const std::string& uniformName, const glm::vec3& vec) {
+		this->bind();
+		glUniform3f(this->findUniformLocation(uniformName), vec.x, vec.y, vec.z);
 	}
 
-	void ShaderProgram::setUniform1iv(const char* uniformName, int size, int data[]) {
-		auto uniformLocation = glGetUniformLocation(this->id, uniformName);
-		glUniform1iv(uniformLocation, size, data);
+	void ShaderProgram::setVec4Uniform(const std::string& uniformName, const glm::vec4& vec) {
+		this->bind();
+		glUniform4f(this->findUniformLocation(uniformName), vec.x, vec.y, vec.z, vec.w);
+	}
+
+	void ShaderProgram::setMat4Uniform(const std::string& uniformName, const glm::mat4& matrix) {
+		this->bind();
+		glUniformMatrix4fv(this->findUniformLocation(uniformName), 1, GL_FALSE, &matrix[0][0]);
+
+	}
+
+	void ShaderProgram::setFloatUniform(const std::string& uniformName, const float value) {
+		this->bind();
+		glUniform1f(this->findUniformLocation(uniformName), value);
+	}
+
+	void ShaderProgram::setIntUniform(const std::string& uniformName, const int value) {
+		this->bind();
+		glUniform1i(this->findUniformLocation(uniformName), value);
+	}
+
+	void ShaderProgram::setIntArrayUniform(const std::string& uniformName, int size, int data[]) {
+		this->bind();
+		glUniform1iv(this->findUniformLocation(uniformName), size, data);
+	}
+
+	int ShaderProgram::findUniformLocation(const std::string& uniformName) {
+		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
+		ASSERT(uniformLocation != -1, "Cannot find uniform `" + uniformName + "`");
+		return uniformLocation;
 	}
 
 }

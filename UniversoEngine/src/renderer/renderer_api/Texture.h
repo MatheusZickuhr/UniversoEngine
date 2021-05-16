@@ -1,35 +1,33 @@
 #pragma once
 
-#include <string>
-
 namespace engine {
 
     class Texture {
 
     public:
 
-        const static unsigned int maxTextureSlot = 32;
-
-        Texture(const std::string& filepath);
+        const static unsigned int maxTextures = 16;
+        const static unsigned int maxCubeMaps = 16;
+        
 
         ~Texture();
 
-        void bind();
+        virtual void bind(unsigned int slot) = 0;
 
-        void unbind() const;
+        virtual void unbind() const = 0;
 
         unsigned int getSlot();
+        
+        unsigned int getId();
 
         int getWidth();
 
         int getHeight();
 
-    private:
+    protected:
 
-        unsigned int id, slot;
-        int width, height, bitsPerPixel;
-
-        static unsigned int currentTextureSlot;
+        unsigned int id, slot = 0;
+        int width, height = 0;
         
     };
 

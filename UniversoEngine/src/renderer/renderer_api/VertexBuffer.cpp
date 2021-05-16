@@ -36,6 +36,7 @@ namespace engine {
 	}
 
 	void VertexBuffer::addAttributePointer(AttriuteType attriuteType, unsigned int offset) {
+		this->bind();
 
 		switch (attriuteType) {
 

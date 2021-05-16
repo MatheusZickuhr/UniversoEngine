@@ -11,7 +11,8 @@ namespace engine {
 
 	Scene::Scene() :
 		physicsWorld(new ReactPhysics3dPhysicsWorld()),
-		renderer(new Renderer3D()) {
+		renderer3d(new Renderer3D()),
+		renderer2d(new Renderer2D()) {
 	
 		this->registry.on_construct<RigidBodyComponent>()
 			.connect<&Scene::onRigidBodyComponentCreated>(this);
@@ -24,7 +25,8 @@ namespace engine {
 	}
 
 	Scene::~Scene() {
-		delete this->renderer;
+		delete this->renderer3d;
+		delete this->renderer2d;
 		delete this->physicsWorld;
 
 		for (Entity* entity : entities) {
@@ -44,17 +46,47 @@ namespace engine {
 		}
 	}
 
-	void Scene::render(float windowWidth, float windowHeight) {
-		auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+	void Scene::render() {
 
-		auto mvp = this->camera.getMvp(windowWidth, windowHeight);
-		this->renderer->clear(0.2f, 0.3f, 0.3f, 1.0f);
-		this->renderer->startDrawing(mvp);
+		this->renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-			this->renderer->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
-		}
-		this->renderer->endDrawing();
+		this->renderer3d->startLightsDrawing();
+			// draw/ update lights
+			{
+				auto view = this->registry.view<PointLightComponent, TransformComponent>();
+
+				for (auto [entity, lightComp, transComp] : view.each()) {
+					this->renderer3d->drawPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
+				}
+			}
+
+			{
+				auto view = this->registry.view<DirectionalLightComponent, TransformComponent>();
+
+				for (auto [entity, lightComp, transComp] : view.each()) {
+					this->renderer3d->drawDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
+				}
+			}
+			// end update/draw lights
+
+			{
+				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+
+				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+					this->renderer3d->drawMeshShadowMap(meshComp.mesh, transComp.transform.getTransformMatrix());
+				}
+			}
+		this->renderer3d->endLightsDrawing();
+
+		this->renderer3d->startDrawing(this->camera);
+			{
+				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+
+				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
+					this->renderer3d->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
+				}
+			}
+		this->renderer3d->endDrawing();
 	}
 
 	void Scene::renderDebugData() {
@@ -67,12 +99,24 @@ namespace engine {
 		ImGui::Text("Frametime: %.1f", 1000.0f / ImGui::GetIO().Framerate);
 		ImGui::Text("Fps: %.1f", ImGui::GetIO().Framerate);
 
-		ImGui::Text("Draw calls: %d", this->renderer->getDrawCallsCount());
+		ImGui::Text("Draw calls: %d", this->renderer3d->getDrawCallsCount());
 
 		ImGui::End();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void Scene::renderDebugLightPositions() {
+		auto view = this->registry.view<PointLightComponent, TransformComponent>();
+
+		this->renderer2d->startDrawing(this->camera);
+
+		for (auto [entity, lightComp, transComp] : view.each()) {
+			this->renderer2d->drawQuad(&this->debugPointLightTexture, transComp.transform.getTransformMatrix());
+		}
+
+		this->renderer2d->endDrawing();
 	}
 
 	void Scene::onUpdateCallBack(float deltaTime) {
@@ -118,7 +162,7 @@ namespace engine {
 	} 
 
 	Renderer3D* Scene::getRenderer() {
-		return this->renderer;
+		return this->renderer3d;
 	}
 
 	Entity* Scene::createEntity() {

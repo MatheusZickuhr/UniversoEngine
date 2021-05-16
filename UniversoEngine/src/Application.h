@@ -3,6 +3,7 @@
 #include "input/Input.h"
 #include "scene/Scene.h"
 #include "debug/Assert.h"
+#include "renderer/renderer_api/DrawApi.h"
 
 struct GLFWwindow;
 
@@ -29,6 +30,11 @@ namespace engine {
 			this->windowName = windowName;
 			this->initializeGlfwWindow();
 			
+			DrawApi::init();
+
+#ifdef DEBUG
+			DrawApi::initDebugMode();
+#endif
 			this->initializeImGui();
 
 			Input::init(this->window);

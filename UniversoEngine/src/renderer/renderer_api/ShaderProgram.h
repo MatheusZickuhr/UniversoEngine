@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <glm/glm.hpp>
+#include <string>
+
+#include "Shader.h"
 
 namespace engine {
 
@@ -11,24 +14,31 @@ namespace engine {
 
 		ShaderProgram();
 
+		ShaderProgram(const ShaderProgram& other) = delete;
+
 		void unbind();
 
 		void bind();
 
-		void attachShader(unsigned int shaderId);
+		void attachShader(Shader& shader);
 
-		void setUniform4f(const char* uniformName, float float1, float float2, float float3, float float4);
+		void setVec3Uniform(const std::string& uniformName, const glm::vec3& vec);
 
-		void setUniformMat4f(const char* uniformName, const glm::mat4& matrix);
+		void setVec4Uniform(const std::string& uniformName, const glm::vec4& vec);
 
-		void setUniform1f(const char* uniformName, const float value);
+		void setMat4Uniform(const std::string& uniformName, const glm::mat4& matrix);
 
-		void setUniform1i(const char* uniformName, const int value);
+		void setFloatUniform(const std::string& uniformName, const float value);
 
-		void setUniform1iv(const char* uniformName, int size, int data[]);
+		void setIntUniform(const std::string& uniformName, const int value);
+
+		void setIntArrayUniform(const std::string& uniformName, int size, int data[]);
 
 	private:
 
 		unsigned int id;
+		bool linked = false;
+
+		int findUniformLocation(const std::string& uniformName);
 	};
 }

@@ -6,16 +6,6 @@
 
 namespace engine {
 
-	const float SPEED = 2.5f;
-	const float SENSITIVITY = 0.1f;
-
-	enum class CameraMovement {
-		FORWARD,
-		BACKWARD,
-		LEFT,
-		RIGHT
-	};
-
 	class CameraController {
 
 	public:
@@ -27,18 +17,15 @@ namespace engine {
 	private:
 
 		Camera& camera;
-		float movementSpeed;
-		float mouseSensitivity;
-		float lastX = 0;
-		float lastY = 0;
-		bool firstMouse = true;
+		float movementSpeed = 2.5f;
+		float mouseSensitivity = 0.1f;
+		float xlast = 0;
+		float ylast = 0;
+		bool isFirstMouseMovement = true;
 
 		void processKeybordInput(float deltaTime);
 
 		void processMouseInput();
 
-		void updateCameraPosition(CameraMovement direction, float deltaTime);
-
-		void updateCameraAngles(float xoffset, float yoffset, bool constrainPitch = true);
 	};
 }
