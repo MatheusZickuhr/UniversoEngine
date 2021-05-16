@@ -20,7 +20,7 @@ namespace engine {
 		glm::vec3 specular = { 1.0f, 1.0f, 1.0f };
 
 		std::shared_ptr<FrameBuffer> depthMapFrameBuffer = std::make_shared<FrameBuffer>();
-		std::shared_ptr<DepthBufferTexture2D> depthMapTexture = std::make_shared<DepthBufferTexture2D>(1024.0f, 1024.0f);
+		std::shared_ptr<DepthBufferTexture2D> depthMapTexture = std::make_shared<DepthBufferTexture2D>(2048.0f, 2048.0f);
 
 
 		DirectionalLight();

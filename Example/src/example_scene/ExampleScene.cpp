@@ -55,32 +55,30 @@ void ExampleScene::onStart() {
 
 
 	// create a floor entity
-	auto floor = createEntity();
-	floor->addComponent<MeshComponent>(boxMesh);
-	floor->addComponent<MaterialComponent>(boxMaterial);
-	floor->addComponent<TransformComponent>();
-	
-	auto& floorTransformComponent = floor->getComponent<TransformComponent>();
-	floorTransformComponent.transform.position.y = -2.0f;
-	floorTransformComponent.transform.scale = { 10.0f, 0.5f, 10.0f };
+	{
+		auto floor = createEntity();
+		floor->addComponent<MeshComponent>(boxMesh);
+		floor->addComponent<MaterialComponent>(boxMaterial);
+		floor->addComponent<TransformComponent>();
 
-	floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
-	floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
+		auto& floorTransformComponent = floor->getComponent<TransformComponent>();
+		floorTransformComponent.transform.position.y = -2.0f;
+		floorTransformComponent.transform.scale = { 10.0f, 0.5f, 10.0f };
+
+		floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
+		floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
+	}
+
 
 	// sun light
 
 	//{
 	//	auto directionalLight = createEntity();
 	//	directionalLight->addComponent<DirectionalLightComponent>();
-	//	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { -2.0f, 4.0f, -1.0f };
+	//	directionalLight->addComponent<TransformComponent>();
+	//	auto& transComp = directionalLight->getComponent<TransformComponent>();
+	//	transComp.transform.position = { -1.0f, 4.0f, -1.0f };
 	//}
-
-	//{
-	//	auto directionalLight = createEntity();
-	//	directionalLight->addComponent<DirectionalLightComponent>();
-	//	directionalLight->getComponent<DirectionalLightComponent>().directionalLight.position = { 2.0f, 4.0f, 1.0f };
-	//}
-
 
 	{
 		auto pointLight = createEntity();
@@ -90,13 +88,6 @@ void ExampleScene::onStart() {
 		pointLight->addComponent<PointLightComponent>();
 	}
 
-	//{
-	//	auto pointLight = createEntity();
-	//	pointLight->addComponent<TransformComponent>();
-	//	auto& transComp = pointLight->getComponent<TransformComponent>();
-	//	transComp.transform.position = { -6.0f, 1.0f, 0.0f };
-	//	pointLight->addComponent<PointLightComponent>();
-	//}
 }
 
 void ExampleScene::onUpdate(float deltaTime) {

@@ -36,10 +36,6 @@ namespace engine {
         shaderProgram.attachShader(fragShader);
         shaderProgram.bind();
 
-        int textureSlots[Texture::maxTextures];
-        for (int i = 0; i < Texture::maxTextures; i++) textureSlots[i] = i;
-        this->shaderProgram.setIntArrayUniform("TextureSlots", Texture::maxTextures, textureSlots);
-
     }
 
     Renderer2D::~Renderer2D() {

@@ -10,5 +10,5 @@ struct Vertex {
     glm::vec3 specular;
     float shininess;
     glm::vec2 textureCoords;
-    float textureSlot = -1.0f;
+    float textureSlotIndex = -1.0f;
 };

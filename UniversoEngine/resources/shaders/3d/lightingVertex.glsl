@@ -7,29 +7,32 @@ layout (location = 3) in vec3 diffuse;
 layout (location = 4) in vec3 specular;
 layout (location = 5) in float shininess;
 layout (location = 6) in vec2 textureCoords;
-layout (location = 7) in float textureSlot;
+layout (location = 7) in float textureSlotIndex;
 
-out vec3 vNormal;
-out vec3 vAmbient;
-out vec3 vDiffuse;
-out vec3 vSpecular;
-out float vShininess;
-out vec2 vTextureCoords;
-out float vTextureSlot;
-out vec3 vFragPosition;
+out VsOut {
+    vec3 normal;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+    vec2 textureCoords;
+    float textureSlotIndex;
+    vec3 fragPosition;
+} vsOut;
+
 
 uniform mat4 viewProjection;
 
 void main() {
     
-    vNormal        = normal;
-    vAmbient       = ambient;
-    vDiffuse       = diffuse;
-    vSpecular      = specular;
-    vShininess     = shininess;
-    vTextureCoords = textureCoords;
-    vTextureSlot   = textureSlot;
-    vFragPosition  = position;
+    vsOut.normal             = normal;
+    vsOut.ambient            = ambient;
+    vsOut.diffuse            = diffuse;
+    vsOut.specular           = specular;
+    vsOut.shininess          = shininess;
+    vsOut.textureCoords      = textureCoords;
+    vsOut.textureSlotIndex   = textureSlotIndex;
+    vsOut.fragPosition       = position;
 
     gl_Position = viewProjection * vec4(position, 1.0);
 }

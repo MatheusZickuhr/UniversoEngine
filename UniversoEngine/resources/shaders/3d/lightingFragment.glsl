@@ -21,13 +21,10 @@ struct PointLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-
     float constant;
     float linear;
     float quadratic;
-    
     float farPlane;
-
     int cubeMapSlotIndex;
 };
 
@@ -42,20 +39,24 @@ struct DirectionalLight {
 
 out vec4 FragColor;
 
-in vec3 vNormal;
-in vec3 vAmbient;
-in vec3 vDiffuse;
-in vec3 vSpecular;
-in float vShininess;
-in vec2 vTextureCoords;
-in float vTextureSlot;
-in vec3 vFragPosition;
+in VsOut {
+    vec3 normal;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+    vec2 textureCoords;
+    float textureSlotIndex;
+    vec3 fragPosition;
+} fsIn;
 
 uniform vec3 viewPosition;
 uniform int numberOfPointLights;
 uniform int numberOfDirectionalLights;
-uniform sampler2D textureSlots[MAX_TEXTURES];
-uniform samplerCube cubeMapSlots[MAX_CUBE_MAPS];
+// samplers from 0 to MAX_TEXTURES - 1
+layout (binding = 0) uniform sampler2D textureSlots[MAX_TEXTURES];
+// samplers from MAX_TEXTURES to MAX_CUBE_MAPS - 1
+layout (binding = MAX_TEXTURES) uniform samplerCube cubeMapSlots[MAX_CUBE_MAPS];
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
 
@@ -80,41 +81,39 @@ void main() {
         outputColor += calcPointLight(pointLights[i]);
     }
     
-    if (vTextureSlot == -1) {
+    if (fsIn.textureSlotIndex == -1) {
         FragColor = vec4(outputColor, 1.0f);
     } else {
-        FragColor = vec4(outputColor, 1.0f) * texture(textureSlots[int(vTextureSlot)], vTextureCoords);
+        FragColor = vec4(outputColor, 1.0f) * texture(textureSlots[int(fsIn.textureSlotIndex)], fsIn.textureCoords);
     }
 } 
 
 vec3 calcPointLight(PointLight light) {
     // difuse lighting
-    vec3 normalizedNormal = normalize(vNormal);
-    // I inrverted that expression from the example,
-    //and looks more correct (the example was  lightPosition - vFragPosition)
-    vec3 lightDirection = normalize(vFragPosition - light.position);
+    vec3 normalizedNormal = normalize(fsIn.normal);
+
+    vec3 lightDirection = normalize(fsIn.fragPosition - light.position);
 
     float diff = max(dot(normalizedNormal, lightDirection), 0.0);
-    vec3 diffuse = light.diffuse * (diff * vDiffuse);
+    vec3 diffuse = light.diffuse * (diff * fsIn.diffuse);
     
     // ambient lighting
     float ambientLightStrength = 0.1;
 
-    vec3 ambient = light.ambient * vAmbient;
+    vec3 ambient = light.ambient * fsIn.ambient;
     
     // specular lighting
     float specularLightStrength = 0.5;
 
-    vec3 viewDir = normalize(viewPosition - vFragPosition);
-    // here again on the example was -lightDirection, but Im using lightDirection instead,
-    // sience I inverted early
+    vec3 viewDir = normalize(viewPosition - fsIn.fragPosition);
+
     vec3 reflectDir = reflect(lightDirection, normalizedNormal);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), vShininess);
-    vec3 specular = light.specular * (spec * vSpecular);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), fsIn.shininess);
+    vec3 specular = light.specular * (spec * fsIn.specular);
 
     // calculate light attenuation
-    float distance = length(light.position - vFragPosition);
+    float distance = length(light.position - fsIn.fragPosition);
     float attenuation = 1.0 / (light.constant + light.linear * distance + 
     		    light.quadratic * (distance * distance)); 
 
@@ -131,29 +130,27 @@ vec3 calcPointLight(PointLight light) {
 
 vec3 calcDirectionalLight(DirectionalLight light) {
     // difuse lighting
-    vec3 normalizedNormal = normalize(vNormal);
-    // I inrverted that expression from the example,
-    //and looks more correct (the example was  lightPosition - vFragPosition)
+    vec3 normalizedNormal = normalize(fsIn.normal);
+
     vec3 lightDirection = normalize(vec3(0, 0, 0) - light.position);
 
     float diff = max(dot(normalizedNormal, lightDirection), 0.0);
-    vec3 diffuse = light.diffuse * (diff * vDiffuse);
+    vec3 diffuse = light.diffuse * (diff * fsIn.diffuse);
     
     // ambient lighting
     float ambientLightStrength = 0.1;
 
-    vec3 ambient = light.ambient * vAmbient;
+    vec3 ambient = light.ambient * fsIn.ambient;
     
     // specular lighting
     float specularLightStrength = 0.5;
 
-    vec3 viewDir = normalize(viewPosition - vFragPosition);
-    // here again on the example was -lightDirection, but Im using lightDirection instead,
-    // sience I inverted early
+    vec3 viewDir = normalize(viewPosition - fsIn.fragPosition);
+
     vec3 reflectDir = reflect(lightDirection, normalizedNormal);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), vShininess);
-    vec3 specular = light.specular * (spec * vSpecular);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), fsIn.shininess);
+    vec3 specular = light.specular * (spec * fsIn.specular);
 
     // calculate shadow
     float shadow = shadowCalculationDirectionalLight(light);       
@@ -164,7 +161,7 @@ vec3 calcDirectionalLight(DirectionalLight light) {
 
 float shadowCalculationDirectionalLight(DirectionalLight light) {
     
-    vec4 fragPosLightSpace = light.viewProjection * vec4(vFragPosition, 1.0);
+    vec4 fragPosLightSpace = light.viewProjection * vec4(fsIn.fragPosition, 1.0);
 
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -175,8 +172,8 @@ float shadowCalculationDirectionalLight(DirectionalLight light) {
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // calculate bias (based on depth map resolution and slope)
-    vec3 normal = normalize(vNormal);
-    vec3 lightDir = normalize(light.position - vFragPosition);
+    vec3 normal = normalize(fsIn.normal);
+    vec3 lightDir = normalize(light.position - fsIn.fragPosition);
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     // check whether current frag pos is in shadow
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
@@ -210,7 +207,7 @@ vec3 sampleOffsetDirections[20] = vec3[]
 
 float shadowCalculationPointLight(PointLight pointLight) {
     // get vector between fragment position and light position
-    vec3 fragToLight = vFragPosition - pointLight.position;
+    vec3 fragToLight = fsIn.fragPosition - pointLight.position;
     // use the light to fragment vector to sample from the depth map    
     float closestDepth = texture(cubeMapSlots[pointLight.cubeMapSlotIndex], fragToLight).r;
     // it is currently in linear range between [0,1]. Re-transform back to original value
@@ -221,7 +218,7 @@ float shadowCalculationPointLight(PointLight pointLight) {
     float shadow = 0.0;
     float bias   = 0.15;
     int samples  = 20;
-    float viewDistance = length(viewPosition - vFragPosition);
+    float viewDistance = length(viewPosition - fsIn.fragPosition);
     float diskRadius = (1.0 + (viewDistance / pointLight.farPlane)) / 25.0;
     for(int i = 0; i < samples; ++i) {
         float closestDepth = texture(cubeMapSlots[pointLight.cubeMapSlotIndex], fragToLight + sampleOffsetDirections[i] * diskRadius).r;

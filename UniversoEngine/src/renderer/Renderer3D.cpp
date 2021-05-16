@@ -22,7 +22,7 @@ namespace engine {
 		vertexBuffer.addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, specular));
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, shininess));
 		vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(Vertex, textureCoords));
-		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlot));
+		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlotIndex));
 
 		fragShader.defineInt("MAX_POINT_LIGHTS", PointLight::maxPointLights);
 		fragShader.defineInt("MAX_DIRECTIONAL_LIGHTS", DirectionalLight::maxDirectionalLights);
@@ -33,19 +33,6 @@ namespace engine {
 		shaderProgram.attachShader(vertexShader);
 		shaderProgram.attachShader(fragShader);
 		shaderProgram.bind();
-
-		// add the textures/cubeMap slots to the shader
-		{
-			int textureSlots[Texture::maxTextures];
-			for (int i = 0; i < Texture::maxTextures; i++) textureSlots[i] = i;
-			this->shaderProgram.setIntArrayUniform("textureSlots", Texture::maxTextures, textureSlots);
-		}
-
-		{
-			int cubeMapSlots[Texture::maxCubeMaps];
-			for (int i = 0; i < Texture::maxCubeMaps; i++) cubeMapSlots[i] = i + Texture::maxTextures;
-			this->shaderProgram.setIntArrayUniform("cubeMapSlots", Texture::maxCubeMaps, cubeMapSlots);
-		}
 		
 		shaderProgram.setIntUniform("numberOfPointLights", 0);
 		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);
@@ -100,7 +87,7 @@ namespace engine {
 			this->vertices->specular = material->specular;
 			this->vertices->shininess = material->shininess;
 			this->vertices->textureCoords = vertex.textureCoords;
-			this->vertices->textureSlot = texture != nullptr ? texture->getSlot() : -1.0f;
+			this->vertices->textureSlotIndex = texture != nullptr ? texture->getSlot() : -1.0f;
 			this->vertices++;
 		}
 

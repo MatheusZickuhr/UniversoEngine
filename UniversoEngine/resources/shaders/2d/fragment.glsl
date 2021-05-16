@@ -2,12 +2,14 @@
 
 out vec4 FragColor;
 
-in vec2 vTextureCoords;
-in float vTextureSlot;
+in VsOut {
+    vec2 textureCoords;
+    float textureSlotIndex;
+} fsIn;
 
-uniform sampler2D TextureSlots[32];
+layout (binding = 0) uniform sampler2D TextureSlots[32];
 
 void main() {
-    vec4 texColor = texture(TextureSlots[int(vTextureSlot)], vTextureCoords);
+    vec4 texColor = texture(TextureSlots[int(fsIn.textureSlotIndex)], fsIn.textureCoords);
     FragColor = texColor;
 } 
