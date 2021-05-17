@@ -8,6 +8,15 @@
 
 namespace engine {
 
+	struct alignas(16) DirectionalLightData {
+		glm::mat4 viewProjection;
+		glm::vec4 position;
+		glm::vec4 ambient;
+		glm::vec4 diffuse;
+		glm::vec4 specular;
+		int textureSlotIndex;
+	};
+
 	class  DirectionalLight {
 
 	public:
@@ -26,6 +35,8 @@ namespace engine {
 		DirectionalLight();
 
 		glm::mat4 getViewProjectionMatrix();
+
+		DirectionalLightData getDirectionalLightData();
 	};
 
 }

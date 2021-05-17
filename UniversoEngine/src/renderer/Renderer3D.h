@@ -14,12 +14,26 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "Camera.h"
+#include "renderer_api/UniformBuffer.h"
 
 namespace engine {
 
     // arbitrary values for now
     const unsigned int maxVertices = 10000;
     const unsigned int maxIndices  = 10000;
+
+    struct CameraUniformBufferData {
+        glm::mat4 cameraViewProjecttionMatrix;
+        glm::vec3 cameraPosition;
+    };
+
+    struct LightsUniformBufferData {
+        PointLightData pointLights[PointLight::maxPointLights];  
+        DirectionalLightData directionalLights[DirectionalLight::maxDirectionalLights];
+        int numberOfPointLights;
+        int numberOfDirectionalLights;
+    };
+
    
     class Renderer3D {
 
@@ -76,6 +90,10 @@ namespace engine {
         Shader fragShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/lightingFragment.glsl" };
         ShaderProgram shaderProgram;
 
+        UniformBuffer cameraUniformBuffer { sizeof(CameraUniformBufferData) };
+
+        UniformBuffer lightsUniformBuffer{ sizeof(LightsUniformBufferData) };
+      
         // lighting
         std::vector<PointLight> pointLights;
         std::vector<DirectionalLight> directionalLights;

@@ -29,20 +29,19 @@ namespace engine {
 		fragShader.defineInt("MAX_TEXTURES", Texture::maxTextures);
 		fragShader.defineInt("MAX_CUBE_MAPS", Texture::maxCubeMaps);
 
-
 		shaderProgram.attachShader(vertexShader);
 		shaderProgram.attachShader(fragShader);
 		shaderProgram.bind();
 		
-		shaderProgram.setIntUniform("numberOfPointLights", 0);
-		shaderProgram.setIntUniform("numberOfDirectionalLights", 0);
-
 		depthshaderProgram.attachShader(depthVertexShader);
 		depthshaderProgram.attachShader(depthFragShader);
 
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapVertexShader);
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader);
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader);
+
+		cameraUniformBuffer.bind(0);
+		lightsUniformBuffer.bind(1);
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -54,10 +53,12 @@ namespace engine {
 		int currentViewPortWidth = DrawApi::getViewPortWidth();
 		int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-		this->shaderProgram.setMat4Uniform("viewProjection",
-			camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight));
-		this->shaderProgram.setVec3Uniform("viewPosition", camera.position);
-		
+		CameraUniformBufferData cameraUniformBufferData{ 
+			camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight),
+			camera.position
+		};
+
+		cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));		
 	}
 
 	void Renderer3D::endDrawing() {
@@ -122,6 +123,19 @@ namespace engine {
 
 	void Renderer3D::endLightsDrawing() {
 		this->performShadowMapDrawCalls();
+
+		LightsUniformBufferData lightsUniformBufferData;
+
+		lightsUniformBufferData.numberOfPointLights = pointLights.size();
+		lightsUniformBufferData.numberOfDirectionalLights = directionalLights.size();
+
+		for (int i = 0; i < this->pointLights.size(); i++)
+			lightsUniformBufferData.pointLights[i] = this->pointLights[i].getPointLightData();
+
+		for (int i = 0; i < this->directionalLights.size(); i++)
+			lightsUniformBufferData.directionalLights[i] = this->directionalLights[i].getDirectionalLightData();
+		
+		this->lightsUniformBuffer.pushData(&lightsUniformBufferData, sizeof(LightsUniformBufferData));
 	}
 
 	void Renderer3D::drawMeshShadowMap(Mesh* mesh, glm::mat4 transform) {
@@ -151,21 +165,6 @@ namespace engine {
 		this->pointLights.push_back(pointLight);
 
 		bindCubeMap(pointLight.depthMapCubeMap.get());
-
-		unsigned int lightIndex = this->pointLights.size() - 1;
-
-		shaderProgram.setIntUniform("numberOfPointLights", pointLights.size());
-
-		shaderProgram.setVec3Uniform(format("pointLights[%d].position", lightIndex), pointLight.position);
-		shaderProgram.setVec3Uniform(format("pointLights[%d].ambient", lightIndex), pointLight.ambient);
-		shaderProgram.setVec3Uniform(format("pointLights[%d].diffuse", lightIndex), pointLight.diffuse);
-		shaderProgram.setVec3Uniform(format("pointLights[%d].specular", lightIndex), pointLight.specular);
-		shaderProgram.setFloatUniform(format("pointLights[%d].constant", lightIndex), pointLight.constant);
-		shaderProgram.setFloatUniform(format("pointLights[%d].linear", lightIndex), pointLight.linear);
-		shaderProgram.setFloatUniform(format("pointLights[%d].quadratic", lightIndex), pointLight.quadratic);
-		shaderProgram.setFloatUniform(format("pointLights[%d].farPlane", lightIndex), pointLight.farPlane);
-		shaderProgram.setIntUniform(format("pointLights[%d].cubeMapSlotIndex", lightIndex),
-			pointLight.depthMapCubeMap->getSlot() - Texture::maxTextures);
 	}
 
 	void Renderer3D::drawDirectionalLight(DirectionalLight directionalLight, glm::mat4 transform) {
@@ -175,17 +174,6 @@ namespace engine {
 		this->directionalLights.push_back(directionalLight);
 
 		bindTexture(directionalLight.depthMapTexture.get());
-
-		shaderProgram.setIntUniform("numberOfDirectionalLights", directionalLights.size());
-
-		unsigned int lightIndex = this->directionalLights.size() - 1;
-
-		shaderProgram.setVec3Uniform(format("directionalLights[%d].position", lightIndex), directionalLight.position);
-		shaderProgram.setVec3Uniform(format("directionalLights[%d].ambient", lightIndex), directionalLight.ambient);
-		shaderProgram.setVec3Uniform(format("directionalLights[%d].diffuse", lightIndex), directionalLight.diffuse);
-		shaderProgram.setVec3Uniform(format("directionalLights[%d].specular", lightIndex), directionalLight.specular);
-		shaderProgram.setMat4Uniform(format("directionalLights[%d].viewProjection", lightIndex), directionalLight.getViewProjectionMatrix());
-		shaderProgram.setIntUniform(format("directionalLights[%d].textureSlotIndex", lightIndex), directionalLight.depthMapTexture->getSlot());
 	}
 
 	void Renderer3D::clearColor(float r, float g, float b, float a) {

@@ -21,4 +21,21 @@ namespace engine {
 
 		return shadowTransforms;
 	}
+
+	PointLightData PointLight::getPointLightData() {
+		PointLightData pointLightData;
+		pointLightData.position = { this->position, 0.0f };
+		pointLightData.ambient = { this->ambient, 0.0f };
+		pointLightData.diffuse = { this->diffuse, 0.0f };
+		pointLightData.specular = { this->specular, 0.0f };
+
+		pointLightData.constant = this->constant;
+		pointLightData.linear = this->linear;
+		pointLightData.quadratic = this->quadratic;
+		pointLightData.farPlane = this->farPlane;
+
+		pointLightData.cubeMapSlotIndex = this->depthMapCubeMap->getSlot() - Texture::maxTextures;
+		
+		return pointLightData;
+	}
 }
