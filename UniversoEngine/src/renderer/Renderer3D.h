@@ -40,6 +40,10 @@ namespace engine {
         float farPlane;
     };
 
+    struct CurrentDirectionalLightUniformBufferData {
+        glm::mat4 lightSpaceMatrix;
+    };
+
    
     class Renderer3D {
 
@@ -98,15 +102,14 @@ namespace engine {
 
         UniformBuffer cameraUniformBuffer { sizeof(CameraUniformBufferData) };
 
-        UniformBuffer lightsUniformBuffer{ sizeof(LightsUniformBufferData) };
-
-        UniformBuffer currentPointLightUniformBuffer{ sizeof(CurrentPointLightUniformBufferData) };
-      
         // lighting
         std::vector<PointLight> pointLights;
         std::vector<DirectionalLight> directionalLights;
 
-        // shadows
+        UniformBuffer lightsUniformBuffer{ sizeof(LightsUniformBufferData) };
+        UniformBuffer currentPointLightUniformBuffer{ sizeof(CurrentPointLightUniformBufferData) };
+        UniformBuffer currentDirectionalLightUniformBuffer{ sizeof(CurrentDirectionalLightUniformBufferData) };
+
         ShaderProgram depthshaderProgram;
         Shader depthVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/depthMapVertex.glsl" };
         Shader depthFragShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/depthMapFragment.glsl" };
@@ -115,6 +118,8 @@ namespace engine {
         Shader cubeMapDepthMapVertexShader { ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapVertex.glsl" };
         Shader cubeMapDepthMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
         Shader cubeMapDepthMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
+
+        void bindUniformBuffers();
 
         void bindTexture(Texture* texture);
 

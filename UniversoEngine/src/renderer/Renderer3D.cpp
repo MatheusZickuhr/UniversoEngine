@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "../utils/Format.h"
 #include "../debug/Assert.h"
 
 namespace engine {
@@ -40,9 +39,7 @@ namespace engine {
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader);
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader);
 
-		cameraUniformBuffer.bind(0);
-		lightsUniformBuffer.bind(1);
-		currentPointLightUniformBuffer.bind(2);
+		bindUniformBuffers();
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -189,6 +186,13 @@ namespace engine {
 		return this->drawCallsCount;
 	}
 
+	void Renderer3D::bindUniformBuffers() {
+		cameraUniformBuffer.bind(0);
+		lightsUniformBuffer.bind(1);
+		currentPointLightUniformBuffer.bind(2);
+		currentDirectionalLightUniformBuffer.bind(3);
+	}
+
 	void Renderer3D::bindTexture(Texture* texture) {
 		ASSERT(currentTextureSlot < Texture::maxTextures, "Maximum texture slot exceded");
 
@@ -256,11 +260,10 @@ namespace engine {
 
 		// update directional lights depth buffers
 		depthshaderProgram.bind();
-		for (int i = 0; i < directionalLights.size(); i++) {
-			auto& directionalLight = directionalLights[i];
-
-			depthshaderProgram.setMat4Uniform("lightSpaceMatrix",
-				directionalLight.getViewProjectionMatrix());
+		for (auto& directionalLight : this->directionalLights) {
+			CurrentDirectionalLightUniformBufferData lightData{ directionalLight.getViewProjectionMatrix() };
+			
+			this->currentDirectionalLightUniformBuffer.pushData(&lightData, sizeof(CurrentDirectionalLightUniformBufferData));
 
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();

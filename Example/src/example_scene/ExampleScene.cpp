@@ -80,13 +80,13 @@ void ExampleScene::onStart() {
 	//	transComp.transform.position = { -1.0f, 4.0f, -1.0f };
 	//}
 
-	//{
-	//	auto directionalLight = createEntity();
-	//	directionalLight->addComponent<DirectionalLightComponent>();
-	//	directionalLight->addComponent<TransformComponent>();
-	//	auto& transComp = directionalLight->getComponent<TransformComponent>();
-	//	transComp.transform.position = { 1.0f, 4.0f, 1.0f };
-	//}
+	{
+		auto directionalLight = createEntity();
+		directionalLight->addComponent<DirectionalLightComponent>();
+		directionalLight->addComponent<TransformComponent>();
+		auto& transComp = directionalLight->getComponent<TransformComponent>();
+		transComp.transform.position = { 1.0f, 4.0f, 1.0f };
+	}
 
 	//{
 	//	auto pointLight = createEntity();
@@ -104,13 +104,13 @@ void ExampleScene::onStart() {
 	//	pointLight->addComponent<PointLightComponent>();
 	//}
 
-	{
-		auto pointLight = createEntity();
-		pointLight->addComponent<TransformComponent>();
-		auto& transComp = pointLight->getComponent<TransformComponent>();
-		transComp.transform.position = { 6.0f, 1.0f, -2.0f };
-		pointLight->addComponent<PointLightComponent>();
-	}
+	//{
+	//	auto pointLight = createEntity();
+	//	pointLight->addComponent<TransformComponent>();
+	//	auto& transComp = pointLight->getComponent<TransformComponent>();
+	//	transComp.transform.position = { 6.0f, 1.0f, -2.0f };
+	//	pointLight->addComponent<PointLightComponent>();
+	//}
 
 }
 
