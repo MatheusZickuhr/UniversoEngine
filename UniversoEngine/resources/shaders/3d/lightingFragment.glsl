@@ -61,7 +61,7 @@ layout (std140, binding = 0) uniform camera {
     vec3 cameraPosition;
 };
 
-layout (std140, binding = 1) uniform PointLights {
+layout (std140, binding = 1) uniform lights {
     PointLight pointLights[MAX_POINT_LIGHTS];
     DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS]; 
     int numberOfPointLights;

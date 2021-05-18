@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <vector>
+#include <array>
 
 #include "renderer_api/FrameBuffer.h"
 #include "renderer_api/DepthBufferCubeMap.h"
@@ -45,7 +46,7 @@ namespace engine {
 
 		PointLight();
 
-		std::vector<glm::mat4> getViewProjectionMatrices();
+		std::array<glm::mat4, 6> getViewShadowMatrices();
 
 		PointLightData getPointLightData();
 	};

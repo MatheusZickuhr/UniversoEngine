@@ -34,6 +34,12 @@ namespace engine {
         int numberOfDirectionalLights;
     };
 
+    struct CurrentPointLightUniformBufferData {
+        glm::mat4 shadowMatrices[6];
+        glm::vec4 lightPosition;
+        float farPlane;
+    };
+
    
     class Renderer3D {
 
@@ -93,6 +99,8 @@ namespace engine {
         UniformBuffer cameraUniformBuffer { sizeof(CameraUniformBufferData) };
 
         UniformBuffer lightsUniformBuffer{ sizeof(LightsUniformBufferData) };
+
+        UniformBuffer currentPointLightUniformBuffer{ sizeof(CurrentPointLightUniformBufferData) };
       
         // lighting
         std::vector<PointLight> pointLights;

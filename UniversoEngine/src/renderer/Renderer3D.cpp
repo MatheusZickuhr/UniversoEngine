@@ -42,6 +42,7 @@ namespace engine {
 
 		cameraUniformBuffer.bind(0);
 		lightsUniformBuffer.bind(1);
+		currentPointLightUniformBuffer.bind(2);
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -284,18 +285,14 @@ namespace engine {
 		// update point lights depth buffers
 		cubeMapDepthMapShaderProgram.bind();
 
-		for (int i = 0; i < pointLights.size(); i++) {
-			auto& pointLight = pointLights[i];
+		for (auto& pointLight : this->pointLights) {
+			CurrentPointLightUniformBufferData lightData;
 
-			cubeMapDepthMapShaderProgram.setVec3Uniform("lightPos", pointLight.position);
-			cubeMapDepthMapShaderProgram.setFloatUniform("far_plane", pointLight.farPlane);
+			lightData.lightPosition = { pointLight.position, 0.0f };
+			lightData.farPlane = pointLight.farPlane;
+			std::memcpy(&lightData.shadowMatrices, pointLight.getViewShadowMatrices().data(), sizeof(lightData.shadowMatrices));
 
-			auto pointLightProjectionMatrices = pointLight.getViewProjectionMatrices();
-			for (int j = 0; j < pointLightProjectionMatrices.size(); j++) {
-				cubeMapDepthMapShaderProgram.setMat4Uniform(
-					format("shadowMatrices[%d]", j),
-					pointLightProjectionMatrices[j]);
-			}
+			this->currentPointLightUniformBuffer.pushData(&lightData, sizeof(CurrentPointLightUniformBufferData));
 
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();
