@@ -9,10 +9,12 @@ out VsOut {
     float textureSlotIndex;
 } vsOut;
 
-uniform mat4 viewProjection;
+layout (std140, binding = 0) uniform camera {
+    mat4 cameraViewProjection;
+};
 
 void main() {
     vsOut.textureCoords      = textureCoords;
     vsOut.textureSlotIndex   = textureSlotIndex;
-    gl_Position = viewProjection * vec4(position, 1.0);
+    gl_Position = cameraViewProjection * vec4(position, 1.0);
 }

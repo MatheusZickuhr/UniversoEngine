@@ -49,7 +49,9 @@ namespace engine {
         int currentViewPortWidth = DrawApi::getViewPortWidth();
         int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-        this->shaderProgram.setMat4Uniform("viewProjection", camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight));
+        CameraUniformBufferData cameraUniformBufferData{ camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight) };
+
+        this->cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
     }
 
     void Renderer2D::endDrawing() {
@@ -100,6 +102,7 @@ namespace engine {
     }
 
     void Renderer2D::performDrawcall() {
+        this->bindUniformBuffers();
         this->shaderProgram.bind();
         this->vertexArray.bind();
 
@@ -124,6 +127,10 @@ namespace engine {
             this->bindedTextures.push_back(texture);
             this->currentTextureSlot++;
         }
+    }
+
+    void Renderer2D::bindUniformBuffers() {
+        this->cameraUniformBuffer.bind(0);
     }
 
     void Renderer2D::clearBindedTextures() {

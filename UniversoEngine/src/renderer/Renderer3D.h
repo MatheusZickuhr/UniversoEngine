@@ -22,30 +22,29 @@ namespace engine {
     const unsigned int maxVertices = 10000;
     const unsigned int maxIndices  = 10000;
 
-    struct CameraUniformBufferData {
-        glm::mat4 cameraViewProjecttionMatrix;
-        glm::vec3 cameraPosition;
-    };
-
-    struct LightsUniformBufferData {
-        PointLightData pointLights[PointLight::maxPointLights];  
-        DirectionalLightData directionalLights[DirectionalLight::maxDirectionalLights];
-        int numberOfPointLights;
-        int numberOfDirectionalLights;
-    };
-
-    struct CurrentPointLightUniformBufferData {
-        glm::mat4 shadowMatrices[6];
-        glm::vec4 lightPosition;
-        float farPlane;
-    };
-
-    struct CurrentDirectionalLightUniformBufferData {
-        glm::mat4 lightSpaceMatrix;
-    };
-
-   
     class Renderer3D {
+
+        struct CameraUniformBufferData {
+            glm::mat4 cameraViewProjecttionMatrix;
+            glm::vec3 cameraPosition;
+        };
+
+        struct LightsUniformBufferData {
+            PointLightData pointLights[PointLight::maxPointLights];
+            DirectionalLightData directionalLights[DirectionalLight::maxDirectionalLights];
+            int numberOfPointLights;
+            int numberOfDirectionalLights;
+        };
+
+        struct CurrentPointLightUniformBufferData {
+            glm::mat4 shadowMatrices[6];
+            glm::vec4 lightPosition;
+            float farPlane;
+        };
+
+        struct CurrentDirectionalLightUniformBufferData {
+            glm::mat4 lightSpaceMatrix;
+        };
 
     public:
 

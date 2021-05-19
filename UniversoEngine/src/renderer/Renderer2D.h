@@ -13,6 +13,7 @@
 #include <map>
 #include <array>
 #include <vector>
+#include "renderer_api/UniformBuffer.h"
 
 namespace engine {
 
@@ -20,13 +21,17 @@ namespace engine {
     const unsigned int maxQuadVertices = 4 * maxQuads;
     const unsigned int maxQuadIndices =  6 * maxQuads;
 
-    struct QuadVertex {
-        glm::vec3 position;
-        glm::vec2 textureCoords;
-        float textureSlot;
-    };
-
     class Renderer2D {
+
+        struct QuadVertex {
+            glm::vec3 position;
+            glm::vec2 textureCoords;
+            float textureSlot;
+        };
+
+        struct CameraUniformBufferData {
+            glm::mat4 cameraViewProjection;
+        };
 
     public:
 
@@ -55,6 +60,8 @@ namespace engine {
         VertexBuffer vertexBuffer{ sizeof(QuadVertex), maxQuadVertices };
         IndexBuffer indexBuffer{ maxQuadIndices };
 
+        UniformBuffer cameraUniformBuffer{ sizeof(CameraUniformBufferData) };
+
         Shader vertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/2d/vertex.glsl" };
         Shader fragShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/2d/fragment.glsl" };
         ShaderProgram shaderProgram;
@@ -67,6 +74,8 @@ namespace engine {
         void performDrawcall();
 
         void bindTexture(Texture* texture);
+
+        void bindUniformBuffers();
 
         void clearBindedTextures();
     };

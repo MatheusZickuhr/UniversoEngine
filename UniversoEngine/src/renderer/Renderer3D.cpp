@@ -39,7 +39,6 @@ namespace engine {
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader);
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader);
 
-		bindUniformBuffers();
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -234,6 +233,7 @@ namespace engine {
 	}
 
 	void Renderer3D::performDrawCall() {
+		this->bindUniformBuffers();
 		this->vertexArray.bind();
 		this->shaderProgram.bind();
 
@@ -252,6 +252,7 @@ namespace engine {
 	}
 
 	void Renderer3D::performShadowMapDrawCalls() {
+		this->bindUniformBuffers();
 		this->vertexArray.bind();
 
 		// upload the data to vertex/index buffer in the gpu
