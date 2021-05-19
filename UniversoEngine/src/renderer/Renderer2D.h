@@ -17,21 +17,7 @@
 
 namespace engine {
 
-    const unsigned int maxQuads = 100;
-    const unsigned int maxQuadVertices = 4 * maxQuads;
-    const unsigned int maxQuadIndices =  6 * maxQuads;
-
     class Renderer2D {
-
-        struct QuadVertex {
-            glm::vec3 position;
-            glm::vec2 textureCoords;
-            float textureSlot;
-        };
-
-        struct CameraUniformBufferData {
-            glm::mat4 cameraViewProjection;
-        };
 
     public:
 
@@ -48,6 +34,20 @@ namespace engine {
         void clearColor(float r, float g, float b, float a);
 
     private:
+
+        struct QuadVertex {
+            glm::vec3 position;
+            glm::vec2 textureCoords;
+            float textureSlot;
+        };
+
+        struct CameraUniformBufferData {
+            glm::mat4 cameraViewProjection;
+        };
+
+        const unsigned int maxQuads        = 100;
+        const unsigned int maxQuadVertices = 4 * maxQuads;
+        const unsigned int maxQuadIndices  = 6 * maxQuads;
 
         std::vector<Texture*> bindedTextures;
 

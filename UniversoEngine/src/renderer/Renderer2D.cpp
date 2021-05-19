@@ -17,7 +17,7 @@ namespace engine {
         this->vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(QuadVertex, textureCoords));
         this->vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(QuadVertex, textureSlot));
 
-        unsigned int indices[maxQuadIndices];
+        unsigned int* indices = new unsigned int[maxQuadIndices];
         unsigned int offset = 0;
 
         for (int i = 0; i < maxQuadIndices; i += 6) {
@@ -31,6 +31,8 @@ namespace engine {
         }
 
         this->indexBuffer.pushData(indices, sizeof(unsigned int) * maxQuadIndices);
+
+        delete[] indices;
 
         shaderProgram.attachShader(vertexShader);
         shaderProgram.attachShader(fragShader);

@@ -17,8 +17,8 @@ namespace engine {
 		return lightSpaceMatrix;
 	}
 
-	DirectionalLightData DirectionalLight::getDirectionalLightData() {
-		DirectionalLightData directionalLightData;
+	DirectionalLight::Data DirectionalLight::getData() {
+		Data directionalLightData;
 
 		directionalLightData.position = { this->position, 0.0f };
 		directionalLightData.ambient = { this->ambient, 0.0f };

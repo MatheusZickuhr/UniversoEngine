@@ -8,18 +8,20 @@
 
 namespace engine {
 
-	struct alignas(16) DirectionalLightData {
-		glm::mat4 viewProjection;
-		glm::vec4 position;
-		glm::vec4 ambient;
-		glm::vec4 diffuse;
-		glm::vec4 specular;
-		int textureSlotIndex;
-	};
 
 	class  DirectionalLight {
 
 	public:
+
+		// std140 compatible struct
+		struct alignas(16) Data {
+			glm::mat4 viewProjection;
+			glm::vec4 position;
+			glm::vec4 ambient;
+			glm::vec4 diffuse;
+			glm::vec4 specular;
+			int textureSlotIndex;
+		};
 
 		const static int maxDirectionalLights = 2;
 
@@ -36,7 +38,7 @@ namespace engine {
 
 		glm::mat4 getViewProjectionMatrix();
 
-		DirectionalLightData getDirectionalLightData();
+		DirectionalLight::Data getData();
 	};
 
 }

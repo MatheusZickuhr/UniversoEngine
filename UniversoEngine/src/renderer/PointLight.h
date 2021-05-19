@@ -11,22 +11,24 @@
 
 namespace engine {
 
-	// send to shaders as uniform buffers
-	struct alignas(16) PointLightData {
-		glm::vec4 position;
-		glm::vec4 ambient;
-		glm::vec4 diffuse;
-		glm::vec4 specular;
-		float constant;
-		float linear;
-		float quadratic;
-		float farPlane;
-		int cubeMapSlotIndex;
-	};
+
 
 	class PointLight {
 		
 	public:
+
+		// std140 compatible struct
+		struct alignas(16) Data {
+			glm::vec4 position;
+			glm::vec4 ambient;
+			glm::vec4 diffuse;
+			glm::vec4 specular;
+			float constant;
+			float linear;
+			float quadratic;
+			float farPlane;
+			int cubeMapSlotIndex;
+		};
 
 		const static int maxPointLights = 4;
 
@@ -48,7 +50,7 @@ namespace engine {
 
 		std::array<glm::mat4, 6> getViewShadowMatrices();
 
-		PointLightData getPointLightData();
+		Data getData();
 	};
 
 }

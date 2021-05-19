@@ -127,10 +127,10 @@ namespace engine {
 		lightsUniformBufferData.numberOfDirectionalLights = directionalLights.size();
 
 		for (int i = 0; i < this->pointLights.size(); i++)
-			lightsUniformBufferData.pointLights[i] = this->pointLights[i].getPointLightData();
+			lightsUniformBufferData.pointLights[i] = this->pointLights[i].getData();
 
 		for (int i = 0; i < this->directionalLights.size(); i++)
-			lightsUniformBufferData.directionalLights[i] = this->directionalLights[i].getDirectionalLightData();
+			lightsUniformBufferData.directionalLights[i] = this->directionalLights[i].getData();
 		
 		this->lightsUniformBuffer.pushData(&lightsUniformBufferData, sizeof(LightsUniformBufferData));
 	}

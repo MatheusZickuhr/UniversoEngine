@@ -23,8 +23,8 @@ namespace engine {
 		return shadowTransforms;
 	}
 
-	PointLightData PointLight::getPointLightData() {
-		PointLightData pointLightData;
+	PointLight::Data PointLight::getData() {
+		Data pointLightData;
 		pointLightData.position = { this->position, 0.0f };
 		pointLightData.ambient = { this->ambient, 0.0f };
 		pointLightData.diffuse = { this->diffuse, 0.0f };
