@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <vector>
+#include <array>
 
 #include "renderer_api/FrameBuffer.h"
 #include "renderer_api/DepthBufferCubeMap.h"
@@ -10,9 +11,24 @@
 
 namespace engine {
 
+
+
 	class PointLight {
 		
 	public:
+
+		// std140 compatible struct
+		struct alignas(16) Data {
+			glm::vec4 position;
+			glm::vec4 ambient;
+			glm::vec4 diffuse;
+			glm::vec4 specular;
+			float constant;
+			float linear;
+			float quadratic;
+			float farPlane;
+			int cubeMapSlotIndex;
+		};
 
 		const static int maxPointLights = 4;
 
@@ -28,11 +44,13 @@ namespace engine {
 		float farPlane = 25.0f;
 
 		std::shared_ptr<FrameBuffer> depthMapFrameBuffer = std::make_shared<FrameBuffer>();
-		std::shared_ptr<DepthBufferCubeMap> depthMapCubeMap = std::make_shared<DepthBufferCubeMap>(1024.0f, 1024.0f);
+		std::shared_ptr<DepthBufferCubeMap> depthMapCubeMap = std::make_shared<DepthBufferCubeMap>(2048.0f, 2048.0f);
 
 		PointLight();
 
-		std::vector<glm::mat4> getViewProjectionMatrices();
+		std::array<glm::mat4, 6> getViewShadowMatrices();
+
+		Data getData();
 	};
 
 }

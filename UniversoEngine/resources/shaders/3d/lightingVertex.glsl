@@ -21,7 +21,10 @@ out VsOut {
 } vsOut;
 
 
-uniform mat4 viewProjection;
+layout (std140, binding = 0) uniform camera {
+    mat4 cameraViewProjection;
+    vec3 cameraPosition;
+};
 
 void main() {
     
@@ -34,5 +37,5 @@ void main() {
     vsOut.textureSlotIndex   = textureSlotIndex;
     vsOut.fragPosition       = position;
 
-    gl_Position = viewProjection * vec4(position, 1.0);
+    gl_Position = cameraViewProjection * vec4(position, 1.0);
 }
