@@ -1,6 +1,7 @@
 #include "Renderer3D.h"
 
 #include <algorithm>
+#include <cstring>
 
 #include "../debug/Assert.h"
 
