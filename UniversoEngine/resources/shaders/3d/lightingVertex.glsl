@@ -9,7 +9,7 @@ layout (location = 5) in float shininess;
 layout (location = 6) in vec2 textureCoords;
 layout (location = 7) in float textureSlotIndex;
 
-out VsOut {
+layout (location = 0) out VsOut {
     vec3 normal;
     vec3 ambient;
     vec3 diffuse;

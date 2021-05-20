@@ -8,12 +8,10 @@ namespace engine {
 
 	enum class ShaderType { FragmentShader, VertexShader, GeometryShader };
 
-	struct IntDefine {
-		const char* name;
-		int value;
-	};
+
 
 	class Shader {
+
 
 	public:
 
@@ -23,19 +21,25 @@ namespace engine {
 
 		unsigned int getId();
 
-		void defineInt(const char* name, int value);
+		void addMacroDefinition(const std::string& name, const std::string& value);
 		
 		void compile();
 
 	private:
 
+		struct MacroDefinition {
+			const std::string name;
+			const std::string value;
+		};
+
 		unsigned int id;
 		bool compiled = false;
 		ShaderType shaderType;
 		std::string sourceCode;
-		std::vector<IntDefine> intDefines;
-
-		void insertDefinesToSourceCode();
+		std::string fileName;
+		std::vector<MacroDefinition> macroDefinitions;
+		
+		std::vector<uint32_t> compileToSpirvBinary(const std::string& sourceName, const std::string& source, bool optimize = false);
 
 		void create();
 

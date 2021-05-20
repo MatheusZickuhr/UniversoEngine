@@ -1,8 +1,8 @@
 #version 460 core
 
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
 
-in VsOut {
+layout (location = 0) in VsOut {
     vec2 textureCoords;
     float textureSlotIndex;
 } fsIn;

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <string>
 
 #include "../debug/Assert.h"
 
@@ -24,10 +25,10 @@ namespace engine {
 		vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(Vertex, textureCoords));
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlotIndex));
 
-		fragShader.defineInt("MAX_POINT_LIGHTS", PointLight::maxPointLights);
-		fragShader.defineInt("MAX_DIRECTIONAL_LIGHTS", DirectionalLight::maxDirectionalLights);
-		fragShader.defineInt("MAX_TEXTURES", Texture::maxTextures);
-		fragShader.defineInt("MAX_CUBE_MAPS", Texture::maxCubeMaps);
+		fragShader.addMacroDefinition("MAX_POINT_LIGHTS",       std::to_string(PointLight::maxPointLights));
+		fragShader.addMacroDefinition("MAX_DIRECTIONAL_LIGHTS", std::to_string(DirectionalLight::maxDirectionalLights));
+		fragShader.addMacroDefinition("MAX_TEXTURES",           std::to_string(Texture::maxTextures));
+		fragShader.addMacroDefinition("MAX_CUBE_MAPS",          std::to_string(Texture::maxCubeMaps));
 
 		shaderProgram.attachShader(vertexShader);
 		shaderProgram.attachShader(fragShader);

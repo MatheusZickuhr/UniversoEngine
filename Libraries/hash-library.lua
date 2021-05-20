@@ -1,18 +1,17 @@
-project "reactphysics3d"
+project "hash-library"
 	kind "StaticLib"
-	language "C++"
-    cppdialect "C++17"
+	language "C"
 	architecture "x86_64"
-	staticruntime "off"
 	systemversion "latest"
+	staticruntime "off"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	
-	includedirs { "reactphysics3d/include/" }
+	includedirs { "hash-library/" }
 
 	files
 	{
-		"reactphysics3d/src/**.hpp", "reactphysics3d/src/**.h", "reactphysics3d/src/**.cpp"
+		"hash-library/*.h", "hash-library/*.cpp"
 	}
 	
 	filter "system:linux"

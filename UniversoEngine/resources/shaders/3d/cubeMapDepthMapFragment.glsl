@@ -1,6 +1,6 @@
 #version 460 core
 
-in vec4 FragPos;
+layout (location = 0) in vec4 FragPos;
 
 layout (std140, binding = 2) uniform currentPointlLight {
     mat4 shadowMatrices[6];

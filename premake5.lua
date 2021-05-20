@@ -14,6 +14,8 @@ workspace "UniversoEngine"
         flags { "LinkTimeOptimization" }
 
 
+VULKAN_SDK_DIR = os.getenv("VULKAN_SDK")
+
 include "Libraries/glfw.lua"
 include "Libraries/glad.lua"
 include "Libraries/glm.lua"
@@ -22,5 +24,6 @@ include "Libraries/stb_image.lua"
 include "Libraries/OBJ_Loader.lua"
 include "Libraries/entt.lua"
 include "Libraries/reactphysics3d.lua"
+include "Libraries/hash-library.lua"
 include "UniversoEngine/universoEngine.lua"
 include "Example/example.lua"
