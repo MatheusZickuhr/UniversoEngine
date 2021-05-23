@@ -29,6 +29,7 @@ project "Example"
     libdirs { "%{wks.location}/Libraries/VulkanDebugSdk/Lib/", "%{VULKAN_SDK_DIR}/lib" }
 
     links {
+        "UniversoEngine",
         "GLFW",
         "GLM",
         "GLAD",
