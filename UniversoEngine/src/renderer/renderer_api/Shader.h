@@ -19,7 +19,7 @@ namespace engine {
 
 		Shader(const Shader& other) = delete;
 
-		unsigned int getId();
+		unsigned int getId() { return this->id; }
 
 		void addMacroDefinition(const std::string& name, const std::string& value);
 		
@@ -37,11 +37,21 @@ namespace engine {
 		ShaderType shaderType;
 		std::string sourceCode;
 		std::string fileName;
+		std::string cacheFilePath;
+		std::string cacheHelperFilePath;
 		std::vector<MacroDefinition> macroDefinitions;
 		
-		std::vector<uint32_t> compileToSpirvBinary(const std::string& sourceName, const std::string& source, bool optimize = false);
+		std::vector<uint32_t> compileToSpirvBinary(bool optimize = false);
 
-		void create();
+		void cacheSpirvBinaryToFile(std::vector<uint32_t> spirvBinary);
+
+		std::vector<uint32_t> readSpirvBinaryFromFile();
+
+		std::string readSourceCodeFromFile(const std::string& filePath);
+
+		bool isSpirvBinaryCacheFileInvalid();
+
+		void createOpenglShader();
 
 	};
 }

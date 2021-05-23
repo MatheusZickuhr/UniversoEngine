@@ -38,13 +38,37 @@ project "UniversoEngine"
 		"reactphysics3d",
 		"hash-library",
 		"vulkan-1", 
-    	"VkLayer_utils",
-    	"shaderc_sharedd",
-    	"spirv-cross-cored",
-    	"spirv-cross-glsld",
-    	"spirv-cross-hlsld",
-    	"SPIRV-Toolsd"
+    	"VkLayer_utils"
 	}
+
+	-- if is debug and windows
+	filter { "configurations:Debug", "system:windows" }
+		links {
+			"shaderc_combinedd",
+    		"spirv-cross-cored",
+    		"spirv-cross-glsld",
+    		"spirv-cross-hlsld",
+    		"SPIRV-Toolsd"
+		}
+
+	-- if is debug and linux
+	filter { "configurations:Debug", "system:linux" }
+		links {
+			"shaderc_combined",
+	    	"spirv-cross-core",
+	    	"spirv-cross-glsl",
+	    	"spirv-cross-hlsl",
+	    	"SPIRV-Toolsd"
+		}
+
+	filter "configurations:Release"
+		links {
+			"shaderc_combined",
+    		"spirv-cross-core",
+    		"spirv-cross-glsl",
+    		"spirv-cross-hlsl",
+    		"SPIRV-Tools"
+		}
 
     filter "system:linux"
         links { "dl", "pthread" }

@@ -11,27 +11,22 @@
 
 namespace engine {
 
-	std::string readFile(const std::string& filePath);
-
-	std::string shaderCodeToSha256(const std::string& shaderSourceCode);
-
-	void cacheSpirvBinaryToFile(std::vector<uint32_t> spirvBinary, const std::string& filename);
-
-	void createCacheFileHelper(const std::string& shaderSourceCode, const std::string& filename);
-
-	std::vector<uint32_t> readSpirvBibaryFromFile(const std::string& filename);
-
-	bool didShaderSourceChanged(const std::string& helperFilePath, const std::string& shaderSourceCode);
-
 	Shader::Shader(ShaderType shaderType, const std::string& filePath): shaderType(shaderType) {
 		ASSERT_FILE_EXISTS(filePath);
 		ASSERT_FILE_EXTENSION(filePath, {".glsl"});
 
-		this->sourceCode = readFile(filePath);
+		this->sourceCode = readSourceCodeFromFile(filePath);
 
 		this->fileName = std::filesystem::path(filePath).filename().string();
 
-		this->create();
+		const std::string  cacheFolder = "shaderCache/";
+
+		std::filesystem::create_directory(cacheFolder);
+
+		this->cacheFilePath = cacheFolder + this->fileName + ".cache";
+		this->cacheHelperFilePath = cacheFilePath + ".helper";
+
+		this->createOpenglShader();
 	}
 
 	void Shader::addMacroDefinition(const std::string& name, const std::string& value) {
@@ -40,33 +35,21 @@ namespace engine {
 		this->macroDefinitions.push_back({ name, value });
 	}
 
-	unsigned int Shader::getId() { return this->id; }
-
 	void Shader::compile() {
-
-		const std::string  cacheFolder = "shaderCache/";
-
-		std::filesystem::create_directory(cacheFolder);
-
-		const std::string cacheFilePath = cacheFolder + this->fileName + ".cache";
-		const std::string cacheHelperFilePath = cacheFilePath + ".helper";
-
+		// load the spirv binary from a cache file or directly from the source code by compiling
 		std::vector<uint32_t> spirvBinary;
 
-		if (didShaderSourceChanged(cacheHelperFilePath, this->sourceCode)) {
+		if (this->isSpirvBinaryCacheFileInvalid()) {
 			std::cout << "compiling shader " << this->fileName << std::endl;
-			spirvBinary = compileToSpirvBinary(this->fileName, this->sourceCode);
-			cacheSpirvBinaryToFile(spirvBinary, cacheFilePath);
-			createCacheFileHelper(this->sourceCode, cacheHelperFilePath);
-			std::cout << "shader " << this->fileName << " compiled" << std::endl;
+			spirvBinary = this->compileToSpirvBinary();
+			this->cacheSpirvBinaryToFile(spirvBinary);
 		}
 		else {
 			std::cout << "loading shader " << this->fileName << " from cache" << std::endl;
-			spirvBinary = readSpirvBibaryFromFile(cacheFilePath);
-			std::cout << "shader " << this->fileName << " loaded" << std::endl;
+			spirvBinary = this->readSpirvBinaryFromFile();
 		}
 		
-
+		// compiles the spirv binary to glsl opengl compatible code
 		spirv_cross::CompilerGLSL glslCompiler(std::move(spirvBinary));
 
 		spirv_cross::CompilerGLSL::Options options;
@@ -76,8 +59,10 @@ namespace engine {
 		std::string spirvGeneratedSource = glslCompiler.compile();
 		const char* spirvGeneratedSourceAsCharPtr = spirvGeneratedSource.c_str();
 
-		// compile
+		// give the generated spirv glsl code to opengl
 		glShaderSource(this->id, 1, &spirvGeneratedSourceAsCharPtr, NULL);
+		
+		// let opengl compile the source code
 		glCompileShader(this->id);
 
 		// check for compile errors
@@ -91,10 +76,10 @@ namespace engine {
 			return;
 		}
 
-		this->compiled = true;
+		this->compiled = success;
 	}
 
-	void Shader::create() {
+	void Shader::createOpenglShader() {
 		//crete shader 
 		switch (shaderType) {
 		case ShaderType::FragmentShader:
@@ -112,7 +97,7 @@ namespace engine {
 		}
 	}
 
-	std::vector<uint32_t> Shader::compileToSpirvBinary(const std::string& sourceName, const std::string& source, bool optimize) {
+	std::vector<uint32_t> Shader::compileToSpirvBinary(bool optimize) {
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		
@@ -139,7 +124,7 @@ namespace engine {
 		}
 
 		shaderc::SpvCompilationResult module =
-			compiler.CompileGlslToSpv(source, shadercShaderKind, sourceName.c_str(), options);
+			compiler.CompileGlslToSpv(this->sourceCode, shadercShaderKind, this->fileName.c_str(), options);
 
 		if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
 			std::cerr << module.GetErrorMessage();
@@ -149,7 +134,7 @@ namespace engine {
 		return { module.cbegin(), module.cend() };
 	}
 
-	std::string readFile(const std::string& filePath) {
+	std::string Shader::readSourceCodeFromFile(const std::string& filePath) {
 		std::ifstream file;
 		std::string line;
 		std::string shaderSource;
@@ -164,32 +149,27 @@ namespace engine {
 		return shaderSource;
 	}
 
-	std::string shaderCodeToSha256(const std::string& shaderSourceCode) {
-		SHA256 sha256;
-		return sha256(shaderSourceCode);
-	}
-
-	void cacheSpirvBinaryToFile(std::vector<uint32_t> spirvBinary, const std::string& filename) {
+	void Shader::cacheSpirvBinaryToFile(std::vector<uint32_t> spirvBinary) {
 		// create cache file
 		std::fstream cacheFile;
-		cacheFile.open(filename, std::ios::out | std::ios::binary);
+		cacheFile.open(this->cacheFilePath, std::ios::out | std::ios::binary);
 		cacheFile.write((char*)spirvBinary.data(), spirvBinary.size() * sizeof(uint32_t));
 		cacheFile.flush();
 		cacheFile.close();
-	}
 
-	void createCacheFileHelper(const std::string& shaderSourceCode, const std::string& filename) {
 		// create helper file
+		SHA256 sha256;
+
 		std::ofstream infoFile;
-		infoFile.open(filename);
-		infoFile << shaderCodeToSha256(shaderSourceCode);
+		infoFile.open(this->cacheHelperFilePath);
+		infoFile << sha256(this->sourceCode);
 		infoFile.flush();
 		infoFile.close();
 	}
 
-	std::vector<uint32_t> readSpirvBibaryFromFile(const std::string& filename) {
+	std::vector<uint32_t> Shader::readSpirvBinaryFromFile() {
 		std::fstream file;
-		file.open(filename, std::ios::in | std::ios::binary);
+		file.open(this->cacheFilePath, std::ios::in | std::ios::binary);
 
 		file.seekg(0, std::ios::end);
 		auto fileSize = file.tellg();
@@ -203,17 +183,20 @@ namespace engine {
 
 		return result;
 	}
+
 	/* read the helper file to determinate if the shader source code changed based on a sha256 hash */
-	bool didShaderSourceChanged(const std::string& helperFilePath, const std::string& shaderSourceCode) {
-		if (!std::filesystem::exists(helperFilePath)) return true;
+	bool Shader::isSpirvBinaryCacheFileInvalid() {
+		if (!std::filesystem::exists(this->cacheFilePath)) return true;
 
-		std::ifstream helperFile(helperFilePath);
+		if (!std::filesystem::exists(this->cacheHelperFilePath)) return true;
 
-		std::string fileSha256;
-		std::getline(helperFile, fileSha256);
+		std::ifstream helperFile(this->cacheHelperFilePath);
 
-		const std::string shaderSourceSha256 = shaderCodeToSha256(shaderSourceCode);
+		std::string oldSourceCodeSha256;
+		std::getline(helperFile, oldSourceCodeSha256);
 
-		return fileSha256 != shaderSourceSha256;
+		SHA256 sha256;
+
+		return oldSourceCodeSha256 != sha256(this->sourceCode);
 	}
 }
