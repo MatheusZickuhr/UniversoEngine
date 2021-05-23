@@ -32,12 +32,14 @@ def check_vulkan_sdk():
     if vulkan_sdk_path is None:
         print("cannot find vulkan sdk, download the sdk with the required version" 
             f" ({REQUIRED_VULKAN_VERSION}) at https://www.lunarg.com/vulkan-sdk/")
+        return False
     elif not REQUIRED_VULKAN_VERSION in vulkan_sdk_path:
         print(f"vulkan sdk found, but is not the required version ({REQUIRED_VULKAN_VERSION}),"
             " download the corrent one at https://www.lunarg.com/vulkan-sdk/")
-    else:
-        print(f"vulkan sdk found with the required version ({REQUIRED_VULKAN_VERSION}) at {vulkan_sdk_path}")
-
+        return False
+    
+    print(f"vulkan sdk found with the required version ({REQUIRED_VULKAN_VERSION}) at {vulkan_sdk_path}")
+    return True
 
 def run_premake():
     # run premake
@@ -93,8 +95,12 @@ def download_vulkan_debug_libraries():
 if __name__ == "__main__":
     os.chdir("../")
 
+    vulkan_sdk_found = check_vulkan_sdk()
+    
+    if not vulkan_sdk_found:
+        exit('bulid aborted')
+    
     run_premake()
-    check_vulkan_sdk()
     download_vulkan_debug_libraries()
 
     print("build done")

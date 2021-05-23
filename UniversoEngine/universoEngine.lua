@@ -20,12 +20,12 @@ project "UniversoEngine"
 		"%{wks.location}/Libraries/entt/include/",
 		"%{wks.location}/Libraries/reactphysics3d/include/",
 		"%{wks.location}/Libraries/hash-library/",
-		"%{VULKAN_SDK_DIR}/Include/"
+		"%{VULKAN_SDK_DIR}/include/"
 	}
     
     files { "src/**.cpp", "src/**.h" }
 
-    libdirs { "%{wks.location}/Libraries/VulkanDebugSdk/Lib/", "%{VULKAN_SDK_DIR}/Lib" }
+    libdirs { "%{wks.location}/Libraries/VulkanDebugSdk/Lib/", "%{VULKAN_SDK_DIR}/lib" }
 
     links { 
 		"GLFW",
@@ -37,7 +37,6 @@ project "UniversoEngine"
 		"entt",
 		"reactphysics3d",
 		"hash-library",
-		"vulkan-1", 
     	"VkLayer_utils"
 	}
 
@@ -58,21 +57,23 @@ project "UniversoEngine"
 	    	"spirv-cross-core",
 	    	"spirv-cross-glsl",
 	    	"spirv-cross-hlsl",
-	    	"SPIRV-Toolsd"
+	    	"SPIRV-Tools"
 		}
 
-	filter "configurations:Release"
-		links {
-			"shaderc_combined",
-    		"spirv-cross-core",
-    		"spirv-cross-glsl",
-    		"spirv-cross-hlsl",
-    		"SPIRV-Tools"
-		}
+    filter "configurations:Release"
+        links {
+            "shaderc_combined",
+            "spirv-cross-core",
+            "spirv-cross-glsl",
+            "spirv-cross-hlsl",
+            "SPIRV-Tools"
+        }
 
-    filter "system:linux"
-        links { "dl", "pthread" }
-        defines { "_X11" }
 
     filter "system:windows"
+        links { "vulkan-1" }
         defines { "_WINDOWS" }
+
+    filter "system:linux"
+        links { "vulkan", "dl", "pthread" }
+        defines { "_X11" }
