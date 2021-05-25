@@ -2,29 +2,20 @@ project "OBJ_Loader"
 	kind "StaticLib"
 	language "C++"
 	architecture "x86_64"
-
+	systemversion "latest"
+	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	
 	includedirs { "OBJ_Loader/include/" }
 
-	files
-	{
+	files {
 		"OBJ_Loader/**.h",
 		"OBJ_Loader/**.cpp"
 	}
 	
 	filter "system:linux"
 		pic "On"
-
-		systemversion "latest"
-		staticruntime "On"
-
-
-	filter "system:windows"
-		systemversion "latest"
-		staticruntime "On"
-
 
 	filter "configurations:Debug"
 		runtime "Debug"

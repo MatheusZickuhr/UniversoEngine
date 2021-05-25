@@ -2,34 +2,25 @@ project "GLM"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
-
+	systemversion "latest"
+	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	
 	includedirs { "glm/" }
 
-	files
-	{
+	files {
 		"glm/glm/**"
 	}
     
 	filter "system:linux"
 		pic "On"
-
-		systemversion "latest"
-		staticruntime "On"
-
-		defines
-		{
+		defines {
 			"_GLM_X11"
 		}
 
 	filter "system:windows"
-		systemversion "latest"
-		staticruntime "On"
-
-		defines 
-		{ 
+		defines { 
 			"_GLM_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}

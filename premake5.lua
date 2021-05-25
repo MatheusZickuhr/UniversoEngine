@@ -13,6 +13,11 @@ workspace "UniversoEngine"
         optimize "Speed"
         flags { "LinkTimeOptimization" }
 
+    filter "system:windows"
+        defines { "_WINDOWS" }
+
+    filter "system:linux"
+        defines { "_X11" }
 
 VULKAN_SDK_DIR = os.getenv("VULKAN_SDK")
 

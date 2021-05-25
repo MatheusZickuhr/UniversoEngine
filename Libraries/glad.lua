@@ -2,7 +2,8 @@ project "GLAD"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
-
+	systemversion "latest"
+	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
     
@@ -12,21 +13,10 @@ project "GLAD"
     
 	filter "system:linux"
 		pic "On"
-
-		systemversion "latest"
-		staticruntime "On"
-
-		defines
-		{
-			"_GLAD_X11"
-		}
+		defines {"_GLAD_X11"}
 
 	filter "system:windows"
-		systemversion "latest"
-		staticruntime "On"
-
-		defines 
-		{ 
+		defines { 
 			"_GLAD_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}

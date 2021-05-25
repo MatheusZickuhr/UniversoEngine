@@ -9,8 +9,7 @@ project "hash-library"
 	
 	includedirs { "hash-library/" }
 
-	files
-	{
+	files {
 		"hash-library/*.h", "hash-library/*.cpp"
 	}
 	

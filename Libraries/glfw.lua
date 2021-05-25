@@ -2,16 +2,14 @@ project "GLFW"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
-
+	systemversion "latest"
+	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 	
 	includedirs { "glfw/include/" }
 
-	files
-	{
---		"glfw/include/GLFW/glfw3.h",
---		"glfw/include/GLFW/glfw3native.h",
+	files {
 		"glfw/src/glfw_config.h",
 		"glfw/src/context.c",
 		"glfw/src/init.c",
@@ -24,11 +22,7 @@ project "GLFW"
 	filter "system:linux"
 		pic "On"
 
-		systemversion "latest"
-		staticruntime "On"
-
-		files
-		{
+		files {
 			"glfw/src/x11_init.c",
 			"glfw/src/x11_monitor.c",
 			"glfw/src/x11_window.c",
@@ -41,17 +35,10 @@ project "GLFW"
 			"glfw/src/linux_joystick.c"
 		}
 
-		defines
-		{
-			"_GLFW_X11"
-		}
+		defines {"_GLFW_X11"}
 
 	filter "system:windows"
-		systemversion "latest"
-		staticruntime "On"
-
-		files
-		{
+		files {
 			"glfw/src/win32_init.c",
 			"glfw/src/win32_joystick.c",
 			"glfw/src/win32_monitor.c",
@@ -63,8 +50,7 @@ project "GLFW"
 			"glfw/src/osmesa_context.c"
 		}
 
-		defines 
-		{ 
+		defines { 
 			"_GLFW_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}

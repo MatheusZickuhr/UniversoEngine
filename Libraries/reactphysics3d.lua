@@ -10,8 +10,7 @@ project "reactphysics3d"
 	
 	includedirs { "reactphysics3d/include/" }
 
-	files
-	{
+	files {
 		"reactphysics3d/src/**.hpp", "reactphysics3d/src/**.h", "reactphysics3d/src/**.cpp"
 	}
 	
