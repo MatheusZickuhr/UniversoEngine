@@ -6,11 +6,11 @@ project "GLAD"
 	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
-    
-    includedirs { "glad/include/" }
+
+	includedirs { "glad/include/" }
 
 	files { "glad/src/glad.c" }
-    
+
 	filter "system:linux"
 		pic "On"
 		defines {"_GLAD_X11"}

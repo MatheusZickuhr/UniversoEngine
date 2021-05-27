@@ -2,12 +2,17 @@
 
 C++ 3D Engine with no level editor (code only). Currently in (early) development.
 
-## How to download and build (Windows)
+## Software requirements for building
+
+- [Vulkan sdk](https://www.lunarg.com/vulkan-sdk/)
+- [Premake5](https://premake.github.io/)
+
+## How to download and build (Windows 10 or Ubuntu)
 
 ```
 git clone --recurse-submodules https://github.com/MatheusZickuhr/UniversoEngine.git
-cd UniversoEngine
-premake5 vs2019
+cd UniversoEngine/Scripts
+python build.py
 ```
 
 ## Credits

@@ -10,10 +10,10 @@ project "UniversoEngine"
 	location "%{wks.location}"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
-    
-    files { "src/**.cpp", "src/**.h" }
-	
+
+	files { "src/**.cpp", "src/**.h" }
+
 	librariesIncludeDirectories()
 
-    librariesLinks()
+	librariesLinks()
     

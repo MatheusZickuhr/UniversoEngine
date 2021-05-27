@@ -1,5 +1,5 @@
-function librariesIncludeDirectories()
-    includedirs { 
+	function librariesIncludeDirectories()
+	includedirs { 
 		"%{wks.location}/include/",
 		"%{wks.location}/Libraries/glad/include/",
 		"%{wks.location}/Libraries/glfw/include/",
@@ -13,4 +13,4 @@ function librariesIncludeDirectories()
 		"%{wks.location}/Libraries/hash-library/",
 		"%{VULKAN_SDK_DIR}/include/"
 	}
-end
+	end

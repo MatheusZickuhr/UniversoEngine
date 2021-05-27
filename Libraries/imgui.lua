@@ -6,7 +6,7 @@ project "ImGui"
 	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
-	
+
 	includedirs { "imgui/", "imgui/examples/", "glad/include", "glfw/include/" }
 
 	files {
@@ -16,7 +16,7 @@ project "ImGui"
 	}
 
 	defines { "IMGUI_IMPL_OPENGL_LOADER_GLAD" }
-    
+
 	filter "system:linux"
 		pic "On"
 

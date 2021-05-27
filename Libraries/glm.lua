@@ -6,13 +6,13 @@ project "GLM"
 	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
-	
+
 	includedirs { "glm/" }
 
 	files {
 		"glm/glm/**"
 	}
-    
+
 	filter "system:linux"
 		pic "On"
 		defines {

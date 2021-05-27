@@ -6,13 +6,13 @@ project "hash-library"
 	staticruntime "off"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
-	
+
 	includedirs { "hash-library/" }
 
 	files {
 		"hash-library/*.h", "hash-library/*.cpp"
 	}
-	
+
 	filter "system:linux"
 		pic "On"
 

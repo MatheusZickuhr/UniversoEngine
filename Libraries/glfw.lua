@@ -6,7 +6,7 @@ project "GLFW"
 	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
-	
+
 	includedirs { "glfw/include/" }
 
 	files {
@@ -18,7 +18,7 @@ project "GLFW"
 		"glfw/src/vulkan.c",
 		"glfw/src/window.c"
 	}
-    
+
 	filter "system:linux"
 		pic "On"
 

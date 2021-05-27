@@ -6,14 +6,14 @@ project "OBJ_Loader"
 	staticruntime "On"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
-	
+
 	includedirs { "OBJ_Loader/include/" }
 
 	files {
 		"OBJ_Loader/**.h",
 		"OBJ_Loader/**.cpp"
 	}
-	
+
 	filter "system:linux"
 		pic "On"
 
