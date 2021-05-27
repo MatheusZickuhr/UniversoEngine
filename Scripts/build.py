@@ -35,7 +35,7 @@ def check_vulkan_sdk():
         return False
     elif not REQUIRED_VULKAN_VERSION in vulkan_sdk_path:
         print(f"vulkan sdk found, but is not the required version ({REQUIRED_VULKAN_VERSION}),"
-            " download the corrent one at https://www.lunarg.com/vulkan-sdk/")
+            " download the correct one at https://www.lunarg.com/vulkan-sdk/")
         return False
     
     print(f"vulkan sdk found with the required version ({REQUIRED_VULKAN_VERSION}) at {vulkan_sdk_path}")
