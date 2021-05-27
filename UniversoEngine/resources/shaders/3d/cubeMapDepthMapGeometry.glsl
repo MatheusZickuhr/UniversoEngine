@@ -3,7 +3,7 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices=18) out;
 
-out vec4 FragPos; // FragPos from GS (output per emitvertex)
+layout (location = 0) out vec4 FragPos; // FragPos from GS (output per emitvertex)
 
 layout (std140, binding = 2) uniform currentPointlLight {
     mat4 shadowMatrices[6];

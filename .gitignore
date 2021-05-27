@@ -1,6 +1,13 @@
 bin/
 obj/
 
+
+*.cache
+*.cache.helper
+
+*.dll
+*.lib
+
 # Linux project files
 Makefile
 libs/Makefile

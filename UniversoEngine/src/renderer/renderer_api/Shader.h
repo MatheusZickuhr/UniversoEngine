@@ -8,12 +8,10 @@ namespace engine {
 
 	enum class ShaderType { FragmentShader, VertexShader, GeometryShader };
 
-	struct IntDefine {
-		const char* name;
-		int value;
-	};
+
 
 	class Shader {
+
 
 	public:
 
@@ -21,23 +19,39 @@ namespace engine {
 
 		Shader(const Shader& other) = delete;
 
-		unsigned int getId();
+		unsigned int getId() { return this->id; }
 
-		void defineInt(const char* name, int value);
+		void addMacroDefinition(const std::string& name, const std::string& value);
 		
 		void compile();
 
 	private:
 
+		struct MacroDefinition {
+			const std::string name;
+			const std::string value;
+		};
+
 		unsigned int id;
 		bool compiled = false;
 		ShaderType shaderType;
 		std::string sourceCode;
-		std::vector<IntDefine> intDefines;
+		std::string fileName;
+		std::string cacheFilePath;
+		std::string cacheHelperFilePath;
+		std::vector<MacroDefinition> macroDefinitions;
+		
+		std::vector<uint32_t> compileToSpirvBinary(bool optimize = false);
 
-		void insertDefinesToSourceCode();
+		void cacheSpirvBinaryToFile(std::vector<uint32_t> spirvBinary);
 
-		void create();
+		std::vector<uint32_t> readSpirvBinaryFromFile();
+
+		std::string readSourceCodeFromFile(const std::string& filePath);
+
+		bool isSpirvBinaryCacheFileInvalid();
+
+		void createOpenglShader();
 
 	};
 }

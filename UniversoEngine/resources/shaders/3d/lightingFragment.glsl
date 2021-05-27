@@ -37,9 +37,9 @@ struct DirectionalLight {
 	int textureSlotIndex;
 };
 
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
 
-in VsOut {
+layout (location = 0) in VsOut {
     vec3 normal;
     vec3 ambient;
     vec3 diffuse;

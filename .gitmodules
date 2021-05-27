@@ -10,3 +10,6 @@
 [submodule "Libraries/reactphysics3d"]
 	path = Libraries/reactphysics3d
 	url = https://github.com/DanielChappuis/reactphysics3d.git
+[submodule "Libraries/hash-library"]
+	path = Libraries/hash-library
+	url = https://github.com/stbrumme/hash-library.git

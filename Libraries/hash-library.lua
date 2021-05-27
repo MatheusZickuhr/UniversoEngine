@@ -1,29 +1,20 @@
-project "GLM"
+project "hash-library"
 	kind "StaticLib"
 	language "C"
 	architecture "x86_64"
 	systemversion "latest"
-	staticruntime "On"
+	staticruntime "off"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 
-	includedirs { "glm/" }
+	includedirs { "hash-library/" }
 
 	files {
-		"glm/glm/**"
+		"hash-library/*.h", "hash-library/*.cpp"
 	}
 
 	filter "system:linux"
 		pic "On"
-		defines {
-			"_GLM_X11"
-		}
-
-	filter "system:windows"
-		defines { 
-			"_GLM_WIN32",
-			"_CRT_SECURE_NO_WARNINGS"
-		}
 
 	filter "configurations:Debug"
 		runtime "Debug"
