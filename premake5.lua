@@ -1,23 +1,23 @@
 workspace "UniversoEngine"
-    configurations { "Debug", "Release" }
-    startproject "Example"
+	configurations { "Debug", "Release" }
+	startproject "Example"
 
-    flags { "MultiProcessorCompile" }
+	flags { "MultiProcessorCompile" }
 
-    filter "configurations:Debug"
-        defines { "DEBUG", "DEBUG_SHADER" }
-        symbols "On"
+	filter "configurations:Debug"
+		defines { "DEBUG", "DEBUG_SHADER" }
+		symbols "On"
 
-    filter "configurations:Release"
-        defines { "RELEASE" }
-        optimize "Speed"
-        flags { "LinkTimeOptimization" }
+	filter "configurations:Release"
+		defines { "RELEASE" }
+		optimize "Speed"
+		flags { "LinkTimeOptimization" }
 
-    filter "system:windows"
-        defines { "_WINDOWS" }
+	filter "system:windows"
+		defines { "_WINDOWS" }
 
-    filter "system:linux"
-        defines { "_X11" }
+	filter "system:linux"
+		defines { "_X11" }
 
 VULKAN_SDK_DIR = os.getenv("VULKAN_SDK")
 

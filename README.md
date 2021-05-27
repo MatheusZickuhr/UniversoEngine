@@ -4,6 +4,7 @@ C++ 3D Engine with no level editor (code only). Currently in (early) development
 
 ## Software requirements for building
 
+- [Python3](https://www.python.org/)
 - [Vulkan sdk](https://www.lunarg.com/vulkan-sdk/)
 - [Premake5](https://premake.github.io/)
 
