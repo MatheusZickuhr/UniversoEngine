@@ -91,11 +91,12 @@ namespace engine {
 			this->vertices++;
 		}
 
-		for (int i = this->indexCount; i < mesh->getVertexCount() + this->indexCount; i++)
-			this->indices[i] = i;
-
+		int indexOffset = this->vertexCount;
+		for (int index : mesh->getIndices()) {
+			this->indices[this->indexCount] = indexOffset + index;
+			this->indexCount++;
+		}
 		this->vertexCount += mesh->getVertexCount();
-		this->indexCount += mesh->getVertexCount();
 	}
 
 	void Renderer3D::startLightsDrawing() {
@@ -150,11 +151,12 @@ namespace engine {
 			this->vertices++;
 		}
 
-		for (int i = this->indexCount; i < mesh->getVertexCount() + this->indexCount; i++)
-			this->indices[i] = i;
-
+		int indexOffset = this->vertexCount;
+		for (int index : mesh->getIndices()) {
+			this->indices[this->indexCount] = indexOffset + index;
+			this->indexCount++;
+		}
 		this->vertexCount += mesh->getVertexCount();
-		this->indexCount += mesh->getVertexCount();
 	}
 
 	void Renderer3D::drawPointLight(PointLight pointLight, glm::mat4 transform) {

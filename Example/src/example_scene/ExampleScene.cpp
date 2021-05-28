@@ -26,7 +26,7 @@ void ExampleScene::onStart() {
 	{
 		auto box = createEntity();
 		box->addComponent<MeshComponent>(boxMesh);
-		box->addComponent<MaterialComponent>(redMaterial);
+		box->addComponent<MaterialComponent>(boxMaterial);
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
@@ -36,7 +36,7 @@ void ExampleScene::onStart() {
 	{
 		auto box = createEntity();
 		box->addComponent<MeshComponent>(boxMesh);
-		box->addComponent<MaterialComponent>(redMaterial);
+		box->addComponent<MaterialComponent>(boxMaterial);
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
@@ -46,7 +46,7 @@ void ExampleScene::onStart() {
 	{
 		auto box = createEntity();
 		box->addComponent<MeshComponent>(boxMesh);
-		box->addComponent<MaterialComponent>(redMaterial);
+		box->addComponent<MaterialComponent>(boxMaterial);
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
