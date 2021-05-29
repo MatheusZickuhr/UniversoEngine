@@ -168,10 +168,15 @@ namespace engine {
 		bindCubeMap(pointLight.depthMapCubeMap.get());
 	}
 
-	void Renderer3D::drawDirectionalLight(DirectionalLight directionalLight, glm::mat4 transform) {
+	void Renderer3D::drawDirectionalLight(DirectionalLight directionalLight, Camera& camera, glm::mat4 transform) {
 		ASSERT(this->directionalLights.size() + 1 <= DirectionalLight::maxDirectionalLights, "Maximum directional lights exceded");
 
-		directionalLight.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec3 lightPosition = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		auto lightDirection = glm::vec3(0.0f, 0.0f, 0.0f) - lightPosition;
+
+		directionalLight.position = camera.front - lightDirection;
+		directionalLight.lookAt = camera.front;
+
 		this->directionalLights.push_back(directionalLight);
 
 		bindTexture(directionalLight.depthMapTexture.get());

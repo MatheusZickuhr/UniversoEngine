@@ -40,7 +40,7 @@ namespace engine {
 
         void drawPointLight(PointLight light, glm::mat4 transform);
 
-        void drawDirectionalLight(DirectionalLight light, glm::mat4 transform);
+        void drawDirectionalLight(DirectionalLight light, Camera& camera, glm::mat4 transform);
 
         void clearColor(float r, float g, float b, float a);
 

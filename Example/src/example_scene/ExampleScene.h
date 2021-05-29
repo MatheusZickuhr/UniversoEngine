@@ -9,10 +9,8 @@ class ExampleScene : public Scene {
 private:
 	CameraController* cameraInput;
 
-	Material* boxMaterial;
-	Mesh* boxMesh;
-
-	Material* redMaterial;
+	Material boxMaterial{ "Example/resources/textures/crate/crate.jpg" };
+	Mesh boxMesh{ "Example/resources/models/crate/crate.obj" };
 
 public:
 

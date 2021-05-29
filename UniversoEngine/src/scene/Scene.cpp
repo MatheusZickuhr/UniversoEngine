@@ -64,7 +64,7 @@ namespace engine {
 				auto view = this->registry.view<DirectionalLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
-					this->renderer3d->drawDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
+					this->renderer3d->drawDirectionalLight(lightComp.directionalLight, this->camera, transComp.transform.getTransformMatrix());
 				}
 			}
 			// end update/draw lights
