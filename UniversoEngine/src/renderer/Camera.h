@@ -28,6 +28,10 @@ namespace engine {
         Camera(glm::vec3 position);
 
 
+        glm::mat4 getViewMatrix();
+
+        glm::mat4 getProjectionMatrix(float width, float height);
+
         glm::mat4 getViewProjectionMatrix(float width, float height);
 
     private:

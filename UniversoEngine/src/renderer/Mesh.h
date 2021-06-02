@@ -11,7 +11,7 @@ namespace engine {
 	public:
 
 
-		Mesh(const std::string& filepath);
+		Mesh(const std::string& filepath, bool useIndices = true);
 
 		int getVertexCount() { return this->vertices.size(); }
 

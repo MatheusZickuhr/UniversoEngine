@@ -54,10 +54,12 @@ namespace engine {
 
 		CameraUniformBufferData cameraUniformBufferData{ 
 			camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight),
+			camera.getViewMatrix(),
+			camera.getProjectionMatrix(currentViewPortWidth, currentViewPortHeight),
 			camera.position
 		};
 
-		cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));		
+		cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
 	}
 
 	void Renderer3D::endDrawing() {
@@ -66,6 +68,9 @@ namespace engine {
 		// unbind all the textures/ cubemaps
 		this->clearBindedTextures();
 		this->clearBindedCubeMaps();
+
+		if (this->cubeMapSkyBox != nullptr)
+			this->drawCubeMapSkyBox();
 	}
 
 	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
@@ -192,6 +197,18 @@ namespace engine {
 
 	unsigned int Renderer3D::getDrawCallsCount() {
 		return this->drawCallsCount;
+	}
+
+	void Renderer3D::drawCubeMapSkyBox() {
+		DrawApi::setDepthFunctionToLessOrEqual();
+		DrawApi::enableDepthMask(false);
+		this->cubeMapSkyBox->shaderProgram.bind();
+		this->cubeMapSkyBox->vertexArray.bind();
+		this->cubeMapSkyBox->cubeMap->bind(0);
+		DrawApi::draw(36);
+		this->drawCallsCount++;
+		DrawApi::enableDepthMask(true);
+		DrawApi::setDepthFunctionToLess();
 	}
 
 	void Renderer3D::bindUniformBuffers() {

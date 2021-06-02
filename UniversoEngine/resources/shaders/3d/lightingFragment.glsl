@@ -58,6 +58,8 @@ layout (binding = MAX_TEXTURES) uniform samplerCube cubeMapSlots[MAX_CUBE_MAPS];
 
 layout (std140, binding = 0) uniform camera {
     mat4 cameraViewProjection;
+    mat4 cameraView;
+    mat4 cameraProjection;
     vec3 cameraPosition;
 };
 

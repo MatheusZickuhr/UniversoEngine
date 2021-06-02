@@ -15,6 +15,8 @@
 #include "PointLight.h"
 #include "Camera.h"
 #include "renderer_api/UniformBuffer.h"
+#include "renderer_api/CubeMap.h"
+#include "CubeMapSkyBox.h"
 
 namespace engine {
 
@@ -48,10 +50,14 @@ namespace engine {
 
         unsigned int getDrawCallsCount();
 
+        void setCubeMapSkyBox(CubeMapSkyBox* skybox) { this->cubeMapSkyBox = skybox; }
+
     private:
 
         struct CameraUniformBufferData {
-            glm::mat4 cameraViewProjecttionMatrix;
+            glm::mat4 cameraViewProjectionMatrix;
+            glm::mat4 cameraViewMatrix;
+            glm::mat4 cameraProjectionMatrix;
             glm::vec3 cameraPosition;
         };
 
@@ -117,6 +123,11 @@ namespace engine {
         Shader cubeMapDepthMapVertexShader { ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapVertex.glsl" };
         Shader cubeMapDepthMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
         Shader cubeMapDepthMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
+
+        // skybox
+        CubeMapSkyBox* cubeMapSkyBox = nullptr;
+
+        void drawCubeMapSkyBox();
 
         void bindUniformBuffers();
 

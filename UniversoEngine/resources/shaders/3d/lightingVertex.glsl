@@ -23,6 +23,8 @@ layout (location = 0) out VsOut {
 
 layout (std140, binding = 0) uniform camera {
     mat4 cameraViewProjection;
+    mat4 cameraView;
+    mat4 cameraProjection;
     vec3 cameraPosition;
 };
 

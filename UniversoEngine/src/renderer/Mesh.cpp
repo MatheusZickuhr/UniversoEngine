@@ -10,7 +10,7 @@
 
 namespace engine {
 
-	Mesh::Mesh(const std::string& filepath) {
+	Mesh::Mesh(const std::string& filepath, bool useIndices) {
 		ASSERT_FILE_EXISTS(filepath);
 		ASSERT_FILE_EXTENSION(filepath, { ".obj" });
 
@@ -24,6 +24,11 @@ namespace engine {
 			std::memcpy(&myVertex.position, &otherVertex.Position, sizeof(myVertex.position));
 			std::memcpy(&myVertex.normal, &otherVertex.Normal, sizeof(myVertex.normal));
 			std::memcpy(&myVertex.textureCoords, &otherVertex.TextureCoordinate, sizeof(myVertex.textureCoords));
+
+			if (!useIndices) {
+				this->vertices.push_back(myVertex);
+				continue;
+			}
 
 			// add only unique vertices to the vertex list
 			int vertexIndex = this->findVertexIndex(myVertex);

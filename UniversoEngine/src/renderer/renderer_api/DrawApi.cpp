@@ -34,6 +34,10 @@ namespace engine {
 		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
+	void DrawApi::draw(unsigned int vertexCount) {
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+	}
+
 	void DrawApi::setViewPortSize(float width, float height) { glViewport(0, 0, width, height); }
 
 	int DrawApi::getViewPortWidth() {
@@ -61,6 +65,12 @@ namespace engine {
 	void DrawApi::cullFrontFace() { glCullFace(GL_FRONT); }
 
 	void DrawApi::cullBackFace() { glCullFace(GL_BACK); }
+
+	void DrawApi::setDepthFunctionToLessOrEqual() { glDepthFunc(GL_LEQUAL); }
+
+	void DrawApi::setDepthFunctionToLess() { glDepthFunc(GL_LESS); }
+
+	void DrawApi::enableDepthMask(bool enableDepthMask) { glDepthMask(enableDepthMask); }
 
 	void APIENTRY GLDebugMessageCallback(
 		GLenum source,

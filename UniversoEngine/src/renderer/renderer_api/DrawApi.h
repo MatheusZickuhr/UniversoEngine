@@ -15,6 +15,8 @@ namespace engine {
 
 		static void drawWithIdexes(unsigned int IndexCount);
 
+		static void draw(unsigned int vertexCount);
+
 		static void setViewPortSize(float width, float height);
 
 		static int getViewPortWidth();
@@ -32,6 +34,12 @@ namespace engine {
 		static void cullFrontFace();
 
 		static void cullBackFace();
+
+		static void setDepthFunctionToLessOrEqual();
+
+		static void setDepthFunctionToLess();
+
+		static void enableDepthMask(bool enableDepthMask);
 
 	};
 

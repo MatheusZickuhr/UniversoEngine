@@ -11,6 +11,8 @@ void ExampleScene::onStart() {
 
 	cameraInput = new CameraController(this->camera);
 
+	this->setCubeMapSkyBox(&this->cubeMapSkyBox);
+
 	{
 		auto box = createEntity();
 		box->addComponent<MeshComponent>(&boxMesh);

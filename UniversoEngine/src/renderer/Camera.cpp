@@ -10,11 +10,18 @@ namespace engine {
 		this->updateVectors();	
 	}
 
-	glm::mat4 Camera::getViewProjectionMatrix(float width, float height) {
+	glm::mat4 Camera::getViewMatrix() {
 		this->updateVectors();
+		return glm::lookAt(this->position, this->position + this->front, this->up);
+	}
 
-		glm::mat4 projection = glm::perspective(glm::radians(this->fov), width / height, 0.1f, 100.0f);
-		glm::mat4 view = glm::lookAt(this->position, this->position + this->front, this->up);
+	glm::mat4 Camera::getProjectionMatrix(float width, float height) {
+		return glm::perspective(glm::radians(this->fov), width / height, 0.1f, 100.0f);
+	}
+
+	glm::mat4 Camera::getViewProjectionMatrix(float width, float height) {
+		glm::mat4 projection = this->getProjectionMatrix(width, height);
+		glm::mat4 view = this->getViewMatrix();
 
 		return projection * view;
 	}

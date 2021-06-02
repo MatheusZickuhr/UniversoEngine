@@ -49,6 +49,8 @@ namespace engine {
 
 		Entity* createEntity();
 
+		void setCubeMapSkyBox(CubeMapSkyBox* skybox) { this->renderer3d->setCubeMapSkyBox(skybox); }
+
 	private:
 
 		PhysicsWorld* physicsWorld;

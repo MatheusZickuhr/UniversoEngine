@@ -2,8 +2,6 @@
 
 #include "Texture.h"
 
-#include "../../debug/Assert.h"
-
 namespace engine {
 
 	Texture::~Texture() { glDeleteTextures(1, &this->id); }
