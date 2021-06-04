@@ -12,7 +12,7 @@ private:
 	Material boxMaterial{ "Example/resources/textures/crate/crate.jpg" };
 	Mesh boxMesh{ "Example/resources/models/crate/crate.obj" };
 
-	CubeMapSkyBox cubeMapSkyBox {
+	CubeMap skyboxCubeMap {
 		{
 			"Example/resources/textures/exampleSkyBox/right.jpg",
 			"Example/resources/textures/exampleSkyBox/left.jpg",

@@ -11,7 +11,7 @@ void ExampleScene::onStart() {
 
 	cameraInput = new CameraController(this->camera);
 
-	this->setCubeMapSkyBox(&this->cubeMapSkyBox);
+	this->setSkyBoxCubeMap(&this->skyboxCubeMap);
 
 	{
 		auto box = createEntity();

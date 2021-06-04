@@ -16,7 +16,6 @@
 #include "Camera.h"
 #include "renderer_api/UniformBuffer.h"
 #include "renderer_api/CubeMap.h"
-#include "CubeMapSkyBox.h"
 
 namespace engine {
 
@@ -50,7 +49,7 @@ namespace engine {
 
         unsigned int getDrawCallsCount();
 
-        void setCubeMapSkyBox(CubeMapSkyBox* skybox) { this->cubeMapSkyBox = skybox; }
+        void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->skyBoxCubeMap = skyBoxCubeMap; }
 
     private:
 
@@ -124,8 +123,15 @@ namespace engine {
         Shader cubeMapDepthMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
         Shader cubeMapDepthMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
 
-        // skybox
-        CubeMapSkyBox* cubeMapSkyBox = nullptr;
+        // skybox cubemap
+        CubeMap* skyBoxCubeMap = nullptr;
+
+        VertexArray skyBoxVertexArray;
+        VertexBuffer skyBoxVertexBuffer{ sizeof(glm::vec3), 36 };
+
+        ShaderProgram skyBoxShaderProgram;
+        Shader skyBoxVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/skyboxVertex.glsl" };
+        Shader skyBoxFragShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/skyboxFragment.glsl" };
 
         void drawCubeMapSkyBox();
 

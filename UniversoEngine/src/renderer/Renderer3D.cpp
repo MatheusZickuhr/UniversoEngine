@@ -41,6 +41,23 @@ namespace engine {
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader);
 		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader);
 
+		// cubemap skybox
+		skyBoxVertexArray.addVertexBuffer(skyBoxVertexBuffer);
+
+		skyBoxVertexBuffer.addAttributePointer(AttriuteType::Vec3, 0);
+
+		glm::vec3 skyboxVertices[36];
+
+		Mesh cubeMesh{ "UniversoEngine/resources/meshes/cube.obj", false };
+		const std::vector<Vertex>& cubeMeshVertices = cubeMesh.getVertices();
+
+		for (int i = 0; i < cubeMeshVertices.size(); i++)
+			skyboxVertices[i] = cubeMeshVertices[i].position;
+
+		skyBoxVertexBuffer.pushData(skyboxVertices, sizeof(skyboxVertices));
+
+		skyBoxShaderProgram.attachShader(skyBoxVertexShader);
+		skyBoxShaderProgram.attachShader(skyBoxFragShader);
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -69,7 +86,7 @@ namespace engine {
 		this->clearBindedTextures();
 		this->clearBindedCubeMaps();
 
-		if (this->cubeMapSkyBox != nullptr)
+		if (this->skyBoxCubeMap != nullptr)
 			this->drawCubeMapSkyBox();
 	}
 
@@ -202,9 +219,9 @@ namespace engine {
 	void Renderer3D::drawCubeMapSkyBox() {
 		DrawApi::setDepthFunctionToLessOrEqual();
 		DrawApi::enableDepthMask(false);
-		this->cubeMapSkyBox->shaderProgram.bind();
-		this->cubeMapSkyBox->vertexArray.bind();
-		this->cubeMapSkyBox->cubeMap->bind(0);
+		skyBoxShaderProgram.bind();
+		skyBoxVertexArray.bind();
+		skyBoxCubeMap->bind(0);
 		DrawApi::draw(36);
 		this->drawCallsCount++;
 		DrawApi::enableDepthMask(true);

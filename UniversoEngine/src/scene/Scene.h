@@ -49,7 +49,7 @@ namespace engine {
 
 		Entity* createEntity();
 
-		void setCubeMapSkyBox(CubeMapSkyBox* skybox) { this->renderer3d->setCubeMapSkyBox(skybox); }
+		void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->renderer3d->setSkyBoxCubeMap(skyBoxCubeMap); }
 
 	private:
 
