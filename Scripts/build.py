@@ -3,6 +3,8 @@ import os
 import subprocess
 import requests
 import zipfile
+from pathlib import Path
+from shutil import copyfile
 
 REQUIRED_VULKAN_VERSION = "1.2.170.0"
 
@@ -41,6 +43,7 @@ def check_vulkan_sdk():
     print(f"vulkan sdk found with the required version ({REQUIRED_VULKAN_VERSION}) at {vulkan_sdk_path}")
     return True
 
+
 def run_premake():
     # run premake
     print("running premake")
@@ -53,16 +56,13 @@ def run_premake():
 
 
 def download_vulkan_debug_libraries():
-    if sys.platform != "win32":
-        return
 
     # check if debug libs are downloaded
     required_libs_paths = [
-        "Libraries/VulkanDebugSdk/Lib/shaderc_combinedd.lib",
+        "Libraries/VulkanDebugSdk/Lib/shaderc_sharedd.lib",
         "Libraries/VulkanDebugSdk/Lib/spirv-cross-cored.lib",
         "Libraries/VulkanDebugSdk/Lib/spirv-cross-glsld.lib",
-        "Libraries/VulkanDebugSdk/Lib/spirv-cross-hlsld.lib",
-        "Libraries/VulkanDebugSdk/Lib/SPIRV-Toolsd.lib"
+        "Libraries/VulkanDebugSdk/Lib/spirv-cross-hlsld.lib"
     ] 
 
     found_required_libs = True
@@ -92,6 +92,33 @@ def download_vulkan_debug_libraries():
     os.remove(file_path)
 
 
+def copy_vulkan_debug_dlls():
+    bin_debug_dir = f"bin{os.sep}Debug"
+    dlls_source_dir = f"Libraries{os.sep}VulkanDebugSdk{os.sep}Bin"
+
+    Path(bin_debug_dir).mkdir(parents=True, exist_ok=True)
+
+    dll_file_names = ["shaderc_sharedd.dll", "spirv-cross-c-sharedd.dll", "SPIRV-Tools-sharedd.dll"]
+
+    dlls_exist = True
+    for dll_file_name in dll_file_names:
+        full_dll_path = f"{bin_debug_dir}{os.sep}{dll_file_name}"
+        if not os.path.isfile(full_dll_path):
+            print(f"cannot find dll {dll_file_name} in {bin_debug_dir}")
+            dlls_exist = False
+            break
+    
+    if not dlls_exist:
+        print(f"coping dlls to {bin_debug_dir}")
+        for dll_file_name in dll_file_names:
+            src_path = f"{dlls_source_dir}{os.sep}{dll_file_name}"
+            dst_path = f"{os.getcwd()}{os.sep}{bin_debug_dir}{os.sep}{dll_file_name}"
+            copyfile(src_path, dst_path)
+            print(f"copied {dll_file_name} to {bin_debug_dir}")
+
+    
+
+
 if __name__ == "__main__":
     os.chdir("../")
 
@@ -101,6 +128,9 @@ if __name__ == "__main__":
         exit('bulid aborted')
     
     run_premake()
-    download_vulkan_debug_libraries()
+
+    if sys.platform == "win32":
+        download_vulkan_debug_libraries()
+        copy_vulkan_debug_dlls()
 
     print("build done")
