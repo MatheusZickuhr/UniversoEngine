@@ -25,21 +25,21 @@ namespace engine {
 		vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(Vertex, textureCoords));
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlotIndex));
 
-		fragShader.addMacroDefinition("MAX_POINT_LIGHTS",       std::to_string(PointLight::maxPointLights));
-		fragShader.addMacroDefinition("MAX_DIRECTIONAL_LIGHTS", std::to_string(DirectionalLight::maxDirectionalLights));
-		fragShader.addMacroDefinition("MAX_TEXTURES",           std::to_string(Texture::maxTextures));
-		fragShader.addMacroDefinition("MAX_CUBE_MAPS",          std::to_string(Texture::maxCubeMaps));
+		fragmentShader.addMacroDefinition("MAX_POINT_LIGHTS", std::to_string(PointLight::maxPointLights));
+		fragmentShader.addMacroDefinition("MAX_DIRECTIONAL_LIGHTS", std::to_string(DirectionalLight::maxDirectionalLights));
+		fragmentShader.addMacroDefinition("MAX_TEXTURES", std::to_string(Texture::maxTextures));
+		fragmentShader.addMacroDefinition("MAX_CUBE_MAPS", std::to_string(Texture::maxCubeMaps));
 
 		shaderProgram.attachShader(vertexShader);
-		shaderProgram.attachShader(fragShader);
+		shaderProgram.attachShader(fragmentShader);
 		shaderProgram.bind();
-		
-		depthshaderProgram.attachShader(depthVertexShader);
-		depthshaderProgram.attachShader(depthFragShader);
 
-		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapVertexShader);
-		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapGeometryShader);
-		cubeMapDepthMapShaderProgram.attachShader(cubeMapDepthMapFragmentShader);
+		depthTextureShaderProgram.attachShader(depthTextureVertexShader);
+		depthTextureShaderProgram.attachShader(depthTextureFragmentShader);
+
+		depthCubeMapShaderProgram.attachShader(depthCubeMapVertexShader);
+		depthCubeMapShaderProgram.attachShader(depthCubeMapGeometryShader);
+		depthCubeMapShaderProgram.attachShader(depthCubeMapFragmentShader);
 
 		// cubemap skybox
 		skyBoxVertexArray.addVertexBuffer(skyBoxVertexBuffer);
@@ -57,7 +57,7 @@ namespace engine {
 		skyBoxVertexBuffer.pushData(skyboxVertices, sizeof(skyboxVertices));
 
 		skyBoxShaderProgram.attachShader(skyBoxVertexShader);
-		skyBoxShaderProgram.attachShader(skyBoxFragShader);
+		skyBoxShaderProgram.attachShader(skyBoxFragmentShader);
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -65,11 +65,14 @@ namespace engine {
 		delete[] this->indices;
 	}
 
-	void Renderer3D::startDrawing(Camera& camera) {
+	void Renderer3D::beginFrame(Camera& camera) {
+		this->drawCallsCount = 0;
+
+		// update camera uniform buffer
 		int currentViewPortWidth = DrawApi::getViewPortWidth();
 		int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-		CameraUniformBufferData cameraUniformBufferData{ 
+		CameraUniformBufferData cameraUniformBufferData{
 			camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight),
 			camera.getViewMatrix(),
 			camera.getProjectionMatrix(currentViewPortWidth, currentViewPortHeight),
@@ -77,52 +80,6 @@ namespace engine {
 		};
 
 		cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
-	}
-
-	void Renderer3D::endDrawing() {
-		this->performDrawCall();
-		
-		// unbind all the textures/ cubemaps
-		this->clearBindedTextures();
-		this->clearBindedCubeMaps();
-
-		if (this->skyBoxCubeMap != nullptr)
-			this->drawCubeMapSkyBox();
-	}
-
-	void Renderer3D::drawMesh(Mesh* mesh, Material* material, glm::mat4 transform) {
-		ASSERT(mesh->getVertexCount() <= maxVertices, "Mesh does not fit in the drawcall");
-
-		if (mesh->getVertexCount() + this->vertexCount > maxVertices) {
-			this->performDrawCall();
-		}
-		
-		this->bindTexture(material->getTexture());
-
-		Texture* texture = material->getTexture();
-
-		for (const Vertex& vertex : mesh->getVertices()) {
-			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
-			this->vertices->normal = glm::mat3(glm::transpose(glm::inverse(transform))) * vertex.normal;
-			this->vertices->ambient = material->ambient;
-			this->vertices->diffuse = material->diffuse;
-			this->vertices->specular = material->specular;
-			this->vertices->shininess = material->shininess;
-			this->vertices->textureCoords = vertex.textureCoords;
-			this->vertices->textureSlotIndex = texture != nullptr ? texture->getSlot() : -1.0f;
-			this->vertices++;
-		}
-
-		int indexOffset = this->vertexCount;
-		for (int index : mesh->getIndices()) {
-			this->indices[this->indexCount] = indexOffset + index;
-			this->indexCount++;
-		}
-		this->vertexCount += mesh->getVertexCount();
-	}
-
-	void Renderer3D::startLightsDrawing() {
-		this->drawCallsCount = 0;
 
 		// clear directional lights shadow maps
 		for (auto& light : directionalLights) {
@@ -143,9 +100,8 @@ namespace engine {
 		directionalLights.clear();
 	}
 
-	void Renderer3D::endLightsDrawing() {
-		this->performShadowMapDrawCalls();
-
+	void Renderer3D::endFrame() {
+		// update lights uniform buffer
 		LightsUniformBufferData lightsUniformBufferData;
 
 		lightsUniformBufferData.numberOfPointLights = pointLights.size();
@@ -156,32 +112,36 @@ namespace engine {
 
 		for (int i = 0; i < this->directionalLights.size(); i++)
 			lightsUniformBufferData.directionalLights[i] = this->directionalLights[i].getData();
-		
+
 		this->lightsUniformBuffer.pushData(&lightsUniformBufferData, sizeof(LightsUniformBufferData));
+
+		// render the scene
+		shadowPass();
+		renderPass();
+
+		frameDrawData.clear();
+
+		this->boundTextures.clear();
+		this->currentTextureSlot = 0;
+
+		this->boundCubeMaps.clear();
+		this->currentCubeMapSlot = 0;
+
+		// draw the sky box
+		if (this->skyBoxCubeMap != nullptr) {
+			DrawApi::setDepthFunctionToLessOrEqual();
+			DrawApi::enableDepthMask(false);
+			skyBoxShaderProgram.bind();
+			skyBoxVertexArray.bind();
+			skyBoxCubeMap->bind(0);
+			DrawApi::draw(36);
+			this->drawCallsCount++;
+			DrawApi::enableDepthMask(true);
+			DrawApi::setDepthFunctionToLess();
+		}
 	}
 
-	void Renderer3D::drawMeshShadowMap(Mesh* mesh, glm::mat4 transform) {
-
-		ASSERT(mesh->getVertexCount() <= maxVertices, "Mesh does not fit in the drawcall");
-
-		if (mesh->getVertexCount() + this->vertexCount > maxVertices) {
-			this->performShadowMapDrawCalls();
-		}
-
-		for (const Vertex& vertex : mesh->getVertices()) {
-			this->vertices->position = transform * glm::vec4(vertex.position, 1.0f);
-			this->vertices++;
-		}
-
-		int indexOffset = this->vertexCount;
-		for (int index : mesh->getIndices()) {
-			this->indices[this->indexCount] = indexOffset + index;
-			this->indexCount++;
-		}
-		this->vertexCount += mesh->getVertexCount();
-	}
-
-	void Renderer3D::drawPointLight(PointLight pointLight, glm::mat4 transform) {
+	void Renderer3D::addPointLight(PointLight pointLight, glm::mat4 transform) {
 		ASSERT(this->pointLights.size() + 1 <= PointLight::maxPointLights, "Maximum point lights exceded");
 
 		pointLight.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -190,7 +150,7 @@ namespace engine {
 		bindCubeMap(pointLight.depthMapCubeMap.get());
 	}
 
-	void Renderer3D::drawDirectionalLight(DirectionalLight directionalLight, Camera& camera, glm::mat4 transform) {
+	void Renderer3D::addDirectionalLight(DirectionalLight directionalLight, Camera& camera, glm::mat4 transform) {
 		ASSERT(this->directionalLights.size() + 1 <= DirectionalLight::maxDirectionalLights, "Maximum directional lights exceded");
 
 		glm::vec3 lightPosition = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -204,28 +164,67 @@ namespace engine {
 		bindTexture(directionalLight.depthMapTexture.get());
 	}
 
-	void Renderer3D::clearColor(float r, float g, float b, float a) {
-		DrawApi::clearColor(r, g, b, a);
+	void Renderer3D::renderPass() {
+
+		for (auto& drawData : frameDrawData) {
+			ASSERT(drawData.mesh->getVertexCount() <= maxVertices, "Mesh does not fit in the drawcall");
+
+			if (drawData.mesh->getVertexCount() + this->vertexCount > maxVertices) {
+				this->performDrawCall();
+			}
+
+			this->bindTexture(drawData.material->getTexture());
+
+			Texture* texture = drawData.material->getTexture();
+
+			for (const Vertex& vertex : drawData.mesh->getVertices()) {
+				this->vertices->position = drawData.transform * glm::vec4(vertex.position, 1.0f);
+				this->vertices->normal = glm::mat3(glm::transpose(glm::inverse(drawData.transform))) * vertex.normal;
+				this->vertices->ambient = drawData.material->ambient;
+				this->vertices->diffuse = drawData.material->diffuse;
+				this->vertices->specular = drawData.material->specular;
+				this->vertices->shininess = drawData.material->shininess;
+				this->vertices->textureCoords = vertex.textureCoords;
+				this->vertices->textureSlotIndex = texture != nullptr ? texture->getSlot() : -1.0f;
+				this->vertices++;
+			}
+
+			int indexOffset = this->vertexCount;
+			for (int index : drawData.mesh->getIndices()) {
+				this->indices[this->indexCount] = indexOffset + index;
+				this->indexCount++;
+			}
+
+			this->vertexCount += drawData.mesh->getVertexCount();
+		}
+
+		this->performDrawCall();
 	}
 
-	void Renderer3D::setViewPortSize(int width, int height) {
-		DrawApi::setViewPortSize(width, height);
-	}
+	void Renderer3D::shadowPass() {
 
-	unsigned int Renderer3D::getDrawCallsCount() {
-		return this->drawCallsCount;
-	}
+		for (auto drawData : frameDrawData) {
 
-	void Renderer3D::drawCubeMapSkyBox() {
-		DrawApi::setDepthFunctionToLessOrEqual();
-		DrawApi::enableDepthMask(false);
-		skyBoxShaderProgram.bind();
-		skyBoxVertexArray.bind();
-		skyBoxCubeMap->bind(0);
-		DrawApi::draw(36);
-		this->drawCallsCount++;
-		DrawApi::enableDepthMask(true);
-		DrawApi::setDepthFunctionToLess();
+			ASSERT(drawData.mesh->getVertexCount() <= maxVertices, "Mesh does not fit in the drawcall");
+
+			if (drawData.mesh->getVertexCount() + this->vertexCount > maxVertices) {
+				this->performShadowMapDrawCalls();
+			}
+
+			for (const Vertex& vertex : drawData.mesh->getVertices()) {
+				this->vertices->position = drawData.transform * glm::vec4(vertex.position, 1.0f);
+				this->vertices++;
+			}
+
+			int indexOffset = this->vertexCount;
+			for (int index : drawData.mesh->getIndices()) {
+				this->indices[this->indexCount] = indexOffset + index;
+				this->indexCount++;
+			}
+			this->vertexCount += drawData.mesh->getVertexCount();
+		}
+
+		this->performShadowMapDrawCalls();
 	}
 
 	void Renderer3D::bindUniformBuffers() {
@@ -240,12 +239,12 @@ namespace engine {
 
 		if (texture == nullptr) return;
 
-		bool textureBinded = std::find(this->bindedTextures.begin(), this->bindedTextures.end(), texture)
-			!= this->bindedTextures.end();
+		bool textureBound = std::find(this->boundTextures.begin(), this->boundTextures.end(), texture)
+			!= this->boundTextures.end();
 
-		if (!textureBinded) {
+		if (!textureBound) {
 			texture->bind(this->currentTextureSlot);
-			this->bindedTextures.push_back(texture);
+			this->boundTextures.push_back(texture);
 			this->currentTextureSlot++;
 		}
 	}
@@ -255,24 +254,14 @@ namespace engine {
 
 		if (cubeMap == nullptr) return;
 
-		bool cubeMapBinded = std::find(this->bindedCubeMaps.begin(), this->bindedCubeMaps.end(), cubeMap)
-			!= this->bindedCubeMaps.end();
+		bool cubeMapBound = std::find(this->boundCubeMaps.begin(), this->boundCubeMaps.end(), cubeMap)
+			!= this->boundCubeMaps.end();
 
-		if (!cubeMapBinded) {
+		if (!cubeMapBound) {
 			cubeMap->bind(this->currentCubeMapSlot + Texture::maxTextures);
-			this->bindedCubeMaps.push_back(cubeMap);
+			this->boundCubeMaps.push_back(cubeMap);
 			this->currentCubeMapSlot++;
 		}
-	}
-
-	void Renderer3D::clearBindedTextures() {
-		this->bindedTextures.clear();
-		this->currentTextureSlot = 0;
-	}
-
-	void Renderer3D::clearBindedCubeMaps() {
-		this->bindedCubeMaps.clear();
-		this->currentCubeMapSlot = 0;
 	}
 
 	void Renderer3D::performDrawCall() {
@@ -288,10 +277,10 @@ namespace engine {
 
 		this->vertices = this->verticesBegin;
 		this->vertexCount = 0;
-		this->indexCount  = 0;
+		this->indexCount = 0;
 
 		this->drawCallsCount++;
-		
+
 	}
 
 	void Renderer3D::performShadowMapDrawCalls() {
@@ -303,11 +292,13 @@ namespace engine {
 		this->indexBuffer.pushData(this->indices, sizeof(unsigned int) * this->indexCount);
 
 		// update directional lights depth buffers
-		depthshaderProgram.bind();
+		depthTextureShaderProgram.bind();
 		for (auto& directionalLight : this->directionalLights) {
-			CurrentDirectionalLightUniformBufferData lightData{ directionalLight.getViewProjectionMatrix() };
-			
-			this->currentDirectionalLightUniformBuffer.pushData(&lightData, sizeof(CurrentDirectionalLightUniformBufferData));
+			CurrentDirectionalLightUniformBufferData 
+				lightData{ directionalLight.getViewProjectionMatrix() };
+
+			this->currentDirectionalLightUniformBuffer
+				.pushData(&lightData, sizeof(CurrentDirectionalLightUniformBufferData));
 
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();
@@ -330,16 +321,20 @@ namespace engine {
 		// end update directional lights depth buffers
 
 		// update point lights depth buffers
-		cubeMapDepthMapShaderProgram.bind();
+		depthCubeMapShaderProgram.bind();
 
 		for (auto& pointLight : this->pointLights) {
 			CurrentPointLightUniformBufferData lightData;
 
 			lightData.lightPosition = { pointLight.position, 0.0f };
 			lightData.farPlane = pointLight.farPlane;
-			std::memcpy(&lightData.shadowMatrices, pointLight.getViewShadowMatrices().data(), sizeof(lightData.shadowMatrices));
+			std::memcpy(
+				&lightData.shadowMatrices,
+				pointLight.getViewShadowMatrices().data(),
+				sizeof(lightData.shadowMatrices));
 
-			this->currentPointLightUniformBuffer.pushData(&lightData, sizeof(CurrentPointLightUniformBufferData));
+			this->currentPointLightUniformBuffer.pushData(
+				&lightData, sizeof(CurrentPointLightUniformBufferData));
 
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();
@@ -364,7 +359,7 @@ namespace engine {
 
 		this->vertices = this->verticesBegin;
 		this->vertexCount = 0;
-		this->indexCount  = 0;
+		this->indexCount = 0;
 
 	}
 

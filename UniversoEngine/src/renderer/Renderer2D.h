@@ -25,13 +25,13 @@ namespace engine {
 
         ~Renderer2D();
 
-        void startDrawing(Camera& camera);
+        void startFrame(Camera& camera);
 
-        void endDrawing();
+        void endFrame();
 
         void drawQuad(Texture* texture, glm::mat4 transform);
 
-        void clearColor(float r, float g, float b, float a);
+        void clearColor(float r, float g, float b, float a) { DrawApi::clearColor(r, g, b, a); }
 
     private:
 
@@ -49,7 +49,7 @@ namespace engine {
         const unsigned int maxQuadVertices = 4 * maxQuads;
         const unsigned int maxQuadIndices  = 6 * maxQuads;
 
-        std::vector<Texture*> bindedTextures;
+        std::vector<Texture*> boundTextures;
 
         unsigned int currentTextureSlot = 0;
 
@@ -74,10 +74,6 @@ namespace engine {
         void performDrawcall();
 
         void bindTexture(Texture* texture);
-
-        void bindUniformBuffers();
-
-        void clearBindedTextures();
     };
 
 }

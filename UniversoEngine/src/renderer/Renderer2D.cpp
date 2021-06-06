@@ -44,8 +44,8 @@ namespace engine {
         delete[] this->verticesBegin;
     }
 
-    void Renderer2D::startDrawing(Camera& camera) {
-        ASSERT(!this->drawingStarted, "You need to call endDrawing before calling startDrawing angain");
+    void Renderer2D::startFrame(Camera& camera) {
+        ASSERT(!this->drawingStarted, "You need to call endFrame before calling startFrame angain");
         drawingStarted = true;
 
         int currentViewPortWidth = DrawApi::getViewPortWidth();
@@ -56,18 +56,19 @@ namespace engine {
         this->cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
     }
 
-    void Renderer2D::endDrawing() {
-        ASSERT(this->drawingStarted, "You need to call startDrawing before calling endDrawing");
+    void Renderer2D::endFrame() {
+        ASSERT(this->drawingStarted, "You need to call startFrame before calling endFrame");
 
         drawingStarted = false;
 
         this->performDrawcall();
 
-        this->clearBindedTextures();
+        this->boundTextures.clear();
+        this->currentTextureSlot = 0;
     }
 
     void Renderer2D::drawQuad(Texture* texture, glm::mat4 transform) {
-        ASSERT(this->drawingStarted, "You need to call startDrawing before calling drawQuad");
+        ASSERT(this->drawingStarted, "You need to call startFrame before calling drawQuad");
 
         if (this->vertexCount + 4 > maxQuadVertices)
             this->performDrawcall();
@@ -99,12 +100,8 @@ namespace engine {
         this->indexCount += 6;
     }
 
-    void Renderer2D::clearColor(float r, float g, float b, float a) {
-        DrawApi::clearColor(r, g, b, a);
-    }
-
     void Renderer2D::performDrawcall() {
-        this->bindUniformBuffers();
+        this->cameraUniformBuffer.bind(0);
         this->shaderProgram.bind();
         this->vertexArray.bind();
 
@@ -121,22 +118,14 @@ namespace engine {
 
         if (texture == nullptr) return;
 
-        bool textureBinded = std::find(this->bindedTextures.begin(), this->bindedTextures.end(), texture)
-            != this->bindedTextures.end();
+        bool textureBound = std::find(this->boundTextures.begin(), this->boundTextures.end(), texture)
+            != this->boundTextures.end();
 
-        if (!textureBinded) {
+        if (!textureBound) {
             texture->bind(this->currentTextureSlot);
-            this->bindedTextures.push_back(texture);
+            this->boundTextures.push_back(texture);
             this->currentTextureSlot++;
         }
     }
 
-    void Renderer2D::bindUniformBuffers() {
-        this->cameraUniformBuffer.bind(0);
-    }
-
-    void Renderer2D::clearBindedTextures() {
-        this->bindedTextures.clear();
-        this->currentTextureSlot = 0;
-    }
 }

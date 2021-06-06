@@ -50,13 +50,13 @@ namespace engine {
 
 		this->renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		this->renderer3d->startLightsDrawing();
+		this->renderer3d->beginFrame(camera);
 			// draw/ update lights
 			{
 				auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
-					this->renderer3d->drawPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
+					this->renderer3d->addPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
 				}
 			}
 
@@ -64,29 +64,19 @@ namespace engine {
 				auto view = this->registry.view<DirectionalLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
-					this->renderer3d->drawDirectionalLight(lightComp.directionalLight, this->camera, transComp.transform.getTransformMatrix());
+					this->renderer3d->addDirectionalLight(lightComp.directionalLight, this->camera, transComp.transform.getTransformMatrix());
 				}
 			}
+
 			// end update/draw lights
-
 			{
 				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
 
 				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-					this->renderer3d->drawMeshShadowMap(meshComp.mesh, transComp.transform.getTransformMatrix());
+					this->renderer3d->addDrawData({ meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
 				}
 			}
-		this->renderer3d->endLightsDrawing();
-
-		this->renderer3d->startDrawing(this->camera);
-			{
-				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
-
-				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-					this->renderer3d->drawMesh(meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix());
-				}
-			}
-		this->renderer3d->endDrawing();
+		this->renderer3d->endFrame();
 	}
 
 	void Scene::renderDebugData() {
@@ -110,13 +100,13 @@ namespace engine {
 	void Scene::renderDebugLightPositions() {
 		auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
-		this->renderer2d->startDrawing(this->camera);
+		this->renderer2d->startFrame(this->camera);
 
 		for (auto [entity, lightComp, transComp] : view.each()) {
 			this->renderer2d->drawQuad(&this->debugPointLightTexture, transComp.transform.getTransformMatrix());
 		}
 
-		this->renderer2d->endDrawing();
+		this->renderer2d->endFrame();
 	}
 
 	void Scene::onUpdateCallBack(float deltaTime) {
