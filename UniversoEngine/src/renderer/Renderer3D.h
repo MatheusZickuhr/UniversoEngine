@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Vertex.h"
 #include "renderer_api/VertexArray.h"
 #include "renderer_api/VertexBuffer.h"
 #include "renderer_api/IndexBuffer.h"
@@ -9,13 +8,14 @@
 #include "renderer_api/DrawApi.h"
 #include "renderer_api/Texture.h"
 #include "renderer_api/FrameBuffer.h"
+#include "renderer_api/CubeMap.h"
+#include "renderer_api/UniformBuffer.h"
+#include "Vertex.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "Camera.h"
-#include "renderer_api/UniformBuffer.h"
-#include "renderer_api/CubeMap.h"
 
 namespace engine {
 
@@ -39,7 +39,7 @@ namespace engine {
 
         void addPointLight(PointLight light, glm::mat4 transform);
 
-        void addDirectionalLight(DirectionalLight light, Camera& camera, glm::mat4 transform);
+        void addDirectionalLight(DirectionalLight light, glm::mat4 transform);
 
         void addDrawData(DrawData drawData) { frameDrawData.push_back(drawData); }
 

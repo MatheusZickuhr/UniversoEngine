@@ -68,6 +68,14 @@ void ExampleScene::onStart() {
 		transComp.transform.position = { -1.0f, 4.0f, -1.0f };
 	}
 
+	//{
+	//	auto pointLight = createEntity();
+	//	pointLight->addComponent<PointLightComponent>();
+	//	pointLight->addComponent<TransformComponent>();
+	//	auto& transComp = pointLight->getComponent<TransformComponent>();
+	//	transComp.transform.position = { -1.0f, 2.0f, -1.0f };
+	//}
+
 }
 
 void ExampleScene::onUpdate(float deltaTime) {
