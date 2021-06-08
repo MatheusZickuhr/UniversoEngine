@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "Input.h"
 #include <GLFW/glfw3.h>
 
 namespace engine {
@@ -13,6 +14,10 @@ namespace engine {
 
 	bool Input::keyPressed(char key) {
 		return glfwGetKey(window, key) == GLFW_PRESS;
+	}
+
+	bool Input::mouseButtonPressed(char key) {
+		return glfwGetMouseButton(window, key) == GLFW_PRESS;
 	}
 
 	GLFWwindow* Input::window = nullptr;

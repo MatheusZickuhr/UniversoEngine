@@ -7,12 +7,12 @@ project "ImGui"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	objdir "%{wks.location}/obj/%{cfg.buildcfg}"
 
-	includedirs { "imgui/", "imgui/examples/", "glad/include", "glfw/include/" }
+	includedirs { "imgui/", "imgui/backends/", "glad/include", "glfw/include/" }
 
 	files {
 		"imgui/*.cpp",
-		"imgui/examples/imgui_impl_glfw.cpp",
-		"imgui/examples/imgui_impl_opengl3.cpp"
+		"imgui/backends/imgui_impl_glfw.cpp",
+		"imgui/backends/imgui_impl_opengl3.cpp"
 	}
 
 	defines { "IMGUI_IMPL_OPENGL_LOADER_GLAD" }

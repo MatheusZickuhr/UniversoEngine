@@ -1,30 +1,21 @@
 #include "Application.h"
+#include "Application.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <imgui_internal.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 namespace engine {
 
 	void framebufferSizeCallback(GLFWwindow* window, int newWindowWidth, int newWindowHeight) {
-		Application::getInstance().setViewPortSize(newWindowWidth, newWindowHeight);
-	}
-
-	Application& Application::getInstance() {
-		static Application instance;
-		return instance;
+		DrawApi::setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
 	Application::Application() : windowWidth(800), windowHeight(600), windowName("Universo Application"),
 		window(nullptr), currentScene(nullptr) {}
-
-	void Application::setViewPortSize(float newWindowWidth, float newWindowHeight) {
-		this->windowWidth = newWindowWidth;
-		this->windowHeight = newWindowHeight;
-		this->currentScene->getRenderer()->setViewPortSize(newWindowWidth, newWindowHeight);
-	}
 
 	void Application::run() {
 		constexpr float fixedDeltaTime = 1.0f / 60.0f;
@@ -56,11 +47,23 @@ namespace engine {
 			// in the end just render the current scene
 			DrawApi::clearDepthAndColorBuffer(); // clean the buffers in the main frame buffer
 			this->currentScene->render();
+			this->onRender();
 
-#ifdef DEBUG
-			this->currentScene->renderDebugLightPositions();
-			this->currentScene->renderDebugData();
-#endif
+			// imgui rendering
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			this->onImGuiRender();
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+			// enable viewports
+			//GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			//ImGui::UpdatePlatformWindows();
+			//ImGui::RenderPlatformWindowsDefault();
+			//glfwMakeContextCurrent(backup_current_context);
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, true);
@@ -71,6 +74,16 @@ namespace engine {
 
 		delete this->currentScene;
 		glfwTerminate();
+	}
+
+	void Application::onImGuiRender() {
+
+	}
+
+	void Application::onRender() {
+	}
+
+	void Application::onInitialize() {
 	}
 
 	bool Application::isRunning() {
@@ -101,13 +114,30 @@ namespace engine {
 	}
 
 	void Application::initializeImGui() {
+		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
+		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsClassic();
 
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		// Setup Platform/Renderer backends
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init("#version 460 core");
+		
+		ImGui_ImplOpenGL3_Init("#version 450 core");
 
 	}
 

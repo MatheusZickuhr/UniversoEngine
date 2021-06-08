@@ -21,6 +21,8 @@ namespace engine {
 
 		static bool keyPressed(char key);
 
+		static bool mouseButtonPressed(char key);
+
 	};
 
 } 

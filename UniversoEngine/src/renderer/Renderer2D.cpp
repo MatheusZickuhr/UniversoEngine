@@ -67,8 +67,8 @@ namespace engine {
         this->currentTextureSlot = 0;
     }
 
-    void Renderer2D::drawQuad(Texture* texture, glm::mat4 transform) {
-        ASSERT(this->drawingStarted, "You need to call startFrame before calling drawQuad");
+    void Renderer2D::addQuad(Texture* texture, glm::mat4 transform) {
+        ASSERT(this->drawingStarted, "You need to call startFrame before calling addQuad");
 
         if (this->vertexCount + 4 > maxQuadVertices)
             this->performDrawcall();

@@ -21,7 +21,12 @@ namespace engine {
 
     public:
 
-        Renderer2D();
+        static Renderer2D& getInstance() {
+            static Renderer2D renderer2d;
+            return renderer2d;
+        }
+
+        Renderer2D(Renderer2D const& other) = delete;
 
         ~Renderer2D();
 
@@ -29,7 +34,7 @@ namespace engine {
 
         void endFrame();
 
-        void drawQuad(Texture* texture, glm::mat4 transform);
+        void addQuad(Texture* texture, glm::mat4 transform);
 
         void clearColor(float r, float g, float b, float a) { DrawApi::clearColor(r, g, b, a); }
 
@@ -70,6 +75,8 @@ namespace engine {
 
         unsigned int vertexCount = 0;
         unsigned int indexCount =  0;
+
+        Renderer2D();
 
         void performDrawcall();
 

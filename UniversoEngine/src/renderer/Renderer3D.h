@@ -29,7 +29,12 @@ namespace engine {
             glm::mat4 transform;
         };
 
-        Renderer3D();
+        static Renderer3D& getInstance() {
+            static Renderer3D renderer3d;
+            return renderer3d;
+        }
+
+        Renderer3D(Renderer3D const& other) = delete;
 
         ~Renderer3D();
 
@@ -134,6 +139,8 @@ namespace engine {
         ShaderProgram skyBoxShaderProgram;
         Shader skyBoxVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/skyboxVertex.glsl" };
         Shader skyBoxFragmentShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/skyboxFragment.glsl" };
+
+        Renderer3D();
 
         void renderPass();
 

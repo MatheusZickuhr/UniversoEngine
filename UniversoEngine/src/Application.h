@@ -13,15 +13,13 @@ namespace engine {
 
 	public:
 
-		static Application& getInstance();
+		Application();
 
 		Application(Application const&) = delete;
 
 		void operator=(Application const&) = delete;
 
 		void run();
-
-		void setViewPortSize(float newWindowWidth, float newWindowHeight);
 
 		template<typename T>
 		void initiliaze(float width, float height, const char* windowName) {
@@ -41,7 +39,7 @@ namespace engine {
 
 			this->setScene<T>();
 
-			this->setViewPortSize(this->windowWidth, this->windowHeight);
+			this->onInitialize();
 		}
 
 		template<typename T>
@@ -50,19 +48,26 @@ namespace engine {
 			this->currentScene->onStartCallBack();
 		}
 
-	private:
-
+	protected:
+		
 		const char* windowName;
 		float windowWidth, windowHeight;
 		GLFWwindow* window;
 		Scene* currentScene;
-		
-		Application();
 
+		virtual void onImGuiRender();
+
+		virtual void onRender();
+
+		virtual void onInitialize();
+
+	private:
+		
 		bool isRunning();
 
 		void initializeGlfwWindow();
 
 		void initializeImGui();
+
 	};
 }

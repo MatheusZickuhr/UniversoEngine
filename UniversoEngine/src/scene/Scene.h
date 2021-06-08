@@ -28,10 +28,6 @@ namespace engine {
 		void onUpdateCallBack(float deltaTime);
 
 		void render();
-
-		void renderDebugData();
-
-		void renderDebugLightPositions();
 		
 		void updatePhysicsWorld(float deltaTime);
 		
@@ -40,8 +36,6 @@ namespace engine {
 		Camera& getCamera();
 
 		entt::registry& getRegistry();
-		
-		Renderer3D* getRenderer();
 
 	protected:
 
@@ -49,16 +43,15 @@ namespace engine {
 
 		Entity* createEntity();
 
-		void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->renderer3d->setSkyBoxCubeMap(skyBoxCubeMap); }
+		void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->renderer3d.setSkyBoxCubeMap(skyBoxCubeMap); }
 
 	private:
 
 		PhysicsWorld* physicsWorld;
-		Renderer3D* renderer3d;
-		Renderer2D* renderer2d;
+		Renderer3D& renderer3d;
+		Renderer2D& renderer2d;
 		entt::registry registry;
 		std::vector<Entity*> entities;
-		Texture2D debugPointLightTexture { "UniversoEngine/resources/textures/lamp.png" };
 
 		void onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity);
 

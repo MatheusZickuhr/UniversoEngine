@@ -1,6 +1,6 @@
 # Universo Engine
 
-C++ 3D Engine with no level editor (code only). Currently in (early) development.
+C++ 3D Engine, currently in (early) development.
 
 ## Software requirements for building
 

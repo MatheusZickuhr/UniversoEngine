@@ -3,16 +3,13 @@
 #include "Components.h"
 #include "Entity.h"
 #include "../debug/Assert.h"
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 
 namespace engine {
 
 	Scene::Scene() :
 		physicsWorld(new ReactPhysics3dPhysicsWorld()),
-		renderer3d(new Renderer3D()),
-		renderer2d(new Renderer2D()) {
+		renderer3d(Renderer3D::getInstance()),
+		renderer2d(Renderer2D::getInstance()) {
 	
 		this->registry.on_construct<RigidBodyComponent>()
 			.connect<&Scene::onRigidBodyComponentCreated>(this);
@@ -25,8 +22,6 @@ namespace engine {
 	}
 
 	Scene::~Scene() {
-		delete this->renderer3d;
-		delete this->renderer2d;
 		delete this->physicsWorld;
 
 		for (Entity* entity : entities) {
@@ -48,15 +43,15 @@ namespace engine {
 
 	void Scene::render() {
 
-		this->renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		this->renderer3d.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		this->renderer3d->beginFrame(camera);
+		this->renderer3d.beginFrame(camera);
 			// draw/ update lights
 			{
 				auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
-					this->renderer3d->addPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
+					this->renderer3d.addPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
 				}
 			}
 
@@ -64,7 +59,7 @@ namespace engine {
 				auto view = this->registry.view<DirectionalLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
-					this->renderer3d->addDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
+					this->renderer3d.addDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
 				}
 			}
 
@@ -73,40 +68,10 @@ namespace engine {
 				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
 
 				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-					this->renderer3d->addDrawData({ meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
+					this->renderer3d.addDrawData({ meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
 				}
 			}
-		this->renderer3d->endFrame();
-	}
-
-	void Scene::renderDebugData() {
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		ImGui::Begin("Debug data", 0, ImGuiWindowFlags_AlwaysAutoResize);
-	
-		ImGui::Text("Frametime: %.1f", 1000.0f / ImGui::GetIO().Framerate);
-		ImGui::Text("Fps: %.1f", ImGui::GetIO().Framerate);
-
-		ImGui::Text("Draw calls: %d", this->renderer3d->getDrawCallsCount());
-
-		ImGui::End();
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	}
-
-	void Scene::renderDebugLightPositions() {
-		auto view = this->registry.view<PointLightComponent, TransformComponent>();
-
-		this->renderer2d->startFrame(this->camera);
-
-		for (auto [entity, lightComp, transComp] : view.each()) {
-			this->renderer2d->drawQuad(&this->debugPointLightTexture, transComp.transform.getTransformMatrix());
-		}
-
-		this->renderer2d->endFrame();
+		this->renderer3d.endFrame();
 	}
 
 	void Scene::onUpdateCallBack(float deltaTime) {
@@ -150,10 +115,6 @@ namespace engine {
 	entt::registry& Scene::getRegistry() {
 		return this->registry;
 	} 
-
-	Renderer3D* Scene::getRenderer() {
-		return this->renderer3d;
-	}
 
 	Entity* Scene::createEntity() {
 		entt::entity enttEntity = this->registry.create();

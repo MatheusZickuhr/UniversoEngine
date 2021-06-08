@@ -61,4 +61,8 @@ namespace engine {
         }
     };
 
+    struct NameComponent {
+        std::string name;
+    };
+
 }
