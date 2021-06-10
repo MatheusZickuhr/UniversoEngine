@@ -35,6 +35,13 @@ namespace engine {
         }
 
         template<typename T>
+        void removeComponent() {
+            ASSERT(this->hasComponent<T>(), "Entity does not have the specified component");
+
+            scene->getRegistry().remove<T>(entity);
+        }
+
+        template<typename T>
         bool hasComponent() {
             return scene->getRegistry().has<T>(entity);
         }

@@ -75,6 +75,7 @@ void DefaultLevelEditorScene::onStart() {
 
 	//{
 	//	auto pointLight = createEntity();
+	//	pointLight->addComponent<NameComponent>("Point Light");
 	//	pointLight->addComponent<PointLightComponent>();
 	//	pointLight->addComponent<TransformComponent>();
 	//	auto& transComp = pointLight->getComponent<TransformComponent>();
