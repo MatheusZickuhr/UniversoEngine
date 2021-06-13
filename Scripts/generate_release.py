@@ -34,12 +34,6 @@ def copy_bin_files_windows():
         src=f"{os.getcwd()}/bin/Release/UniversoEngine.lib",
         dst=f"{release_folder}/Bin/UniversoEngine.lib")
 
-    vulkan_debug_sdk_bin_folder = f"{os.getcwd()}/Libraries/VulkanDebugSdk/Bin/"
-    for file in os.listdir(vulkan_debug_sdk_bin_folder):
-        shutil.copyfile(
-            src=f"{vulkan_debug_sdk_bin_folder}/{file}",
-            dst=f"{release_folder}/Bin/{file}")
-
 
 def create_zip_file():
     print("Generating Release.zip in the root directory")

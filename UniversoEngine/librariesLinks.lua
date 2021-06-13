@@ -18,7 +18,7 @@ function librariesLinks()
 	-- if is debug and windows
 	filter { "configurations:Debug", "system:windows" }
 		links {
-			"shaderc_sharedd",
+			"shaderc_combinedd",
 			"spirv-cross-cored",
 			"spirv-cross-glsld",
 			"spirv-cross-hlsld"
@@ -27,7 +27,7 @@ function librariesLinks()
 	-- if is debug and linux
 	filter { "configurations:Debug", "system:linux" }
 		links {
-			"shaderc_shared",
+			"shaderc_combined",
 			"spirv-cross-core",
 			"spirv-cross-glsl",
 			"spirv-cross-hlsl"
@@ -35,7 +35,7 @@ function librariesLinks()
 
 	filter "configurations:Release"
 		links {
-			"shaderc_shared",
+			"shaderc_combined",
 			"spirv-cross-core",
 			"spirv-cross-glsl",
 			"spirv-cross-hlsl"
