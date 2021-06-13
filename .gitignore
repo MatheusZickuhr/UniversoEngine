@@ -8,6 +8,10 @@ obj/
 *.dll
 *.lib
 
+*.pyc
+
+*.zip
+
 # Linux project files
 Makefile
 libs/Makefile
