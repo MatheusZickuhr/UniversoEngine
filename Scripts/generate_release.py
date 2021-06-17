@@ -49,12 +49,20 @@ def copy_header_files():
     glm_include_dir = f"{os.getcwd()}/Libraries/glm/glm/" 
     reactphysics_include_dir = f"{os.getcwd()}/Libraries/reactphysics3d/Include/reactphysics3d/" 
 
+    entt_licence_dir = f"{os.getcwd()}/Libraries/entt/LICENSE.txt"
+    glm_licence_dir = f"{os.getcwd()}/Libraries/glm/copying.txt"
+    reactphysics_licence_dir = f"{os.getcwd()}/Libraries/reactphysics3d/LICENSE"
+
     release_binaries_include_dir = f"{release_folder}/Include"
 
     shutil.copytree(src=engine_src_folder, dst=release_binaries_include_dir)
     shutil.copytree(src=entt_include_dir, dst=f"{release_binaries_include_dir}/entt")
     shutil.copytree(src=glm_include_dir, dst=f"{release_binaries_include_dir}/glm")
     shutil.copytree(src=reactphysics_include_dir, dst=f"{release_binaries_include_dir}/reactphysics3d")
+
+    shutil.copyfile(src=entt_licence_dir, dst=f"{release_binaries_include_dir}/entt/LICENSE.txt")
+    shutil.copyfile(src=glm_licence_dir, dst=f"{release_binaries_include_dir}/glm/copying.txt")
+    shutil.copyfile(src=reactphysics_licence_dir, dst=f"{release_binaries_include_dir}/reactphysics3d/LICENSE")
 
     # delete all cpp files from the release folder (cpp files are no required)
     delete_cpp_files_from_dir(release_binaries_include_dir)
