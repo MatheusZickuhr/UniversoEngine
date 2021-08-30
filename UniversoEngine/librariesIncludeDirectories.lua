@@ -11,6 +11,7 @@ function librariesIncludeDirectories()
 		"%{wks.location}/Libraries/entt/include/",
 		"%{wks.location}/Libraries/reactphysics3d/include/",
 		"%{wks.location}/Libraries/hash-library/",
-		"%{VULKAN_SDK_DIR}/include/"
+		"%{VULKAN_SDK_DIR}/include/",
+		"%{wks.location}/Libraries/PerlinNoise/"
 	}
 end

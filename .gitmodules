@@ -13,3 +13,6 @@
 [submodule "Libraries/hash-library"]
 	path = Libraries/hash-library
 	url = https://github.com/stbrumme/hash-library.git
+[submodule "Libraries/PerlinNoise"]
+	path = Libraries/PerlinNoise
+	url = https://github.com/Reputeless/PerlinNoise.git

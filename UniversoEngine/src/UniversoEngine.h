@@ -4,6 +4,7 @@
 
 #include "input/Input.h"
 
+#include "math/Math.h"
 #include "math/Random.h"
 #include "math/Transform.h"
 

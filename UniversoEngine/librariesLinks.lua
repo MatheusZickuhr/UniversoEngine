@@ -12,7 +12,8 @@ function librariesLinks()
 		"entt",
 		"reactphysics3d",
 		"hash-library",
-		"VkLayer_utils"
+		"VkLayer_utils",
+		"PerlinNoise"
 	}
 
 	-- if is debug and windows
