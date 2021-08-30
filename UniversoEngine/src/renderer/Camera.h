@@ -17,6 +17,10 @@ namespace engine {
         glm::vec3 front    = { 0.0f, 0.0f, -1.0f };
         glm::vec3 worldUp  = { 0.0f, 1.0f, 0.0f };
 
+        //clipping values
+        float nearClippingDistance = 0.1f;
+        float farClippingDistance = 1000.0f;
+
         // euler Angles
         float yaw   = -90.0f;
         float pitch = 0.0f;

@@ -16,7 +16,7 @@ namespace engine {
 	}
 
 	glm::mat4 Camera::getProjectionMatrix(float width, float height) {
-		return glm::perspective(glm::radians(this->fov), width / height, 0.1f, 100.0f);
+		return glm::perspective(glm::radians(this->fov), width / height, this->nearClippingDistance, this->farClippingDistance);
 	}
 
 	glm::mat4 Camera::getViewProjectionMatrix(float width, float height) {
