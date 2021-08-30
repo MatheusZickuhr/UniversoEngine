@@ -84,7 +84,7 @@ namespace engine {
 
         // arbitrary values for now
         const unsigned int maxVertices = 10000;
-        const unsigned int maxIndices  = 10000;
+        const unsigned int maxIndices  = 20000;
 
         unsigned int drawCallsCount = 0;
 
