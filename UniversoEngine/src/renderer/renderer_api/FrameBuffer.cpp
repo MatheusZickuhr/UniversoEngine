@@ -36,4 +36,8 @@ namespace engine {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	void FrameBuffer::bindDefaultFrameBuffer() {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
 }

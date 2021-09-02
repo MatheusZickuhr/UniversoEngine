@@ -68,7 +68,7 @@ namespace engine {
 				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
 
 				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-					this->renderer3d.addDrawData({ meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
+					this->renderer3d.drawDynamicMesh({ meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
 				}
 			}
 		this->renderer3d.endFrame();

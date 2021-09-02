@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "renderer_api/VertexArray.h"
 #include "renderer_api/VertexBuffer.h"
 #include "renderer_api/IndexBuffer.h"
@@ -10,6 +12,7 @@
 #include "renderer_api/FrameBuffer.h"
 #include "renderer_api/CubeMap.h"
 #include "renderer_api/UniformBuffer.h"
+
 #include "Vertex.h"
 #include "Material.h"
 #include "Mesh.h"
@@ -23,7 +26,7 @@ namespace engine {
 
     public:
 
-        struct DrawData {
+        struct MeshData {
             Mesh* mesh;
             Material* material;
             glm::mat4 transform;
@@ -46,7 +49,7 @@ namespace engine {
 
         void addDirectionalLight(DirectionalLight light, glm::mat4 transform);
 
-        void addDrawData(DrawData drawData) { frameDrawData.push_back(drawData); }
+        void drawDynamicMesh(MeshData meshData) { dynamicRenderingData.frameMeshData.push_back(meshData); }
 
         void clearColor(float r, float g, float b, float a) { DrawApi::clearColor(r, g, b, a); }
 
@@ -59,10 +62,10 @@ namespace engine {
     private:
 
         struct CameraUniformBufferData {
-            glm::mat4 cameraViewProjectionMatrix;
-            glm::mat4 cameraViewMatrix;
-            glm::mat4 cameraProjectionMatrix;
-            glm::vec3 cameraPosition;
+            glm::mat4 viewProjectionMatrix;
+            glm::mat4 viewMatrix;
+            glm::mat4 projectionMatrix;
+            glm::vec3 position;
         };
 
         struct LightsUniformBufferData {
@@ -82,13 +85,29 @@ namespace engine {
             glm::mat4 lightSpaceMatrix;
         };
 
-        // arbitrary values for now
-        const unsigned int maxVertices = 10000;
-        const unsigned int maxIndices  = 20000;
+        struct DynamicRenderingData {
+            const unsigned int maxVertices = 10000;
+            const unsigned int maxIndices  = 20000;
+            
+            // current frame data (this data will reset on every frame)
+            std::vector<MeshData> frameMeshData;
+
+            // current batch data (this data will reset on every new batch)
+            unsigned int vertexCount = 0;
+            unsigned int indexCount  = 0;
+
+            Vertex* vertices;
+            Vertex* verticesBegin;
+            unsigned int* indices;
+
+            VertexArray vertexArray;
+            VertexBuffer vertexBuffer{ sizeof(Vertex), maxVertices };
+            IndexBuffer indexBuffer{ maxIndices };
+        };
 
         unsigned int drawCallsCount = 0;
-
-        std::vector<DrawData> frameDrawData;
+        
+        DynamicRenderingData dynamicRenderingData;
 
         std::vector<Texture*> boundTextures;
         unsigned int currentTextureSlot = 0;
@@ -96,16 +115,6 @@ namespace engine {
         std::vector<Texture*> boundCubeMaps;
         unsigned int currentCubeMapSlot = 0;
 
-        Vertex* vertices;
-        Vertex* verticesBegin;
-        unsigned int* indices;
-
-        unsigned int vertexCount = 0;
-        unsigned int indexCount =  0;
-
-        VertexArray vertexArray;
-        VertexBuffer vertexBuffer { sizeof(Vertex), maxVertices };
-        IndexBuffer indexBuffer { maxIndices };
 
         Shader vertexShader { ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/lightingVertex.glsl" };
         Shader fragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/lightingFragment.glsl" };
@@ -142,9 +151,9 @@ namespace engine {
 
         Renderer3D();
 
-        void renderPass();
+        void drawDynamicMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget = nullptr);
 
-        void shadowPass();
+        void drawLightsFrameBuffers();
 
         void bindUniformBuffers();
 
@@ -152,9 +161,19 @@ namespace engine {
 
         void bindCubeMap(Texture* texture);
                 
-        void performDrawCall();
+        void flushDynamicRenderingBatch();
 
-        void performShadowMapDrawCalls();
+        void updateCameraUniformBuffer(Camera& camera);
+
+        void clearLightsFrameBuffers();
+
+        void updateLightsUniformBuffers();
+
+        void drawSkyBox();
+
+        void clearLights();
+
+        void clearBindedTextures();
 
     };
 }

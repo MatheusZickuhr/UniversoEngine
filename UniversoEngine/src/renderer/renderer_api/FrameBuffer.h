@@ -20,6 +20,8 @@ namespace engine {
 		void addDepthBufferTexture(DepthBufferTexture2D& texture);
 
 		void addDepthBufferCubeMap(DepthBufferCubeMap& cubeMap);
+		
+		static void bindDefaultFrameBuffer();
 
 	private:
 
