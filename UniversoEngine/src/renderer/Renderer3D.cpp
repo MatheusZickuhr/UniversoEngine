@@ -90,6 +90,7 @@ namespace engine {
 			staticRenderingData.indexCount  = 0;
 
 			staticRenderingData.vertices.clear();
+			staticRenderingData.indices.clear();
 
 			for (auto& meshData : staticRenderingData.meshDataList) {
 
