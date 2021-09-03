@@ -16,7 +16,7 @@ void DefaultLevelEditorScene::onStart() {
 	{
 		auto box = createEntity();
 		box->addComponent<NameComponent>("Box 1");
-		box->addComponent<MeshComponent>(&boxMesh);
+		box->addComponent<DynamicMeshComponent>(&boxMesh);
 		box->addComponent<MaterialComponent>(&boxMaterial);
 		box->addComponent<TransformComponent>();
 
@@ -27,7 +27,7 @@ void DefaultLevelEditorScene::onStart() {
 	{
 		auto box = createEntity();
 		box->addComponent<NameComponent>("Box 2");
-		box->addComponent<MeshComponent>(&boxMesh);
+		box->addComponent<DynamicMeshComponent>(&boxMesh);
 		box->addComponent<MaterialComponent>(&boxMaterial);
 		box->addComponent<TransformComponent>();
 
@@ -38,7 +38,7 @@ void DefaultLevelEditorScene::onStart() {
 	{
 		auto box = createEntity();
 		box->addComponent<NameComponent>("Box 3");
-		box->addComponent<MeshComponent>(&boxMesh);
+		box->addComponent<DynamicMeshComponent>(&boxMesh);
 		box->addComponent<MaterialComponent>(&boxMaterial);
 		box->addComponent<TransformComponent>();
 
@@ -51,7 +51,7 @@ void DefaultLevelEditorScene::onStart() {
 	{
 		auto floor = createEntity();
 		floor->addComponent<NameComponent>("Floor");
-		floor->addComponent<MeshComponent>(&boxMesh);
+		floor->addComponent<DynamicMeshComponent>(&boxMesh);
 		floor->addComponent<MaterialComponent>(&boxMaterial);
 		floor->addComponent<TransformComponent>();
 

@@ -53,6 +53,8 @@ namespace engine {
 		entt::registry registry;
 		std::vector<Entity*> entities;
 
+		void onStaticMeshComponentCreated(entt::registry& registry, entt::entity entity);
+
 		void onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity);
 
 		void onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity);

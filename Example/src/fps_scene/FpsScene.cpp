@@ -17,7 +17,7 @@ void FpsScene::onStart() {
 	// create a player entity
 	auto player = createEntity();
 	player->addComponent<MaterialComponent>(boxMaterial);
-	player->addComponent<MeshComponent>(boxMesh);
+	player->addComponent<DynamicMeshComponent>(boxMesh);
 	player->addComponent<TransformComponent>();
 	player->addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	player->addComponent<RigidBodyComponent>();
@@ -27,7 +27,7 @@ void FpsScene::onStart() {
 	// create a floor entity
 	auto floor = createEntity();
 	floor->addComponent<MaterialComponent>(boxMaterial);
-	floor->addComponent<MeshComponent>(boxMesh);
+	floor->addComponent<DynamicMeshComponent>(boxMesh);
 	floor->addComponent<TransformComponent>();
 
 	auto& floorTransformComponent = floor->getComponent<TransformComponent>();
@@ -40,7 +40,7 @@ void FpsScene::onStart() {
 	// create a obstacle entity
 	auto obstacle1 = createEntity();
 	obstacle1->addComponent<MaterialComponent>(grassCubeMaterial);
-	obstacle1->addComponent<MeshComponent>(grassCubeMesh);
+	obstacle1->addComponent<DynamicMeshComponent>(grassCubeMesh);
 	obstacle1->addComponent<TransformComponent>();
 	
 	auto& obstacle1TransformComponent = obstacle1->getComponent<TransformComponent>();
@@ -52,7 +52,7 @@ void FpsScene::onStart() {
 	// create other obstacle entity
 	auto obstacle2 = createEntity();
 	obstacle2->addComponent<MaterialComponent>(boxMaterial);
-	obstacle2->addComponent<MeshComponent>(boxMesh);
+	obstacle2->addComponent<DynamicMeshComponent>(boxMesh);
 	obstacle2->addComponent<TransformComponent>();
 
 	auto& obstacle2TransformComponent = obstacle2->getComponent<TransformComponent>();

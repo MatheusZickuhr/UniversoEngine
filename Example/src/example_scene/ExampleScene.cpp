@@ -15,45 +15,48 @@ void ExampleScene::onStart() {
 
 	{
 		auto box = createEntity();
-		box->addComponent<MeshComponent>(&boxMesh);
 		box->addComponent<MaterialComponent>(&boxMaterial);
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
 		boxTransformComponent.transform.position = { 8.0f, 0.0f, -4.0f };
+
+		box->addComponent<StaticMeshComponent>(&boxMesh);
 	}
 
 	{
 		auto box = createEntity();
-		box->addComponent<MeshComponent>(&boxMesh);
 		box->addComponent<MaterialComponent>(&boxMaterial);
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { -8.0f, 0.0f, 4.0f };
+		boxTransformComponent.transform.position = { -8.0f, 0.0f, 0.0f };
+
+		box->addComponent<StaticMeshComponent>(&boxMesh);
 	}
 
 	{
 		auto box = createEntity();
-		box->addComponent<MeshComponent>(&boxMesh);
 		box->addComponent<MaterialComponent>(&boxMaterial);
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { 0.0f, 0.0f, -3.0f };
-	}
+		boxTransformComponent.transform.position = { 0.0f, 0.0f, 4.0f };
 
+		box->addComponent<StaticMeshComponent>(&boxMesh);
+	}
 
 	// create a floor entity
 	{
 		auto floor = createEntity();
-		floor->addComponent<MeshComponent>(&boxMesh);
 		floor->addComponent<MaterialComponent>(&boxMaterial);
 		floor->addComponent<TransformComponent>();
 
 		auto& floorTransformComponent = floor->getComponent<TransformComponent>();
 		floorTransformComponent.transform.position.y = -2.0f;
 		floorTransformComponent.transform.scale = { 10.0f, 0.5f, 10.0f };
+
+		floor->addComponent<StaticMeshComponent>(&boxMesh);
 
 		floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
 		floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);

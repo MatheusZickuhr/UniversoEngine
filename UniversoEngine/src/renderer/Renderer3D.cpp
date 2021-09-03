@@ -42,9 +42,9 @@ namespace engine {
 		depthCubeMapShaderProgram.attachShader(depthCubeMapFragmentShader);
 
 		// cubemap skybox
-		skyBoxVertexArray.addVertexBuffer(skyBoxVertexBuffer);
+		skyBoxData.vertexArray.addVertexBuffer(skyBoxData.vertexBuffer);
 
-		skyBoxVertexBuffer.addAttributePointer(AttriuteType::Vec3, 0);
+		skyBoxData.vertexBuffer.addAttributePointer(AttriuteType::Vec3, 0);
 
 		glm::vec3 skyboxVertices[36];
 
@@ -54,10 +54,95 @@ namespace engine {
 		for (int i = 0; i < cubeMeshVertices.size(); i++)
 			skyboxVertices[i] = cubeMeshVertices[i].position;
 
-		skyBoxVertexBuffer.pushData(skyboxVertices, sizeof(skyboxVertices));
+		skyBoxData.vertexBuffer.pushData(skyboxVertices, sizeof(skyboxVertices));
 
-		skyBoxShaderProgram.attachShader(skyBoxVertexShader);
-		skyBoxShaderProgram.attachShader(skyBoxFragmentShader);
+		skyBoxData.shaderProgram.attachShader(skyBoxData.vertexShader);
+		skyBoxData.shaderProgram.attachShader(skyBoxData.fragmentShader);
+	}
+
+	void Renderer3D::drawStaticMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget) {
+		bindUniformBuffers();
+
+		targetShaderProgram->bind();
+
+		staticRenderingData.vertexArray.bind();
+
+		if (frameBufferTarget != nullptr) {
+			frameBufferTarget->bind();
+		}
+		else {
+			FrameBuffer::bindDefaultFrameBuffer();
+		}
+
+		if (staticRenderingData.shouldCreateBuffers) {
+
+			staticRenderingData.shouldCreateBuffers = false;
+
+			if (staticRenderingData.vertexBuffer != nullptr) {
+				delete staticRenderingData.vertexBuffer;
+			}
+
+			if (staticRenderingData.indexBuffer != nullptr) {
+				delete staticRenderingData.indexBuffer;
+			}
+
+			staticRenderingData.vertexCount = 0;
+			staticRenderingData.indexCount  = 0;
+
+			staticRenderingData.vertices.clear();
+
+			for (auto& meshData : staticRenderingData.meshDataList) {
+
+				this->bindTexture(meshData.material->getTexture());
+
+				Texture* texture = meshData.material->getTexture();
+
+				for (const Vertex& vertex : meshData.mesh->getVertices()) {
+					Vertex transformedVertex;
+
+					transformedVertex.position = meshData.transform * glm::vec4(vertex.position, 1.0f);
+					transformedVertex.normal = glm::mat3(glm::transpose(glm::inverse(meshData.transform))) * vertex.normal;
+					transformedVertex.ambient = meshData.material->ambient;
+					transformedVertex.diffuse = meshData.material->diffuse;
+					transformedVertex.specular = meshData.material->specular;
+					transformedVertex.shininess = meshData.material->shininess;
+					transformedVertex.textureCoords = vertex.textureCoords;
+					transformedVertex.textureSlotIndex = texture != nullptr ? texture->getSlot() : -1.0f;
+					
+					staticRenderingData.vertices.push_back(transformedVertex);
+				}
+
+				int indexOffset = staticRenderingData.vertexCount;
+				for (int index : meshData.mesh->getIndices()) {
+					staticRenderingData.indices.push_back(indexOffset + index);
+					staticRenderingData.indexCount++;
+				}
+
+				staticRenderingData.vertexCount += meshData.mesh->getVertexCount();
+			}
+			
+			staticRenderingData.vertexBuffer = new VertexBuffer{ sizeof(Vertex), staticRenderingData.vertexCount };
+
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, position));
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, normal));
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, ambient));
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, diffuse));
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Vec3, offsetof(Vertex, specular));
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Float, offsetof(Vertex, shininess));
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Vec2, offsetof(Vertex, textureCoords));
+			staticRenderingData.vertexBuffer->addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlotIndex));
+
+
+			staticRenderingData.indexBuffer = new IndexBuffer{ staticRenderingData.indexCount };
+
+			staticRenderingData.vertexArray.addVertexBuffer(*staticRenderingData.vertexBuffer);
+			staticRenderingData.vertexArray.addIndexBuffer(*staticRenderingData.indexBuffer);
+
+			staticRenderingData.vertexBuffer->pushData(staticRenderingData.vertices.data(), sizeof(Vertex) * staticRenderingData.vertexCount);
+			staticRenderingData.indexBuffer->pushData(staticRenderingData.indices.data(), sizeof(unsigned int) * staticRenderingData.indexCount);
+		}
+
+		DrawApi::drawWithIdexes(staticRenderingData.indexCount);
 	}
 
 	Renderer3D::~Renderer3D() {
@@ -67,11 +152,10 @@ namespace engine {
 
 	void Renderer3D::beginFrame(Camera& camera) {
 		this->drawCallsCount = 0;
-
+		
 		updateCameraUniformBuffer(camera);
-
+		
 		clearLightsFrameBuffers();
-
 		clearLights();
 	}
 
@@ -79,14 +163,12 @@ namespace engine {
 		updateLightsUniformBuffers();
 
 		drawLightsFrameBuffers();
-		
 		drawDynamicMeshes(&this->shaderProgram);
-
-		dynamicRenderingData.frameMeshData.clear();
-
-		clearBindedTextures();
-
+		drawStaticMeshes(&this->shaderProgram);
 		drawSkyBox();
+		
+		clearBindedTextures();
+		dynamicRenderingData.meshDataList.clear();
 	}
 
 	void Renderer3D::addPointLight(PointLight pointLight, glm::mat4 transform) {
@@ -108,6 +190,11 @@ namespace engine {
 		bindTexture(directionalLight.depthMapTexture.get());
 	}
 
+	void Renderer3D::drawStaticMesh(MeshData meshData) {
+		staticRenderingData.shouldCreateBuffers = true;
+		staticRenderingData.meshDataList.push_back(meshData);
+	}
+
 	void Renderer3D::drawDynamicMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget) {
 
 		this->bindUniformBuffers();
@@ -122,7 +209,7 @@ namespace engine {
 		}
 
 
-		for (auto& meshData : dynamicRenderingData.frameMeshData) {
+		for (auto& meshData : dynamicRenderingData.meshDataList) {
 			ASSERT(meshData.mesh->getVertexCount() <= dynamicRenderingData.maxVertices, "Mesh does not fit in the drawcall");
 
 			bool batchIsFull = meshData.mesh->getVertexCount() + dynamicRenderingData.vertexCount > dynamicRenderingData.maxVertices;
@@ -171,6 +258,7 @@ namespace engine {
 
 			DrawApi::setViewPortSize(directionalLight.depthMapTexture->getWidth(), directionalLight.depthMapTexture->getHeight());
 			drawDynamicMeshes(&depthTextureShaderProgram, directionalLight.depthMapFrameBuffer.get());
+			drawStaticMeshes(&depthTextureShaderProgram, directionalLight.depthMapFrameBuffer.get());
 			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 
@@ -189,6 +277,7 @@ namespace engine {
 
 			DrawApi::setViewPortSize(pointLight.depthMapCubeMap->getWidth(), pointLight.depthMapCubeMap->getHeight());
 			drawDynamicMeshes(&depthCubeMapShaderProgram, pointLight.depthMapFrameBuffer.get());
+			drawStaticMeshes(&depthCubeMapShaderProgram, pointLight.depthMapFrameBuffer.get());
 			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 	}
@@ -298,12 +387,12 @@ namespace engine {
 
 	void Renderer3D::drawSkyBox() {
 		// draw the sky box
-		if (this->skyBoxCubeMap != nullptr) {
+		if (this->skyBoxData.cubeMap != nullptr) {
 			DrawApi::setDepthFunctionToLessOrEqual();
 			DrawApi::enableDepthMask(false);
-			skyBoxShaderProgram.bind();
-			skyBoxVertexArray.bind();
-			skyBoxCubeMap->bind(0);
+			skyBoxData.shaderProgram.bind();
+			skyBoxData.vertexArray.bind();
+			skyBoxData.cubeMap->bind(0);
 			DrawApi::draw(36);
 			this->drawCallsCount++;
 			DrawApi::enableDepthMask(true);

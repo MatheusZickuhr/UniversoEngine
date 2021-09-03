@@ -25,7 +25,11 @@ namespace engine {
         DirectionalLight directionalLight;
     };
 
-    struct MeshComponent {
+    struct DynamicMeshComponent {
+        Mesh* mesh;
+    };
+
+    struct StaticMeshComponent {
         Mesh* mesh;
     };
 

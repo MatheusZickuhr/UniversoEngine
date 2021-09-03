@@ -11,6 +11,9 @@ namespace engine {
 		renderer3d(Renderer3D::getInstance()),
 		renderer2d(Renderer2D::getInstance()) {
 	
+		this->registry.on_construct<StaticMeshComponent>()
+			.connect<&Scene::onStaticMeshComponentCreated>(this);
+
 		this->registry.on_construct<RigidBodyComponent>()
 			.connect<&Scene::onRigidBodyComponentCreated>(this);
 
@@ -65,7 +68,7 @@ namespace engine {
 
 			// end update/draw lights
 			{
-				auto view = this->registry.view<MeshComponent, MaterialComponent, TransformComponent>();
+				auto view = this->registry.view<DynamicMeshComponent, MaterialComponent, TransformComponent>();
 
 				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
 					this->renderer3d.drawDynamicMesh({ meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
@@ -121,6 +124,15 @@ namespace engine {
 		Entity* entity = new Entity{ enttEntity, this };
 		this->entities.push_back(entity);
 		return entity;
+	}
+
+	void Scene::onStaticMeshComponentCreated(entt::registry& registry, entt::entity entity) {
+
+		auto& meshComp = registry.get<StaticMeshComponent>(entity);
+		auto& materialComp = registry.get<MaterialComponent>(entity);
+		auto& transComp = registry.get<TransformComponent>(entity);
+
+		this->renderer3d.drawStaticMesh( { meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
 	}
 
 	void Scene::onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity) {

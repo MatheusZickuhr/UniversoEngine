@@ -49,7 +49,9 @@ namespace engine {
 
         void addDirectionalLight(DirectionalLight light, glm::mat4 transform);
 
-        void drawDynamicMesh(MeshData meshData) { dynamicRenderingData.frameMeshData.push_back(meshData); }
+        void drawDynamicMesh(MeshData meshData) { dynamicRenderingData.meshDataList.push_back(meshData); }
+
+        void drawStaticMesh(MeshData meshData);
 
         void clearColor(float r, float g, float b, float a) { DrawApi::clearColor(r, g, b, a); }
 
@@ -57,7 +59,7 @@ namespace engine {
 
         unsigned int getDrawCallsCount() { return this->drawCallsCount; }
 
-        void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->skyBoxCubeMap = skyBoxCubeMap; }
+        void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->skyBoxData.cubeMap = skyBoxCubeMap; }
 
     private:
 
@@ -85,12 +87,23 @@ namespace engine {
             glm::mat4 lightSpaceMatrix;
         };
 
+        struct SkyBoxData {
+            CubeMap* cubeMap = nullptr;
+
+            VertexArray vertexArray;
+            VertexBuffer vertexBuffer{ sizeof(glm::vec3), 36 };
+
+            ShaderProgram shaderProgram;
+            Shader vertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/skyboxVertex.glsl" };
+            Shader fragmentShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/skyboxFragment.glsl" };
+        };
+
         struct DynamicRenderingData {
             const unsigned int maxVertices = 10000;
             const unsigned int maxIndices  = 20000;
             
             // current frame data (this data will reset on every frame)
-            std::vector<MeshData> frameMeshData;
+            std::vector<MeshData> meshDataList;
 
             // current batch data (this data will reset on every new batch)
             unsigned int vertexCount = 0;
@@ -105,9 +118,26 @@ namespace engine {
             IndexBuffer indexBuffer{ maxIndices };
         };
 
+        struct StaticRenderingData {
+            bool shouldCreateBuffers = false;
+
+            std::vector<MeshData> meshDataList;
+
+            unsigned int vertexCount = 0;
+            unsigned int indexCount = 0;
+
+            std::vector<Vertex> vertices;
+            std::vector<unsigned int> indices;
+
+            VertexArray vertexArray;
+            VertexBuffer* vertexBuffer = nullptr;
+            IndexBuffer* indexBuffer = nullptr;
+        };
+
         unsigned int drawCallsCount = 0;
         
         DynamicRenderingData dynamicRenderingData;
+        StaticRenderingData staticRenderingData;
 
         std::vector<Texture*> boundTextures;
         unsigned int currentTextureSlot = 0;
@@ -139,17 +169,12 @@ namespace engine {
         Shader depthCubeMapGeometryShader { ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
         Shader depthCubeMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
 
-        // skybox cubemap
-        CubeMap* skyBoxCubeMap = nullptr;
+        SkyBoxData skyBoxData;
 
-        VertexArray skyBoxVertexArray;
-        VertexBuffer skyBoxVertexBuffer{ sizeof(glm::vec3), 36 };
-
-        ShaderProgram skyBoxShaderProgram;
-        Shader skyBoxVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/skyboxVertex.glsl" };
-        Shader skyBoxFragmentShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/skyboxFragment.glsl" };
 
         Renderer3D();
+
+        void drawStaticMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget = nullptr);
 
         void drawDynamicMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget = nullptr);
 
