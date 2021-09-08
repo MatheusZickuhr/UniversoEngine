@@ -4,7 +4,7 @@
 
 using namespace engine;
 
-class ExampleScene : public Scene {
+class DirectionalLightScene : public Scene {
 
 private:
 	CameraController* cameraInput;
@@ -25,7 +25,7 @@ private:
 
 public:
 
-	~ExampleScene();
+	~DirectionalLightScene();
 
 private:
 

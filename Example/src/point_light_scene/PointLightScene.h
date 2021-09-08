@@ -1,12 +1,14 @@
-#include <UniversoEngine.h>
+#pragma once
 
-#include "PLayerBehavior.h"
+#include <UniversoEngine.h>
 
 using namespace engine;
 
-class FpsScene : public Scene {
+class PointLightScene : public Scene {
 
 private:
+    CameraController* cameraInput;
+
     Material boxMaterial{ "Example/resources/textures/crate/crate.jpg" };
     Mesh boxMesh{ "Example/resources/models/crate/crate.obj" };
 
@@ -22,7 +24,8 @@ private:
     };
 
 public:
-    ~FpsScene();
+
+    ~PointLightScene();
 
 private:
 

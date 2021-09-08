@@ -1,13 +1,13 @@
-#include "ExampleScene.h"
+#include "DirectionalLightScene.h"
 
-ExampleScene::~ExampleScene() {
+DirectionalLightScene::~DirectionalLightScene() {
 
 	delete cameraInput;
 }
 
-void ExampleScene::onStart() {
+void DirectionalLightScene::onStart() {
 
-	this->camera.position = { 0.0f, 0.0f, 0.0f };
+	this->camera.position = { 0.0f, 0.0f, 5.0f };
 
 	cameraInput = new CameraController(this->camera);
 
@@ -19,7 +19,7 @@ void ExampleScene::onStart() {
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { 8.0f, 0.0f, -4.0f };
+		boxTransformComponent.transform.position = { 4.0f, 0.0f, 0.0f };
 
 		box->addComponent<StaticMeshComponent>(&boxMesh);
 	}
@@ -30,7 +30,7 @@ void ExampleScene::onStart() {
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { -8.0f, 0.0f, 0.0f };
+		boxTransformComponent.transform.position = { -4.0f, 0.0f, 0.0f  };
 
 		box->addComponent<StaticMeshComponent>(&boxMesh);
 	}
@@ -41,7 +41,7 @@ void ExampleScene::onStart() {
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { 0.0f, 0.0f, 4.0f };
+		boxTransformComponent.transform.position = { 0.0f, 0.0f, -4.0f };
 
 		box->addComponent<StaticMeshComponent>(&boxMesh);
 	}
@@ -71,16 +71,8 @@ void ExampleScene::onStart() {
 		transComp.transform.position = { -1.0f, 4.0f, -1.0f };
 	}
 
-	//{
-	//	auto pointLight = createEntity();
-	//	pointLight->addComponent<PointLightComponent>();
-	//	pointLight->addComponent<TransformComponent>();
-	//	auto& transComp = pointLight->getComponent<TransformComponent>();
-	//	transComp.transform.position = { -1.0f, 2.0f, -1.0f };
-	//}
-
 }
 
-void ExampleScene::onUpdate(float deltaTime) {
+void DirectionalLightScene::onUpdate(float deltaTime) {
 	cameraInput->update(deltaTime);
 }
