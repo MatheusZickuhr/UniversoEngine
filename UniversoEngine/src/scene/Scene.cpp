@@ -7,9 +7,7 @@
 namespace engine {
 
 	Scene::Scene() :
-		physicsWorld(new ReactPhysics3dPhysicsWorld()),
-		renderer3d(Renderer3D::getInstance()),
-		renderer2d(Renderer2D::getInstance()) {
+		physicsWorld(new ReactPhysics3dPhysicsWorld()) {
 	
 		this->registry.on_construct<StaticMeshComponent>()
 			.connect<&Scene::onStaticMeshComponentCreated>(this);

@@ -31,11 +31,8 @@ namespace engine {
             Material* material;
             glm::mat4 transform;
         };
-
-        static Renderer3D& getInstance() {
-            static Renderer3D renderer3d;
-            return renderer3d;
-        }
+        
+        Renderer3D();
 
         Renderer3D(Renderer3D const& other) = delete;
 
@@ -170,9 +167,6 @@ namespace engine {
         Shader depthCubeMapFragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
 
         SkyBoxData skyBoxData;
-
-
-        Renderer3D();
 
         void drawStaticMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget = nullptr);
 

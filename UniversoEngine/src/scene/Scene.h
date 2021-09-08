@@ -48,8 +48,8 @@ namespace engine {
 	private:
 
 		PhysicsWorld* physicsWorld;
-		Renderer3D& renderer3d;
-		Renderer2D& renderer2d;
+		Renderer3D renderer3d;
+		Renderer2D renderer2d;
 		entt::registry registry;
 		std::vector<Entity*> entities;
 

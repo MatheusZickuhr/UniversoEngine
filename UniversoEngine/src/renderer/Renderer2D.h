@@ -21,10 +21,7 @@ namespace engine {
 
     public:
 
-        static Renderer2D& getInstance() {
-            static Renderer2D renderer2d;
-            return renderer2d;
-        }
+        Renderer2D();
 
         Renderer2D(Renderer2D const& other) = delete;
 
@@ -75,8 +72,6 @@ namespace engine {
 
         unsigned int vertexCount = 0;
         unsigned int indexCount =  0;
-
-        Renderer2D();
 
         void performDrawcall();
 
