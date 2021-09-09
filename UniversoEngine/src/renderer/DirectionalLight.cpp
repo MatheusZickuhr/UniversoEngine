@@ -16,17 +16,4 @@ namespace engine {
 		return lightSpaceMatrix;
 	}
 
-	DirectionalLight::Data DirectionalLight::getData() {
-		Data directionalLightData;
-
-		directionalLightData.position = { this->position, 0.0f };
-		directionalLightData.ambient = { this->ambient, 0.0f };
-		directionalLightData.diffuse = { this->diffuse, 0.0f };
-		directionalLightData.specular = { this->specular, 0.0f };
-		directionalLightData.textureSlotIndex = this->depthMapTexture->getSlot();
-		directionalLightData.viewProjection = this->getViewProjectionMatrix();
-
-		return directionalLightData;
-	}
-
 }

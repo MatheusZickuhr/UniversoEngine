@@ -376,11 +376,30 @@ namespace engine {
 		lightsUniformBufferData.numberOfDirectionalLights = directionalLights.size();
 
 		for (int i = 0; i < this->pointLights.size(); i++) {
-			lightsUniformBufferData.pointLights[i] = this->pointLights[i].getData();
+			PointLightUniformBufferData pointLightData;
+			pointLightData.position = { pointLights[i].position, 0.0f };
+			pointLightData.ambient = { pointLights[i].ambient, 0.0f };
+			pointLightData.diffuse = { pointLights[i].diffuse, 0.0f };
+			pointLightData.specular = { pointLights[i].specular, 0.0f };
+			pointLightData.constant = pointLights[i].constant;
+			pointLightData.linear = pointLights[i].linear;
+			pointLightData.quadratic = pointLights[i].quadratic;
+			pointLightData.farPlane = pointLights[i].farPlane;
+			pointLightData.cubeMapSlotIndex = pointLights[i].depthMapCubeMap->getSlot() - Texture::maxTextures;
+
+			lightsUniformBufferData.pointLights[i] = pointLightData;
 		}
 
 		for (int i = 0; i < this->directionalLights.size(); i++) {
-			lightsUniformBufferData.directionalLights[i] = this->directionalLights[i].getData();
+			DirectionalLightUniformBufferData directionalLightData;
+			directionalLightData.position = { directionalLights[i].position, 0.0f };
+			directionalLightData.ambient = { directionalLights[i].ambient, 0.0f };
+			directionalLightData.diffuse = { directionalLights[i].diffuse, 0.0f };
+			directionalLightData.specular = { directionalLights[i].specular, 0.0f };
+			directionalLightData.textureSlotIndex = directionalLights[i].depthMapTexture->getSlot();
+			directionalLightData.viewProjection = directionalLights[i].getViewProjectionMatrix();
+
+			lightsUniformBufferData.directionalLights[i] = directionalLightData;
 		}
 
 		this->lightsUniformBuffer.pushData(&lightsUniformBufferData, sizeof(LightsUniformBufferData));

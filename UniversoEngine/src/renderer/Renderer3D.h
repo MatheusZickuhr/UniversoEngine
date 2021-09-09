@@ -67,9 +67,30 @@ namespace engine {
             glm::vec3 position;
         };
 
+        struct alignas(16) PointLightUniformBufferData {
+            glm::vec4 position;
+            glm::vec4 ambient;
+            glm::vec4 diffuse;
+            glm::vec4 specular;
+            float constant;
+            float linear;
+            float quadratic;
+            float farPlane;
+            int cubeMapSlotIndex;
+        };
+
+        struct alignas(16) DirectionalLightUniformBufferData {
+            glm::mat4 viewProjection;
+            glm::vec4 position;
+            glm::vec4 ambient;
+            glm::vec4 diffuse;
+            glm::vec4 specular;
+            int textureSlotIndex;
+        };
+
         struct LightsUniformBufferData {
-            PointLight::Data pointLights[PointLight::maxPointLights];
-            DirectionalLight::Data directionalLights[DirectionalLight::maxDirectionalLights];
+            PointLightUniformBufferData pointLights[PointLight::maxPointLights];
+            DirectionalLightUniformBufferData directionalLights[DirectionalLight::maxDirectionalLights];
             int numberOfPointLights;
             int numberOfDirectionalLights;
         };

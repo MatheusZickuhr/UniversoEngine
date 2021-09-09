@@ -17,19 +17,6 @@ namespace engine {
 		
 	public:
 
-		// std140 compatible struct
-		struct alignas(16) Data {
-			glm::vec4 position;
-			glm::vec4 ambient;
-			glm::vec4 diffuse;
-			glm::vec4 specular;
-			float constant;
-			float linear;
-			float quadratic;
-			float farPlane;
-			int cubeMapSlotIndex;
-		};
-
 		const static int maxPointLights = 4;
 
 		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
@@ -50,7 +37,6 @@ namespace engine {
 
 		std::array<glm::mat4, 6> getViewShadowMatrices();
 
-		Data getData();
 	};
 
 }
