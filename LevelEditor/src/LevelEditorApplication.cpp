@@ -208,7 +208,7 @@ void LevelEditorApplication::rendererSelectedEntityProperties() {
 			ImGui::DragFloat3("Diffuse", &dirLightComp.directionalLight.diffuse[0], 0.1f);
 			ImGui::DragFloat3("Specular", &dirLightComp.directionalLight.specular[0], 0.1f);
 			ImGui::Text("Depth map texture");
-			ImGui::Image((void*)(intptr_t)dirLightComp.directionalLight.depthMapTexture->getId(), ImVec2(200, 200));
+			ImGui::Image((void*)(intptr_t)dirLightComp.directionalLight.getDepthBufferTexture()->getId(), ImVec2(200, 200));
 		});
 	}
 

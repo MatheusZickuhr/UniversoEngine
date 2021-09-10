@@ -11,8 +11,6 @@
 
 namespace engine {
 
-
-
 	class PointLight {
 		
 	public:
@@ -30,13 +28,18 @@ namespace engine {
 		float nearPlane = 1.0f;
 		float farPlane = 25.0f;
 
-		std::shared_ptr<FrameBuffer> depthMapFrameBuffer = std::make_shared<FrameBuffer>();
-		std::shared_ptr<DepthBufferCubeMap> depthMapCubeMap = std::make_shared<DepthBufferCubeMap>(2048.0f, 2048.0f);
-
 		PointLight();
 
 		std::array<glm::mat4, 6> getViewShadowMatrices();
 
+		FrameBuffer* getDepthBufferFrameBuffer();
+
+		DepthBufferCubeMap* getDepthBufferCubeMap();
+
+	private:
+
+		std::shared_ptr<FrameBuffer> depthBufferFrameBuffer;
+		std::shared_ptr<DepthBufferCubeMap> depthBufferCubeMap;
 	};
 
 }

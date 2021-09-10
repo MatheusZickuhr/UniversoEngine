@@ -156,8 +156,9 @@ namespace engine {
 		
 		updateCameraUniformBuffer(camera);
 		
-		clearLightsFrameBuffers();
 		clearLights();
+		clearBoundTextures();
+		dynamicRenderingData.meshDataList.clear();
 	}
 
 	void Renderer3D::endFrame() {
@@ -167,9 +168,6 @@ namespace engine {
 		drawDynamicMeshes(&this->shaderProgram);
 		drawStaticMeshes(&this->shaderProgram);
 		drawSkyBox();
-		
-		clearBindedTextures();
-		dynamicRenderingData.meshDataList.clear();
 	}
 
 	void Renderer3D::addPointLight(PointLight pointLight, glm::mat4 transform) {
@@ -178,7 +176,7 @@ namespace engine {
 		pointLight.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		this->pointLights.push_back(pointLight);
 
-		bindCubeMap(pointLight.depthMapCubeMap.get());
+		bindCubeMap(pointLight.getDepthBufferCubeMap());
 	}
 
 	void Renderer3D::addDirectionalLight(DirectionalLight directionalLight, glm::mat4 transform) {
@@ -188,7 +186,7 @@ namespace engine {
 
 		this->directionalLights.push_back(directionalLight);
 
-		bindTexture(directionalLight.depthMapTexture.get());
+		bindTexture(directionalLight.getDepthBufferTexture());
 	}
 
 	void Renderer3D::drawStaticMesh(MeshData meshData) {
@@ -254,12 +252,21 @@ namespace engine {
 			CurrentDirectionalLightUniformBufferData lightData{ directionalLight.getViewProjectionMatrix() };
 			this->currentDirectionalLightUniformBuffer.pushData(&lightData, sizeof(CurrentDirectionalLightUniformBufferData));
 
+			auto frameBuffer = directionalLight.getDepthBufferFrameBuffer();
+
+			frameBuffer->bind();
+			DrawApi::clearDepthBuffer();
+			frameBuffer->unbind();
+
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-			DrawApi::setViewPortSize(directionalLight.depthMapTexture->getWidth(), directionalLight.depthMapTexture->getHeight());
-			drawDynamicMeshes(&depthTextureShaderProgram, directionalLight.depthMapFrameBuffer.get());
-			drawStaticMeshes(&depthTextureShaderProgram, directionalLight.depthMapFrameBuffer.get());
+			auto depthBufferTexture = directionalLight.getDepthBufferTexture();
+			DrawApi::setViewPortSize(depthBufferTexture->getWidth(), depthBufferTexture->getHeight());
+
+			drawDynamicMeshes(&depthTextureShaderProgram, frameBuffer);
+			drawStaticMeshes(&depthTextureShaderProgram, frameBuffer);
+
 			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 
@@ -273,12 +280,21 @@ namespace engine {
 
 			this->currentPointLightUniformBuffer.pushData(&lightData, sizeof(CurrentPointLightUniformBufferData));
 
+			auto frameBuffer = pointLight.getDepthBufferFrameBuffer();
+
+			frameBuffer->bind();
+			DrawApi::clearDepthBuffer();
+			frameBuffer->unbind();
+
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-			DrawApi::setViewPortSize(pointLight.depthMapCubeMap->getWidth(), pointLight.depthMapCubeMap->getHeight());
-			drawDynamicMeshes(&depthCubeMapShaderProgram, pointLight.depthMapFrameBuffer.get());
-			drawStaticMeshes(&depthCubeMapShaderProgram, pointLight.depthMapFrameBuffer.get());
+			auto depthBufferCubeMap = pointLight.getDepthBufferCubeMap();
+			DrawApi::setViewPortSize(depthBufferCubeMap->getWidth(), depthBufferCubeMap->getHeight());
+
+			drawDynamicMeshes(&depthCubeMapShaderProgram, frameBuffer);
+			drawStaticMeshes(&depthCubeMapShaderProgram, frameBuffer);
+
 			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 	}
@@ -352,22 +368,6 @@ namespace engine {
 		cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
 	}
 
-	void Renderer3D::clearLightsFrameBuffers() {
-		// clear directional lights shadow maps
-		for (auto& light : directionalLights) {
-			light.depthMapFrameBuffer->bind();
-			DrawApi::clearDepthBuffer();
-			light.depthMapFrameBuffer->unbind();
-		}
-
-		//clear point lights shadow maps
-		for (auto& light : pointLights) {
-			light.depthMapFrameBuffer->bind();
-			DrawApi::clearDepthBuffer();
-			light.depthMapFrameBuffer->unbind();
-		}
-	}
-
 	void Renderer3D::updateLightsUniformBuffers() {
 		// update lights uniform buffer
 		LightsUniformBufferData lightsUniformBufferData;
@@ -385,7 +385,7 @@ namespace engine {
 			pointLightData.linear = pointLights[i].linear;
 			pointLightData.quadratic = pointLights[i].quadratic;
 			pointLightData.farPlane = pointLights[i].farPlane;
-			pointLightData.cubeMapSlotIndex = pointLights[i].depthMapCubeMap->getSlot() - Texture::maxTextures;
+			pointLightData.cubeMapSlotIndex = pointLights[i].getDepthBufferCubeMap()->getSlot() - Texture::maxTextures;
 
 			lightsUniformBufferData.pointLights[i] = pointLightData;
 		}
@@ -396,7 +396,7 @@ namespace engine {
 			directionalLightData.ambient = { directionalLights[i].ambient, 0.0f };
 			directionalLightData.diffuse = { directionalLights[i].diffuse, 0.0f };
 			directionalLightData.specular = { directionalLights[i].specular, 0.0f };
-			directionalLightData.textureSlotIndex = directionalLights[i].depthMapTexture->getSlot();
+			directionalLightData.textureSlotIndex = directionalLights[i].getDepthBufferTexture()->getSlot();
 			directionalLightData.viewProjection = directionalLights[i].getViewProjectionMatrix();
 
 			lightsUniformBufferData.directionalLights[i] = directionalLightData;
@@ -426,7 +426,7 @@ namespace engine {
 		directionalLights.clear();
 	}
 
-	void Renderer3D::clearBindedTextures() {
+	void Renderer3D::clearBoundTextures() {
 		this->boundTextures.clear();
 		this->currentTextureSlot = 0;
 

@@ -205,15 +205,13 @@ namespace engine {
 
         void updateCameraUniformBuffer(Camera& camera);
 
-        void clearLightsFrameBuffers();
-
         void updateLightsUniformBuffers();
 
         void drawSkyBox();
 
         void clearLights();
 
-        void clearBindedTextures();
+        void clearBoundTextures();
 
     };
 }
