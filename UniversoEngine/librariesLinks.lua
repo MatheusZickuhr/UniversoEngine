@@ -1,6 +1,6 @@
 function librariesLinks()
 	
-	libdirs { "%{wks.location}/Libraries/VulkanDebugSdk/Lib/", "%{VULKAN_SDK_DIR}/lib" }
+	libdirs { "../Libraries/VulkanDebugSdk/Lib/", "%{VULKAN_SDK_DIR}/lib" }
 
 	links { 
 		"GLFW",

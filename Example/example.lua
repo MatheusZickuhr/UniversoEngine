@@ -13,7 +13,7 @@ project "Example"
 
 	files { "src/**.cpp", "src/**.h" }
 
-	includedirs { "%{wks.location}/UniversoEngine/src/" }
+	includedirs { "../UniversoEngine/src/" }
 	librariesIncludeDirectories()
 
 	links { "UniversoEngine" }
