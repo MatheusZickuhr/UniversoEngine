@@ -64,8 +64,8 @@ namespace engine {
 
         UniformBuffer cameraUniformBuffer{ sizeof(CameraUniformBufferData) };
 
-        Shader vertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/2d/vertex.glsl" };
-        Shader fragShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/2d/fragment.glsl" };
+        Shader vertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/2d/vertex.glsl" };
+        Shader fragShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/2d/fragment.glsl" };
         ShaderProgram shaderProgram;
 
         bool drawingStarted = false;

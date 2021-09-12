@@ -112,8 +112,8 @@ namespace engine {
             VertexBuffer vertexBuffer{ sizeof(glm::vec3), 36 };
 
             ShaderProgram shaderProgram;
-            Shader vertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/skyboxVertex.glsl" };
-            Shader fragmentShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/skyboxFragment.glsl" };
+            Shader vertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/skyboxVertex.glsl" };
+            Shader fragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/skyboxFragment.glsl" };
         };
 
         struct DynamicRenderingData {
@@ -161,13 +161,13 @@ namespace engine {
             UniformBuffer currentDirectionalLightUniformBuffer{ sizeof(CurrentDirectionalLightUniformBufferData) };
 
             ShaderProgram depthBufferTextureShaderProgram;
-            Shader depthBufferTextureVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/depthMapVertex.glsl" };
-            Shader depthBufferTextureFragmentShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/depthMapFragment.glsl" };
+            Shader depthBufferTextureVertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/depthMapVertex.glsl" };
+            Shader depthBufferTextureFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/depthMapFragment.glsl" };
 
             ShaderProgram depthBufferCubeMapShaderProgram;
-            Shader depthBufferCubeMapVertexShader{ ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapVertex.glsl" };
-            Shader depthBufferCubeMapGeometryShader{ ShaderType::GeometryShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapGeometry.glsl" };
-            Shader depthBufferCubeMapFragmentShader{ ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/cubeMapDepthMapFragment.glsl" };
+            Shader depthBufferCubeMapVertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapVertex.glsl" };
+            Shader depthBufferCubeMapGeometryShader{ ShaderType::GeometryShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapGeometry.glsl" };
+            Shader depthBufferCubeMapFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapFragment.glsl" };
         };
 
         unsigned int drawCallsCount = 0;
@@ -183,8 +183,8 @@ namespace engine {
         LightingData lightingData;
         SkyBoxData skyBoxData;
 
-        Shader vertexShader { ShaderType::VertexShader, "UniversoEngine/resources/shaders/3d/lightingVertex.glsl" };
-        Shader fragmentShader { ShaderType::FragmentShader, "UniversoEngine/resources/shaders/3d/lightingFragment.glsl" };
+        Shader vertexShader { ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/lightingVertex.glsl" };
+        Shader fragmentShader { ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/lightingFragment.glsl" };
         ShaderProgram shaderProgram;
 
         UniformBuffer cameraUniformBuffer { sizeof(CameraUniformBufferData) };

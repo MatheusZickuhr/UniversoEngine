@@ -68,7 +68,7 @@ namespace engine {
 
 		glm::vec3 skyboxVertices[36];
 
-		Mesh cubeMesh{ "UniversoEngine/resources/meshes/cube.obj", false };
+		Mesh cubeMesh{ std::string(ENGINE_ASSET_DIRECTORY) + "meshes/cube.obj", false };
 		const std::vector<Vertex>& cubeMeshVertices = cubeMesh.getVertices();
 
 		for (int i = 0; i < cubeMeshVertices.size(); i++)

@@ -4,6 +4,8 @@ workspace "UniversoEngine"
 
 	flags { "MultiProcessorCompile" }
 
+	defines { "ENGINE_ASSET_DIRECTORY=\"UniversoEngine/resources/\"" }
+
 	filter "configurations:Debug"
 		defines { "DEBUG", "DEBUG_SHADER" }
 		symbols "On"
