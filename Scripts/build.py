@@ -8,7 +8,7 @@ def run_premake():
     # run premake
     print("running premake")
      
-    command = subprocess.run(["premake5", "vs2019"], capture_output=True) if sys.platform == 'win32' \
+    command = subprocess.run(["premake5", "vs2022"], capture_output=True) if sys.platform == 'win32' \
         else subprocess.run(["premake5", "gmake"], capture_output=True)
     
     sys.stdout.buffer.write(command.stdout)
