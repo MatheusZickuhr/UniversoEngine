@@ -93,7 +93,7 @@ namespace engine {
 	void Application::initializeGlfwWindow() {
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef DEBUG
@@ -137,7 +137,7 @@ namespace engine {
 		// Setup Platform/Renderer backends
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		
-		ImGui_ImplOpenGL3_Init("#version 450 core");
+		ImGui_ImplOpenGL3_Init("#version 440 core");
 
 	}
 

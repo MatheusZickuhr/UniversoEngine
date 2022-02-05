@@ -53,7 +53,7 @@ namespace engine {
 		spirv_cross::CompilerGLSL glslCompiler(std::move(spirvBinary));
 
 		spirv_cross::CompilerGLSL::Options options;
-		options.version = 460;
+		options.version = 440;
 		glslCompiler.set_common_options(options);
 
 		std::string spirvGeneratedSource = glslCompiler.compile();
