@@ -1,31 +1,31 @@
-#include "ReactPhysics3dRigidBody.h"
+#include "RigidBody.h"
 #include <glm/gtx/quaternion.hpp>
 #include "../debug/Assert.h"
 
+
 namespace engine {
+	RigidBody::RigidBody() {}
 
-	ReactPhysics3dRigidBody::ReactPhysics3dRigidBody() {}
-
-	ReactPhysics3dRigidBody::ReactPhysics3dRigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody)
+	RigidBody::RigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody)
 		: physicsCommon(physicsCommon), rigidBodyPtr(rigidBody), prevTransform(rigidBody->getTransform()) {
 	}
 
-	void ReactPhysics3dRigidBody::addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape) {
+	void RigidBody::addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape) {
 		reactphysics3d::ConvexPolyhedronShape* shape = nullptr;
 
 		switch (collisionShape) {
-			case CollisionShape::Box: {
-				shape = this->physicsCommon->createBoxShape({ scale.x, scale.y, scale.z });
-				break;
-			}
-			case CollisionShape::Capsule: {
+		case CollisionShape::Box: {
+			shape = this->physicsCommon->createBoxShape({ scale.x, scale.y, scale.z });
+			break;
+		}
+		case CollisionShape::Capsule: {
 
-				break;
-			}
-			case CollisionShape::Sphere: {
+			break;
+		}
+		case CollisionShape::Sphere: {
 
-				break;
-			}
+			break;
+		}
 		}
 
 		ASSERT(shape != nullptr, "You must choose a valid/implemented collision shape");
@@ -34,7 +34,7 @@ namespace engine {
 		this->rigidBodyPtr->addCollider(shape, collisionShapeTransform);
 	}
 
-	Transform ReactPhysics3dRigidBody::getInterpolatedTranform(float timeInterpolationFactor) {
+	Transform RigidBody::getInterpolatedTranform(float timeInterpolationFactor) {
 		auto& currentTransform = this->rigidBodyPtr->getTransform();
 		auto interpolatedTransform = reactphysics3d::Transform::interpolateTransforms(
 			this->prevTransform, currentTransform, timeInterpolationFactor);
@@ -53,7 +53,7 @@ namespace engine {
 		return transform;
 	}
 
-	void ReactPhysics3dRigidBody::setRigidBodyType(RigidBodyType rigidBodyType) {
+	void RigidBody::setRigidBodyType(RigidBodyType rigidBodyType) {
 		switch (rigidBodyType) {
 		case RigidBodyType::Dynamic: {
 			this->rigidBodyPtr->setType(reactphysics3d::BodyType::DYNAMIC);
@@ -70,8 +70,7 @@ namespace engine {
 		}
 	}
 
-	void ReactPhysics3dRigidBody::apllyForce(glm::vec3 force) {
+	void RigidBody::apllyForce(glm::vec3 force) {
 		rigidBodyPtr->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(force.x, force.y, force.z));
 	}
-
 }

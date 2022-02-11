@@ -8,7 +8,7 @@
 #include "../renderer/Renderer3D.h"
 #include "../renderer/Renderer2D.h"
 #include "../renderer/renderer_api/Texture2D.h"
-#include "../physics/ReactPhysics3dPhysicsWorld.h"
+#include "../physics/PhysicsWorld.h"
 #include "../physics/RigidBody.h"
 
 namespace engine {
