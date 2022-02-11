@@ -43,6 +43,8 @@ namespace engine {
 
 		Entity* createEntity();
 
+		void destroyEntity(Entity* entity);
+
 		void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->renderer3d.setSkyBoxCubeMap(skyBoxCubeMap); }
 
 	private:
@@ -60,6 +62,10 @@ namespace engine {
 		void onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity);
 
 		void onBehaviorComponentDestroyed(entt::registry& registry, entt::entity entity);
+
+		void onStaticMeshComponentDestroyed(entt::registry& registry, entt::entity entity);
+
+		std::string generateUuid();
 
 		virtual void onStart() = 0;
 		

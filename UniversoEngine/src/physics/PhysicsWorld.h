@@ -13,6 +13,7 @@ namespace engine {
 
 		virtual RigidBody* createRigidBody(const glm::vec3& position, const glm::vec3& rotation) = 0;
 
+		virtual void destroyRigidBody(RigidBody* rigidBody) = 0;
 	};
 
 }

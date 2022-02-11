@@ -13,37 +13,39 @@ namespace engine {
 
     class Entity {
 
+    friend class Scene;
+
     private:
-        entt::entity entity;
+        entt::entity enttEntity;
         Scene* scene;
 
     public:
 
-        Entity(entt::entity entity, Scene* scene)
-        : entity(entity), scene(scene){}
+        Entity(entt::entity enttEntity, Scene* scene)
+        : enttEntity(enttEntity), scene(scene){}
 
         template<typename T, typename... Args>
         T& addComponent(Args &&... args) {
-            return scene->getRegistry().emplace<T>(entity, std::forward<Args>(args)...);
+            return scene->getRegistry().emplace<T>(enttEntity, std::forward<Args>(args)...);
         }
 
         template<typename T>
         T& getComponent() {
             ASSERT(this->hasComponent<T>(), "Entity does not have the specified component");
 
-            return scene->getRegistry().get<T>(entity);
+            return scene->getRegistry().get<T>(enttEntity);
         }
 
         template<typename T>
         void removeComponent() {
             ASSERT(this->hasComponent<T>(), "Entity does not have the specified component");
 
-            scene->getRegistry().remove<T>(entity);
+            scene->getRegistry().remove<T>(enttEntity);
         }
 
         template<typename T>
         bool hasComponent() {
-            return scene->getRegistry().has<T>(entity);
+            return scene->getRegistry().has<T>(enttEntity);
         }
 
         Scene* getScene() {

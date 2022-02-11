@@ -6,6 +6,6 @@ namespace engine {
     template<>
     BehaviorComponent& Entity::addComponent<BehaviorComponent>() {
 
-        return scene->getRegistry().emplace<BehaviorComponent>(entity, this);
+        return scene->getRegistry().emplace<BehaviorComponent>(enttEntity, this);
     }
 }

@@ -132,6 +132,24 @@ namespace engine {
 		staticRenderingData.meshDataList.push_back(meshData);
 	}
 
+	void Renderer3D::destroyStaticMesh(unsigned int renderId) {
+		int meshDataIndex = 0;
+		bool meshDataFound = false;
+
+		for (auto& meshData: this->staticRenderingData.meshDataList) {
+			if (renderId == meshData.renderId) {
+				meshDataFound = true;
+				break;
+			}
+			meshDataIndex++;
+		}
+
+		if (meshDataFound) {
+			this->staticRenderingData.meshDataList.erase(this->staticRenderingData.meshDataList.begin() + meshDataIndex);
+			this->staticRenderingData.shouldCreateBuffers = true;
+		}
+	}
+
 	void Renderer3D::clearColor(float r, float g, float b, float a) { 
 		DrawApi::clearColor(r, g, b, a);
 	}

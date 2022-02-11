@@ -23,5 +23,7 @@ namespace engine {
 		void update(float deltaTime);
 
 		RigidBody* createRigidBody(const glm::vec3& position, const glm::vec3& rotation);
+
+		void destroyRigidBody(RigidBody* rigidBody);
 	};
 }

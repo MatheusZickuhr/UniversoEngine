@@ -6,7 +6,9 @@
 namespace engine {
 
 	class ReactPhysics3dRigidBody : public RigidBody {
-
+	
+		friend class ReactPhysics3dPhysicsWorld;
+		
 	private:
 
 		reactphysics3d::PhysicsCommon* physicsCommon;

@@ -30,6 +30,7 @@ namespace engine {
             Mesh* mesh;
             Material* material;
             glm::mat4 transform;
+            unsigned int renderId;
         };
         
         Renderer3D();
@@ -49,6 +50,8 @@ namespace engine {
         void drawDynamicMesh(MeshData meshData);
 
         void drawStaticMesh(MeshData meshData);
+
+        void destroyStaticMesh(unsigned int renderId);
 
         void clearColor(float r, float g, float b, float a);
 

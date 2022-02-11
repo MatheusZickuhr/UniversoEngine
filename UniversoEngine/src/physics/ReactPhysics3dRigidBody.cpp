@@ -71,7 +71,7 @@ namespace engine {
 	}
 
 	void ReactPhysics3dRigidBody::apllyForce(glm::vec3 force) {
-		rigidBodyPtr->applyForceToCenterOfMass(reactphysics3d::Vector3(force.x, force.y, force.z));
+		rigidBodyPtr->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(force.x, force.y, force.z));
 	}
 
 }

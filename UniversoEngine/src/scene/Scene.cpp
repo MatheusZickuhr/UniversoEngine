@@ -3,6 +3,7 @@
 #include "Components.h"
 #include "Entity.h"
 #include "../debug/Assert.h"
+#include <random>
 
 namespace engine {
 
@@ -20,6 +21,9 @@ namespace engine {
 
 		this->registry.on_destroy<BehaviorComponent>()
 			.connect<&Scene::onBehaviorComponentDestroyed>(this);
+
+		this->registry.on_destroy<StaticMeshComponent>()
+			.connect<&Scene::onStaticMeshComponentDestroyed>(this);
 	}
 
 	Scene::~Scene() {
@@ -69,7 +73,13 @@ namespace engine {
 				auto view = this->registry.view<DynamicMeshComponent, MaterialComponent, TransformComponent>();
 
 				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-					this->renderer3d.drawDynamicMesh({ meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
+					Renderer3D::MeshData meshData;
+					meshData.mesh = meshComp.mesh;
+					meshData.material = materialComp.material;
+					meshData.transform = transComp.transform.getTransformMatrix();
+					meshData.renderId = (unsigned int) entity;
+
+					this->renderer3d.drawDynamicMesh(meshData);
 				}
 			}
 		this->renderer3d.endFrame();
@@ -98,7 +108,7 @@ namespace engine {
 	void Scene::updatePhysics(float timeInterpolationFactor) {
 
 		auto view = this->registry.view<RigidBodyComponent, TransformComponent>();
-
+		
 		for (auto [entity, rbComp, transComp] : view.each()) {
 			// perform transform interpolation
 			Transform interpolatedTransform = rbComp.rigidBody->getInterpolatedTranform(timeInterpolationFactor);
@@ -124,13 +134,38 @@ namespace engine {
 		return entity;
 	}
 
+	void Scene::destroyEntity(Entity* toBeDestroyedEntity) {
+		int entityIndex = 0;
+		bool entityFound = false;
+
+		for (Entity* entity : this->entities) {
+			if (toBeDestroyedEntity == entity) {
+				entityFound = true;
+				break;
+			}
+			entityIndex++;
+		}
+
+		if (entityFound) {
+			this->entities.erase(this->entities.begin() + entityIndex);
+			this->registry.destroy(toBeDestroyedEntity->enttEntity);
+		}
+	}
+
 	void Scene::onStaticMeshComponentCreated(entt::registry& registry, entt::entity entity) {
 
 		auto& meshComp = registry.get<StaticMeshComponent>(entity);
 		auto& materialComp = registry.get<MaterialComponent>(entity);
 		auto& transComp = registry.get<TransformComponent>(entity);
 
-		this->renderer3d.drawStaticMesh( { meshComp.mesh, materialComp.material, transComp.transform.getTransformMatrix() });
+
+		Renderer3D::MeshData meshData;
+		meshData.mesh = meshComp.mesh;
+		meshData.material = materialComp.material;
+		meshData.transform = transComp.transform.getTransformMatrix();
+		meshData.renderId = (unsigned int) entity;
+
+		this->renderer3d.drawStaticMesh(meshData);
 	}
 
 	void Scene::onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity) {
@@ -157,11 +192,36 @@ namespace engine {
 	}
 
 	void Scene::onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
-
+		auto& rigidBodyComp = registry.get<RigidBodyComponent>(entity);
+		
+		physicsWorld->destroyRigidBody(rigidBodyComp.rigidBody);
 	}
 
 	void Scene::onBehaviorComponentDestroyed(entt::registry& registry, entt::entity entity) {
 		auto& behaviorComponent = registry.get<BehaviorComponent>(entity);
 		behaviorComponent.destroy();
+	}
+
+	void Scene::onStaticMeshComponentDestroyed(entt::registry& registry, entt::entity entity) {
+		this->renderer3d.destroyStaticMesh((unsigned int) entity);
+	}
+
+	std::string Scene::generateUuid() {
+		static std::random_device randomDevice;
+		static std::mt19937 mt(randomDevice());
+
+		std::uniform_int_distribution<int> uniformIntDistribution(0, 15);
+
+		const char* hexDigits = "0123456789abcdef";
+
+		std::string uuid = "00000000-0000-0000-0000-000000000000";
+
+		for (int i = 0; i < uuid.size(); i++) {
+			if (uuid[i] != '-') {
+				uuid[i] = hexDigits[uniformIntDistribution(mt)];
+			}
+		}
+
+		return std::string(uuid);
 	}
 }

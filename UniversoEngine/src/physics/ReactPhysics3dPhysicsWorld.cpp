@@ -31,4 +31,26 @@ namespace engine {
 		return wrappedRigidBody;
 	}
 
+	void ReactPhysics3dPhysicsWorld::destroyRigidBody(RigidBody* toBeDestroyedRigidBody) {
+		ReactPhysics3dRigidBody* reactPhysics3dRigidBody = (ReactPhysics3dRigidBody*) toBeDestroyedRigidBody;
+		
+		this->physicsWorld->destroyRigidBody(reactPhysics3dRigidBody->rigidBodyPtr);
+		
+		int index = 0;
+		bool rigidBodyFound = false;
+
+		for (RigidBody* rigidBody : this->rigidBodies) {
+			if (rigidBody == reactPhysics3dRigidBody) {
+				rigidBodyFound = true;
+				break;
+			}
+			index++;
+		}
+
+		if (rigidBodyFound) {
+			delete reactPhysics3dRigidBody;
+			this->rigidBodies.erase(this->rigidBodies.begin() + index);
+		}
+	}
+
 }
