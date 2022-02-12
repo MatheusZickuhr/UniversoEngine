@@ -5,25 +5,26 @@
 #include <vector>
 #include <filesystem>
 
+namespace engine {
 #ifdef DEBUG
 
-void assertFileExists(
-	const std::string& filePath,
-	const std::string& file,
-	const long line);
+	void assertFileExists(
+		const std::string& filePath,
+		const std::string& file,
+		const long line);
 
-void assertm(
-	const std::string& conditionStr,
-	const std::string& message,
-	const bool condition,
-	const std::string& file,
-	const long line);
+	void assertm(
+		const std::string& conditionStr,
+		const std::string& message,
+		const bool condition,
+		const std::string& file,
+		const long line);
 
-void assertFileExtension(
-	const std::string& filePath,
-	const std::vector<std::string>& validFileExtensions,
-	const std::string& file,
-	const long line);
+	void assertFileExtension(
+		const std::string& filePath,
+		const std::vector<std::string>& validFileExtensions,
+		const std::string& file,
+		const long line);
 
 
 #define ASSERT(condition, message) assertm(#condition, message, condition, __FILE__, __LINE__)
@@ -41,3 +42,4 @@ void assertFileExtension(
 #define ASSERT_FILE_EXTENSION(filePath, ...) do { } while (false)
 
 #endif
+}

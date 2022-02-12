@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debug/Assert.h"
+#include "debug/Log.h"
 
 #include "input/Input.h"
 

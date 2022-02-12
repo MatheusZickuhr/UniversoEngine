@@ -1,8 +1,9 @@
 #include "Shader.h"
 #include <glad/glad.h>
 #include "../../debug/Assert.h"
-#include "../../utils/Format.h"
+#include "../../debug/Log.h"
 
+#include <format>
 #include <filesystem>
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
@@ -40,12 +41,12 @@ namespace engine {
 		std::vector<uint32_t> spirvBinary;
 
 		if (this->isSpirvBinaryCacheFileInvalid()) {
-			std::cout << "compiling shader " << this->fileName << std::endl;
+			LOG(std::format("compiling shader {}", this->fileName));
 			spirvBinary = this->compileToSpirvBinary();
 			this->cacheSpirvBinaryToFile(spirvBinary);
 		}
 		else {
-			std::cout << "loading shader " << this->fileName << " from cache" << std::endl;
+			LOG(std::format("loading shader {} from cache", this->fileName));
 			spirvBinary = this->readSpirvBinaryFromFile();
 		}
 		
@@ -72,7 +73,7 @@ namespace engine {
 
 		if (!success) {
 			glGetShaderInfoLog(this->id, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+			LOG(std::format("ERROR::SHADER::COMPILATION_FAILED\n{}", infoLog));
 			return;
 		}
 
@@ -127,7 +128,7 @@ namespace engine {
 			compiler.CompileGlslToSpv(this->sourceCode, shadercShaderKind, this->fileName.c_str(), options);
 
 		if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
-			std::cerr << module.GetErrorMessage();
+			LOG(module.GetErrorMessage());
 			return std::vector<uint32_t>();
 		}
 

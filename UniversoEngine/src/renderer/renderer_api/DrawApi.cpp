@@ -1,6 +1,8 @@
 #include "DrawApi.h"
 #include <glad/glad.h>
-
+#include <format>
+#include <string>
+#include "../../debug/Log.h"
 namespace engine {
 
 	void APIENTRY GLDebugMessageCallback(
@@ -19,9 +21,9 @@ namespace engine {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		printf("Vendor: %s\n", glGetString(GL_VENDOR));
-		printf("Renderer: %s\n", glGetString(GL_RENDERER));
-		printf("OpenGL version: %s\n", glGetString(GL_VERSION));
+		LOG(std::format("Vendor: {}", (char*) glGetString(GL_VENDOR)));
+		LOG(std::format("Renderer: {}", (char*) glGetString(GL_RENDERER)));
+		LOG(std::format("OpenGL version: {}", (char*) glGetString(GL_VERSION)));
 	}
 
 	void DrawApi::initDebugMode() {
@@ -172,9 +174,9 @@ namespace engine {
 		}
 
 
-
-		printf("OpenGL error [%d]: %s of %s severity, raised from %s: %s\n",
-			id, _type, _severity, _source, msg);
+		LOG(std::format("OpenGL error {}: {} of {} severity, raised from {}: {}",
+				id, _type, _severity, _source, msg));
+	
 #ifdef _DEBUG
 		__debugbreak();
 #endif
