@@ -56,7 +56,8 @@ namespace engine {
 				auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
-					this->renderer3d.addPointLight(lightComp.pointLight, transComp.transform.getTransformMatrix());
+					lightComp.pointLight.position = transComp.transform.getTransformMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					this->renderer3d.drawPointLight(lightComp.pointLight);
 				}
 			}
 
@@ -64,7 +65,8 @@ namespace engine {
 				auto view = this->registry.view<DirectionalLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
-					this->renderer3d.addDirectionalLight(lightComp.directionalLight, transComp.transform.getTransformMatrix());
+					lightComp.directionalLight.position = transComp.transform.getTransformMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					this->renderer3d.drawDirectionalLight(lightComp.directionalLight);
 				}
 			}
 
@@ -73,13 +75,12 @@ namespace engine {
 				auto view = this->registry.view<DynamicMeshComponent, MaterialComponent, TransformComponent>();
 
 				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
-					Renderer3D::MeshData meshData;
-					meshData.mesh = meshComp.mesh;
-					meshData.material = materialComp.material;
-					meshData.transform = transComp.transform.getTransformMatrix();
-					meshData.renderId = (unsigned int) entity;
-
-					this->renderer3d.drawDynamicMesh(meshData);
+				
+					this->renderer3d.drawDynamicMesh(
+						meshComp.mesh,
+						materialComp.material,
+						transComp.transform.getTransformMatrix(),
+						(unsigned int)entity);
 				}
 			}
 		this->renderer3d.endFrame();
@@ -158,14 +159,11 @@ namespace engine {
 		auto& materialComp = registry.get<MaterialComponent>(entity);
 		auto& transComp = registry.get<TransformComponent>(entity);
 
-
-		Renderer3D::MeshData meshData;
-		meshData.mesh = meshComp.mesh;
-		meshData.material = materialComp.material;
-		meshData.transform = transComp.transform.getTransformMatrix();
-		meshData.renderId = (unsigned int) entity;
-
-		this->renderer3d.drawStaticMesh(meshData);
+		this->renderer3d.drawStaticMesh(
+			meshComp.mesh,
+			materialComp.material,
+			transComp.transform.getTransformMatrix(),
+			(unsigned int)entity);
 	}
 
 	void Scene::onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity) {

@@ -6,8 +6,8 @@ namespace engine {
 
     public:
 
-        const static unsigned int maxTextures = 16;
-        const static unsigned int maxCubeMaps = 16;
+        const static unsigned int MAX_TEXTURES = 16;
+        const static unsigned int MAX_CUBEMAPS = 16;
         
 
         ~Texture();

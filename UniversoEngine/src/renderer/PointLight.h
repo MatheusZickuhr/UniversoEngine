@@ -34,7 +34,7 @@ namespace engine {
 
 		FrameBuffer* getDepthBufferFrameBuffer();
 
-		DepthBufferCubeMap* getDepthBufferCubeMap();
+		DepthBufferCubeMap* getDepthBufferCubeMap() const;
 
 	private:
 

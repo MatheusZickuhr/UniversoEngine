@@ -26,13 +26,6 @@ namespace engine {
 
     public:
 
-        struct MeshData {
-            Mesh* mesh;
-            Material* material;
-            glm::mat4 transform;
-            unsigned int renderId;
-        };
-        
         Renderer3D();
 
         Renderer3D(Renderer3D const& other) = delete;
@@ -43,25 +36,44 @@ namespace engine {
 
         void endFrame();
 
-        void addPointLight(PointLight light, glm::mat4 transform);
+        void drawPointLight(const PointLight& light);
 
-        void addDirectionalLight(DirectionalLight light, glm::mat4 transform);
+        void drawDirectionalLight(const DirectionalLight& light);
 
-        void drawDynamicMesh(MeshData meshData);
+        void drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId);
 
-        void drawStaticMesh(MeshData meshData);
+        void drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId);
 
-        void destroyStaticMesh(unsigned int renderId);
+        void destroyStaticMesh(const unsigned int& renderId);
 
         void clearColor(float r, float g, float b, float a);
-
-        void setViewPortSize(int width, int height);
 
         unsigned int getDrawCallsCount();
 
         void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap);
 
     private:
+
+        struct DynamicMeshData {
+            Mesh* mesh;
+            Material* material;
+            glm::mat4 transform;
+            unsigned int renderId;
+        };
+
+        struct StaticMeshData {
+            Mesh* mesh;
+            Material* material;
+            glm::mat4 transform;
+            unsigned int renderId;
+
+            std::vector<Vertex> vertices;
+            std::vector<unsigned int> indices;
+
+            std::shared_ptr<VertexArray> vertexArray;
+            std::shared_ptr<VertexBuffer> vertexBuffer;
+            std::shared_ptr<IndexBuffer> indexBuffer;
+        };
 
         struct CameraUniformBufferData {
             glm::mat4 viewProjectionMatrix;
@@ -124,7 +136,7 @@ namespace engine {
             const unsigned int maxIndices  = 20000;
             
             // current frame data (this data will reset on every frame)
-            std::vector<MeshData> meshDataList;
+            std::vector<DynamicMeshData> meshDataList;
 
             // current batch data (this data will reset on every new batch)
             unsigned int vertexCount = 0;
@@ -140,19 +152,9 @@ namespace engine {
         };
 
         struct StaticRenderingData {
-            bool shouldCreateBuffers = false;
 
-            std::vector<MeshData> meshDataList;
+            std::vector<StaticMeshData> meshDataList;
 
-            unsigned int vertexCount = 0;
-            unsigned int indexCount = 0;
-
-            std::vector<Vertex> vertices;
-            std::vector<unsigned int> indices;
-
-            VertexArray vertexArray;
-            std::unique_ptr<VertexBuffer> vertexBuffer;
-            std::unique_ptr<IndexBuffer> indexBuffer;
         };
 
         struct LightingData {
@@ -171,16 +173,25 @@ namespace engine {
             Shader depthBufferCubeMapVertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapVertex.glsl" };
             Shader depthBufferCubeMapGeometryShader{ ShaderType::GeometryShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapGeometry.glsl" };
             Shader depthBufferCubeMapFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapFragment.glsl" };
+        
+            unsigned int currentTextureSlot;
+            unsigned int currentCubeMapSlot;
+
+            // starts on slot 1, 0 is reserved to draw meshes 
+            const unsigned int initialTextureSlot = 1;
+            const unsigned int initialCubeMapSlot = 0;
+
+            std::vector<Texture*> boundTextures;
+            std::vector<Texture*> boundCubeMaps;
         };
 
-        unsigned int drawCallsCount = 0;
+
+        const static unsigned int TEXTURE_SLOT = 0;
+
+        const float NO_TEXTURE_SLOT = -1.0f;
+
+        unsigned int drawCallsCount;
         
-        unsigned int currentTextureSlot = 0;
-        unsigned int currentCubeMapSlot = 0;
-
-        std::vector<Texture*> boundTextures;
-        std::vector<Texture*> boundCubeMaps;
-
         DynamicRenderingData dynamicRenderingData;
         StaticRenderingData staticRenderingData;
         LightingData lightingData;
@@ -200,13 +211,13 @@ namespace engine {
 
         void drawSkyBox();
 
-        void flushDynamicRenderingBatch();
+        Vertex transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, Material* material);
 
         void bindUniformBuffers();
 
-        void bindTexture(Texture* texture);
+        void bindLightingTexture(Texture* texture);
 
-        void bindCubeMap(Texture* texture);
+        void bindLightingCubeMap(Texture* texture);
                 
         void updateCameraUniformBuffer(Camera& camera);
 
@@ -214,7 +225,7 @@ namespace engine {
 
         void clearLights();
 
-        void clearBoundTextures();
+        void clearLightingBoundTextures();
 
         void clearDynamicMeshes();
 

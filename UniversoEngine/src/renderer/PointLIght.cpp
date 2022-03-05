@@ -30,7 +30,7 @@ namespace engine {
 		return depthBufferFrameBuffer.get();
 	}
 
-	DepthBufferCubeMap* PointLight::getDepthBufferCubeMap() {
+	DepthBufferCubeMap* PointLight::getDepthBufferCubeMap() const {
 		return depthBufferCubeMap.get();
 	}
 

@@ -23,7 +23,7 @@ namespace engine {
 		return depthBufferFrameBuffer.get();
 	}
 
-	DepthBufferTexture2D* DirectionalLight::getDepthBufferTexture() {
+	DepthBufferTexture2D* DirectionalLight::getDepthBufferTexture() const {
 		return depthBufferTexture.get();
 	}
 

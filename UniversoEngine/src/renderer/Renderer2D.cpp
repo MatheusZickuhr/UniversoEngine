@@ -114,7 +114,7 @@ namespace engine {
     }
 
     void Renderer2D::bindTexture(Texture* texture) {
-        ASSERT(currentTextureSlot + 1 < Texture::maxTextures, "Maximum texture slot exceded");
+        ASSERT(currentTextureSlot + 1 < Texture::MAX_TEXTURES, "Maximum texture slot exceded");
 
         if (texture == nullptr) return;
 

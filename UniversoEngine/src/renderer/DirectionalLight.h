@@ -26,7 +26,7 @@ namespace engine {
 
 		FrameBuffer* getDepthBufferFrameBuffer();
 
-		DepthBufferTexture2D* getDepthBufferTexture();
+		DepthBufferTexture2D* getDepthBufferTexture() const;
 
 	private:
 

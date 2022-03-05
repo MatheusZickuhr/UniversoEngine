@@ -19,23 +19,12 @@ namespace engine {
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlotIndex));
 	}
 
-	Vertex transformVertex(const Vertex& vertex, const Renderer3D::MeshData& meshData) {
-		Texture* texture = meshData.material->getTexture();
-
-		Vertex transformedVertex;
-		transformedVertex.position = meshData.transform * glm::vec4(vertex.position, 1.0f);
-		transformedVertex.normal = glm::mat3(glm::transpose(glm::inverse(meshData.transform))) * vertex.normal;
-		transformedVertex.ambient = meshData.material->ambient;
-		transformedVertex.diffuse = meshData.material->diffuse;
-		transformedVertex.specular = meshData.material->specular;
-		transformedVertex.shininess = meshData.material->shininess;
-		transformedVertex.textureCoords = vertex.textureCoords;
-		transformedVertex.textureSlotIndex = texture != nullptr ? texture->getSlot() : -1.0f;
-
-		return transformedVertex;
-	}
-
 	Renderer3D::Renderer3D() {
+		drawCallsCount = 0;
+
+		lightingData.currentTextureSlot = lightingData.initialTextureSlot;
+		lightingData.currentCubeMapSlot = lightingData.initialCubeMapSlot;
+
 		dynamicRenderingData.vertices = new Vertex[dynamicRenderingData.maxVertices];
 		dynamicRenderingData.verticesBegin = dynamicRenderingData.vertices;
 		dynamicRenderingData.indices = new unsigned int[dynamicRenderingData.maxIndices];
@@ -47,12 +36,11 @@ namespace engine {
 
 		fragmentShader.addMacroDefinition("MAX_POINT_LIGHTS", std::to_string(PointLight::maxPointLights));
 		fragmentShader.addMacroDefinition("MAX_DIRECTIONAL_LIGHTS", std::to_string(DirectionalLight::maxDirectionalLights));
-		fragmentShader.addMacroDefinition("MAX_TEXTURES", std::to_string(Texture::maxTextures));
-		fragmentShader.addMacroDefinition("MAX_CUBE_MAPS", std::to_string(Texture::maxCubeMaps));
+		fragmentShader.addMacroDefinition("MAX_TEXTURES", std::to_string(Texture::MAX_TEXTURES));
+		fragmentShader.addMacroDefinition("MAX_CUBE_MAPS", std::to_string(Texture::MAX_CUBEMAPS));
 
 		shaderProgram.attachShader(vertexShader);
 		shaderProgram.attachShader(fragmentShader);
-		shaderProgram.bind();
 
 		lightingData.depthBufferTextureShaderProgram.attachShader(lightingData.depthBufferTextureVertexShader);
 		lightingData.depthBufferTextureShaderProgram.attachShader(lightingData.depthBufferTextureFragmentShader);
@@ -91,7 +79,7 @@ namespace engine {
 		updateCameraUniformBuffer(camera);
 		
 		clearLights();
-		clearBoundTextures();
+		clearLightingBoundTextures();
 		clearDynamicMeshes();
 	}
 
@@ -104,35 +92,60 @@ namespace engine {
 		drawSkyBox();
 	}
 
-	void Renderer3D::addPointLight(PointLight pointLight, glm::mat4 transform) {
+	void Renderer3D::drawPointLight(const PointLight& pointLight) {
 		ASSERT(lightingData.pointLights.size() + 1 <= PointLight::maxPointLights, "Maximum point lights exceded");
-
-		pointLight.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		lightingData.pointLights.push_back(pointLight);
-
-		bindCubeMap(pointLight.getDepthBufferCubeMap());
+		bindLightingCubeMap(pointLight.getDepthBufferCubeMap());
 	}
 
-	void Renderer3D::addDirectionalLight(DirectionalLight directionalLight, glm::mat4 transform) {
+	void Renderer3D::drawDirectionalLight(const DirectionalLight& directionalLight) {
 		ASSERT(lightingData.directionalLights.size() + 1 <= DirectionalLight::maxDirectionalLights, "Maximum directional lights exceded");
-
-		directionalLight.position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
 		lightingData.directionalLights.push_back(directionalLight);
-
-		bindTexture(directionalLight.getDepthBufferTexture());
+		bindLightingTexture(directionalLight.getDepthBufferTexture());
 	}
 
-	void Renderer3D::drawDynamicMesh(MeshData meshData) { 
-		dynamicRenderingData.meshDataList.push_back(meshData);
+	void Renderer3D::drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId) {
+		
+		dynamicRenderingData.meshDataList.push_back({
+			.mesh = mesh,
+			.material = material,
+			.transform = transform,
+			.renderId = renderId});
 	}
 
-	void Renderer3D::drawStaticMesh(MeshData meshData) {
-		staticRenderingData.shouldCreateBuffers = true;
+	void Renderer3D::drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId) {
+		StaticMeshData meshData { 
+			.mesh = mesh,
+			.material = material,
+			.transform = transform,
+			.renderId = renderId };
+	
+		for (const Vertex& vertex : meshData.mesh->getVertices()) {
+			Vertex transformedVertex = transformAndApplyMateriaToVertex(vertex, meshData.transform, meshData.material);
+			meshData.vertices.push_back(transformedVertex);
+		}
+
+		for (int index : meshData.mesh->getIndices()) {
+			meshData.indices.push_back(index);
+		}
+		
+		meshData.vertexArray = std::make_shared<VertexArray>();
+		meshData.vertexBuffer = std::make_shared<VertexBuffer>(sizeof(Vertex), meshData.vertices.size());
+
+		addDefaultVertexAttributePointers(*meshData.vertexBuffer);
+
+		meshData.indexBuffer = std::make_shared<IndexBuffer>(meshData.indices.size());
+
+		meshData.vertexArray->addVertexBuffer(*meshData.vertexBuffer);
+		meshData.vertexArray->addIndexBuffer(*meshData.indexBuffer);
+
+		meshData.vertexBuffer->pushData(meshData.vertices.data(), sizeof(Vertex) * meshData.vertices.size());
+		meshData.indexBuffer->pushData(meshData.indices.data(), sizeof(unsigned int) * meshData.indices.size());
+		
 		staticRenderingData.meshDataList.push_back(meshData);
 	}
 
-	void Renderer3D::destroyStaticMesh(unsigned int renderId) {
+	void Renderer3D::destroyStaticMesh(const unsigned int& renderId) {
 		int meshDataIndex = 0;
 		bool meshDataFound = false;
 
@@ -146,16 +159,11 @@ namespace engine {
 
 		if (meshDataFound) {
 			this->staticRenderingData.meshDataList.erase(this->staticRenderingData.meshDataList.begin() + meshDataIndex);
-			this->staticRenderingData.shouldCreateBuffers = true;
 		}
 	}
 
 	void Renderer3D::clearColor(float r, float g, float b, float a) { 
 		DrawApi::clearColor(r, g, b, a);
-	}
-
-	void Renderer3D::setViewPortSize(int width, int height) { 
-		DrawApi::setViewPortSize(width, height);
 	}
 
 	unsigned int Renderer3D::getDrawCallsCount() { 
@@ -169,7 +177,8 @@ namespace engine {
 	void Renderer3D::updateLightsDepthBufferTextures() {
 
 		// update directional lights frame buffers
-		for (auto& directionalLight : lightingData.directionalLights) {
+		for (DirectionalLight& directionalLight : lightingData.directionalLights) {
+
 			CurrentDirectionalLightUniformBufferData lightData{ directionalLight.getViewProjectionMatrix() };
 			lightingData.currentDirectionalLightUniformBuffer.pushData(&lightData, sizeof(CurrentDirectionalLightUniformBufferData));
 
@@ -225,8 +234,6 @@ namespace engine {
 
 		targetShaderProgram->bind();
 
-		staticRenderingData.vertexArray.bind();
-
 		if (frameBufferTarget != nullptr) {
 			frameBufferTarget->bind();
 		}
@@ -234,48 +241,15 @@ namespace engine {
 			FrameBuffer::bindDefaultFrameBuffer();
 		}
 
-		if (staticRenderingData.shouldCreateBuffers) {
-
-			staticRenderingData.shouldCreateBuffers = false;
-
-			staticRenderingData.vertexCount = 0;
-			staticRenderingData.indexCount = 0;
-
-			staticRenderingData.vertices.clear();
-			staticRenderingData.indices.clear();
-
-			for (auto& meshData : staticRenderingData.meshDataList) {
-
-				bindTexture(meshData.material->getTexture());
-
-				for (const Vertex& vertex : meshData.mesh->getVertices()) {
-					Vertex transformedVertex = transformVertex(vertex, meshData);
-					staticRenderingData.vertices.push_back(transformedVertex);
-				}
-
-				int indexOffset = staticRenderingData.vertexCount;
-				for (int index : meshData.mesh->getIndices()) {
-					staticRenderingData.indices.push_back(indexOffset + index);
-					staticRenderingData.indexCount++;
-				}
-
-				staticRenderingData.vertexCount += meshData.mesh->getVertexCount();
+		
+		for (StaticMeshData& meshData : staticRenderingData.meshDataList) {
+			if (meshData.material->getTexture() != nullptr) {
+				meshData.material->getTexture()->bind(TEXTURE_SLOT);
 			}
-
-			staticRenderingData.vertexBuffer = std::make_unique<VertexBuffer>(sizeof(Vertex), staticRenderingData.vertexCount);
-
-			addDefaultVertexAttributePointers(*staticRenderingData.vertexBuffer);
-
-			staticRenderingData.indexBuffer = std::make_unique<IndexBuffer>(staticRenderingData.indexCount);
-
-			staticRenderingData.vertexArray.addVertexBuffer(*staticRenderingData.vertexBuffer);
-			staticRenderingData.vertexArray.addIndexBuffer(*staticRenderingData.indexBuffer);
-
-			staticRenderingData.vertexBuffer->pushData(staticRenderingData.vertices.data(), sizeof(Vertex) * staticRenderingData.vertexCount);
-			staticRenderingData.indexBuffer->pushData(staticRenderingData.indices.data(), sizeof(unsigned int) * staticRenderingData.indexCount);
+			meshData.vertexArray->bind();
+			DrawApi::drawWithIdexes(meshData.indices.size());
 		}
 
-		DrawApi::drawWithIdexes(staticRenderingData.indexCount);
 	}
 
 	void Renderer3D::drawDynamicMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget) {
@@ -283,6 +257,8 @@ namespace engine {
 		this->bindUniformBuffers();
 
 		targetShaderProgram->bind();
+
+		dynamicRenderingData.vertexArray.bind();
 
 		if (frameBufferTarget != nullptr) {
 			frameBufferTarget->bind();
@@ -294,31 +270,41 @@ namespace engine {
 
 		for (auto& meshData : dynamicRenderingData.meshDataList) {
 			ASSERT(meshData.mesh->getVertexCount() <= dynamicRenderingData.maxVertices, "Mesh does not fit in the drawcall");
-
-			bool batchIsFull = meshData.mesh->getVertexCount() + dynamicRenderingData.vertexCount > dynamicRenderingData.maxVertices;
-
-			if (batchIsFull) {
-				this->flushDynamicRenderingBatch();
+			
+			Texture* texture = meshData.material->getTexture();
+			
+			if (texture != nullptr) {
+				texture->bind(TEXTURE_SLOT);
 			}
 
-			bindTexture(meshData.material->getTexture());
-
 			for (const Vertex& vertex : meshData.mesh->getVertices()) {
-				Vertex transformedVertex = transformVertex(vertex, meshData);
+
+				Vertex transformedVertex = transformAndApplyMateriaToVertex(vertex, meshData.transform, meshData.material);
+
 				std::memcpy(dynamicRenderingData.vertices, &transformedVertex, sizeof(Vertex));
 				dynamicRenderingData.vertices++;
 			}
 
-			int indexOffset = dynamicRenderingData.vertexCount;
 			for (int index : meshData.mesh->getIndices()) {
-				dynamicRenderingData.indices[dynamicRenderingData.indexCount] = indexOffset + index;
+				dynamicRenderingData.indices[dynamicRenderingData.indexCount] = index;
 				dynamicRenderingData.indexCount++;
 			}
 
 			dynamicRenderingData.vertexCount += meshData.mesh->getVertexCount();
+			
+			// upload the data to vertex/index buffer in the gpu
+			dynamicRenderingData.vertexBuffer.pushData(dynamicRenderingData.verticesBegin, sizeof(Vertex) * dynamicRenderingData.vertexCount);
+			dynamicRenderingData.indexBuffer.pushData(dynamicRenderingData.indices, sizeof(unsigned int) * dynamicRenderingData.indexCount);
+
+			DrawApi::drawWithIdexes(dynamicRenderingData.indexCount);
+
+			dynamicRenderingData.vertices = dynamicRenderingData.verticesBegin;
+			dynamicRenderingData.vertexCount = 0;
+			dynamicRenderingData.indexCount = 0;
+
+			this->drawCallsCount++;
 		}
 
-		this->flushDynamicRenderingBatch();
 	}
 
 	void Renderer3D::drawSkyBox() {
@@ -336,21 +322,21 @@ namespace engine {
 		}
 	}
 
-	void Renderer3D::flushDynamicRenderingBatch() {
-		dynamicRenderingData.vertexArray.bind();
+	Vertex Renderer3D::transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, Material* material) {
+	
+		Texture* texture = material->getTexture();
 
-		// upload the data to vertex/index buffer in the gpu
-		dynamicRenderingData.vertexBuffer.pushData(dynamicRenderingData.verticesBegin, sizeof(Vertex) * dynamicRenderingData.vertexCount);
-		dynamicRenderingData.indexBuffer.pushData(dynamicRenderingData.indices, sizeof(unsigned int) * dynamicRenderingData.indexCount);
+		Vertex transformedVertex;
+		transformedVertex.position =transform * glm::vec4(vertex.position, 1.0f);
+		transformedVertex.normal = glm::mat3(glm::transpose(glm::inverse(transform))) * vertex.normal;
+		transformedVertex.ambient = material->ambient;
+		transformedVertex.diffuse =material->diffuse;
+		transformedVertex.specular = material->specular;
+		transformedVertex.shininess = material->shininess;
+		transformedVertex.textureCoords = vertex.textureCoords;
+		transformedVertex.textureSlotIndex = material->getTexture() != nullptr ? TEXTURE_SLOT : NO_TEXTURE_SLOT;
 
-		DrawApi::drawWithIdexes(dynamicRenderingData.indexCount);
-
-		dynamicRenderingData.vertices = dynamicRenderingData.verticesBegin;
-		dynamicRenderingData.vertexCount = 0;
-		dynamicRenderingData.indexCount = 0;
-
-		this->drawCallsCount++;
-
+		return transformedVertex;
 	}
 
 	void Renderer3D::bindUniformBuffers() {
@@ -360,33 +346,33 @@ namespace engine {
 		lightingData.currentDirectionalLightUniformBuffer.bind(3);
 	}
 
-	void Renderer3D::bindTexture(Texture* texture) {
-		ASSERT(currentTextureSlot < Texture::maxTextures, "Maximum texture slot exceded");
+	void Renderer3D::bindLightingTexture(Texture* texture) {
+		ASSERT(lightingData.currentTextureSlot < Texture::MAX_TEXTURES, "Maximum texture slot exceded");
 
 		if (texture == nullptr) return;
 
-		bool textureBound = std::find(this->boundTextures.begin(), this->boundTextures.end(), texture)
-			!= this->boundTextures.end();
+		bool textureBound = std::find(lightingData.boundTextures.begin(), lightingData.boundTextures.end(), texture)
+			!= lightingData.boundTextures.end();
 
 		if (!textureBound) {
-			texture->bind(this->currentTextureSlot);
-			this->boundTextures.push_back(texture);
-			this->currentTextureSlot++;
+			texture->bind(lightingData.currentTextureSlot);
+			lightingData.boundTextures.push_back(texture);
+			lightingData.currentTextureSlot++;
 		}
 	}
 
-	void Renderer3D::bindCubeMap(Texture* cubeMap) {
-		ASSERT(currentCubeMapSlot < Texture::maxCubeMaps, "Maximum cube map slot exceded");
+	void Renderer3D::bindLightingCubeMap(Texture* cubeMap) {
+		ASSERT(lightingData.currentCubeMapSlot < Texture::MAX_CUBEMAPS, "Maximum cube map slot exceded");
 
 		if (cubeMap == nullptr) return;
 
-		bool cubeMapBound = std::find(this->boundCubeMaps.begin(), this->boundCubeMaps.end(), cubeMap)
-			!= this->boundCubeMaps.end();
+		bool cubeMapBound = std::find(lightingData.boundCubeMaps.begin(), lightingData.boundCubeMaps.end(), cubeMap)
+			!= lightingData.boundCubeMaps.end();
 
 		if (!cubeMapBound) {
-			cubeMap->bind(this->currentCubeMapSlot + Texture::maxTextures);
-			this->boundCubeMaps.push_back(cubeMap);
-			this->currentCubeMapSlot++;
+			cubeMap->bind(lightingData.currentCubeMapSlot + Texture::MAX_TEXTURES);
+			lightingData.boundCubeMaps.push_back(cubeMap);
+			lightingData.currentCubeMapSlot++;
 		}
 	}
 
@@ -422,19 +408,21 @@ namespace engine {
 			pointLightData.linear = lightingData.pointLights[i].linear;
 			pointLightData.quadratic = lightingData.pointLights[i].quadratic;
 			pointLightData.farPlane = lightingData.pointLights[i].farPlane;
-			pointLightData.cubeMapSlotIndex = lightingData.pointLights[i].getDepthBufferCubeMap()->getSlot() - Texture::maxTextures;
+			pointLightData.cubeMapSlotIndex = lightingData.pointLights[i].getDepthBufferCubeMap()->getSlot() - Texture::MAX_TEXTURES;
 
 			lightsUniformBufferData.pointLights[i] = pointLightData;
 		}
 
 		for (int i = 0; i < lightingData.directionalLights.size(); i++) {
+			DirectionalLight& directionalLight = lightingData.directionalLights[i];
+
 			DirectionalLightUniformBufferData directionalLightData;
-			directionalLightData.position = { lightingData.directionalLights[i].position, 0.0f };
-			directionalLightData.ambient = { lightingData.directionalLights[i].ambient, 0.0f };
-			directionalLightData.diffuse = { lightingData.directionalLights[i].diffuse, 0.0f };
-			directionalLightData.specular = { lightingData.directionalLights[i].specular, 0.0f };
-			directionalLightData.textureSlotIndex = lightingData.directionalLights[i].getDepthBufferTexture()->getSlot();
-			directionalLightData.viewProjection = lightingData.directionalLights[i].getViewProjectionMatrix();
+			directionalLightData.position = {directionalLight.position, 0.0f};
+			directionalLightData.ambient = { directionalLight.ambient, 0.0f };
+			directionalLightData.diffuse = { directionalLight.diffuse, 0.0f };
+			directionalLightData.specular = { directionalLight.specular, 0.0f };
+			directionalLightData.textureSlotIndex = directionalLight.getDepthBufferTexture()->getSlot();
+			directionalLightData.viewProjection = directionalLight.getViewProjectionMatrix();
 
 			lightsUniformBufferData.directionalLights[i] = directionalLightData;
 		}
@@ -448,12 +436,12 @@ namespace engine {
 		lightingData.directionalLights.clear();
 	}
 
-	void Renderer3D::clearBoundTextures() {
-		this->boundTextures.clear();
-		this->currentTextureSlot = 0;
+	void Renderer3D::clearLightingBoundTextures() {
+		lightingData.boundTextures.clear();
+		lightingData.currentTextureSlot = lightingData.initialTextureSlot;
 
-		this->boundCubeMaps.clear();
-		this->currentCubeMapSlot = 0;
+		lightingData.boundCubeMaps.clear();
+		lightingData.currentCubeMapSlot = lightingData.initialCubeMapSlot;
 	}
 
 	void Renderer3D::clearDynamicMeshes() {

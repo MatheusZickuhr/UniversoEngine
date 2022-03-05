@@ -20,9 +20,11 @@ namespace engine {
 
 		this->fileName = std::filesystem::path(filePath).filename().string();
 
-		const std::string  cacheFolder = "shaderCache/";
+		const std::string parentPath = std::filesystem::path(filePath).parent_path().string();
 
-		std::filesystem::create_directory(cacheFolder);
+		const std::string  cacheFolder = "shaderCache/" + parentPath + "/";
+
+		std::filesystem::create_directories(cacheFolder);
 
 		this->cacheFilePath = cacheFolder + this->fileName + ".cache";
 		this->cacheHelperFilePath = cacheFilePath + ".helper";
