@@ -14,6 +14,8 @@ namespace engine {
 		// use this contructor for a dynamic buffer
 		VertexBuffer(unsigned int vertexSize, unsigned int count);
 
+		VertexBuffer(const VertexBuffer& other) = delete;
+
 		~VertexBuffer();
 		
 		void bind();

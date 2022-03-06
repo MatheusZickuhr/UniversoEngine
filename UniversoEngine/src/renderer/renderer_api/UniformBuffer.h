@@ -8,6 +8,8 @@ namespace engine {
 
 		UniformBuffer(unsigned int bufferSize);
 
+		UniformBuffer(const UniformBuffer& other) = delete;
+
 		~UniformBuffer();
 
 		void bind(unsigned int slot);

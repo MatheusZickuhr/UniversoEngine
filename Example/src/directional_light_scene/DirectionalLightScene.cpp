@@ -6,12 +6,11 @@ DirectionalLightScene::~DirectionalLightScene() {
 }
 
 void DirectionalLightScene::onStart() {
-
-	this->camera.position = { 0.0f, 0.0f, 5.0f };
-
+	this->camera.position = { -2.0f, 3.0f, 10.0f };
 	cameraInput = new CameraController(this->camera);
 
-	this->setSkyBoxCubeMap(&this->skyboxCubeMap);
+	this->setSkyBoxCubeMap(this->skyboxCubeMap);
+
 
 	{
 		auto box = createEntity();
@@ -19,47 +18,74 @@ void DirectionalLightScene::onStart() {
 		box->addComponent<TransformComponent>();
 
 		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { 4.0f, 0.0f, 0.0f };
+		boxTransformComponent.transform.position = { 4.0f, 60.0f, 0.0f };
 
-		box->addComponent<StaticMeshComponent>(&boxMesh);
+		box->addComponent<DynamicMeshComponent>(&boxMesh);
+
+		box->addComponent<CollisionShapeComponent>(CollisionShape::Box);
+		box->addComponent<RigidBodyComponent>(RigidBodyType::Dynamic);
 	}
 
 	{
-		auto box = createEntity();
-		box->addComponent<MaterialComponent>(&boxMaterial);
-		box->addComponent<TransformComponent>();
+		auto lowPolyTree1 = createEntity();
+		lowPolyTree1->addComponent<MaterialComponent>(&lowPolyTree1Material);
+		lowPolyTree1->addComponent<TransformComponent>();
 
-		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { -4.0f, 0.0f, 0.0f  };
+		auto& transformComponent = lowPolyTree1->getComponent<TransformComponent>();
+		transformComponent.transform.position = { -5.0f, 0.0f, 3.0f };
 
-		box->addComponent<StaticMeshComponent>(&boxMesh);
+		lowPolyTree1->addComponent<DynamicMeshComponent>(&lowPolyTree1Mesh);
 	}
 
 	{
-		auto box = createEntity();
-		box->addComponent<MaterialComponent>(&boxMaterial);
-		box->addComponent<TransformComponent>();
+		auto lowPolyTree2 = createEntity();
+		lowPolyTree2->addComponent<MaterialComponent>(&lowPolyTree2Material);
+		lowPolyTree2->addComponent<TransformComponent>();
 
-		auto& boxTransformComponent = box->getComponent<TransformComponent>();
-		boxTransformComponent.transform.position = { 0.0f, 0.0f, -4.0f };
+		auto& transformComponent = lowPolyTree2->getComponent<TransformComponent>();
+		transformComponent.transform.position = { -1.0f, 0.0f, 3.0f };
 
-		box->addComponent<StaticMeshComponent>(&boxMesh);
+		lowPolyTree2->addComponent<DynamicMeshComponent>(&lowPolyTree2Mesh);
 	}
 
-	// create a floor entity
 	{
-		auto floor = createEntity();
-		floor->addComponent<MaterialComponent>(&boxMaterial);
-		floor->addComponent<TransformComponent>();
+		auto lowPolyTree3 = createEntity();
+		lowPolyTree3->addComponent<MaterialComponent>(&lowPolyTree3Material);
+		lowPolyTree3->addComponent<TransformComponent>();
 
-		auto& floorTransformComponent = floor->getComponent<TransformComponent>();
-		floorTransformComponent.transform.position.y = -2.0f;
-		floorTransformComponent.transform.scale = { 10.0f, 0.5f, 10.0f };
+		auto& transformComponent = lowPolyTree3->getComponent<TransformComponent>();
+		transformComponent.transform.position = { -1.0f, 0.0f, 0.0f };
 
-		floor->addComponent<StaticMeshComponent>(&boxMesh);
+		lowPolyTree3->addComponent<StaticMeshComponent>(&lowPolyTree3Mesh);
+	}
 
-		floor->addComponent<CollisionShapeComponent>(CollisionShape::Box);
-		floor->addComponent<RigidBodyComponent>(RigidBodyType::Static);
+	{
+		auto lowPolyTree4 = createEntity();
+		lowPolyTree4->addComponent<MaterialComponent>(&lowPolyTree4Material);
+		lowPolyTree4->addComponent<TransformComponent>();
+
+		auto& transformComponent = lowPolyTree4->getComponent<TransformComponent>();
+		transformComponent.transform.position = { -5.0f, 0.0f, 0.0f };
+
+		lowPolyTree4->addComponent<StaticMeshComponent>(&lowPolyTree4Mesh);
+	}
+
+	{
+
+		terrainMaterial.ambient = { 0.28f, 0.43f, 0.21f };
+		terrainMaterial.diffuse = { 0.28f, 0.43f, 0.21f };
+
+		auto terrain = createEntity();
+		terrain->addComponent<MaterialComponent>(&terrainMaterial);
+		terrain->addComponent<TransformComponent>();
+
+		auto& transformComponent = terrain->getComponent<TransformComponent>();
+		transformComponent.transform.scale = { 10.0f, 0.1f, 10.0f };
+
+		terrain->addComponent<StaticMeshComponent>(&cubeMesh);
+
+		terrain->addComponent<CollisionShapeComponent>(CollisionShape::Box);
+		terrain->addComponent<RigidBodyComponent>(RigidBodyType::Static);
 	}
 
 	// sun light

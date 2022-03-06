@@ -11,7 +11,7 @@ void PointLightScene::onStart() {
 
     cameraInput = new CameraController(this->camera);
 
-    this->setSkyBoxCubeMap(&this->skyboxCubeMap);
+    this->setSkyBoxCubeMap(this->skyboxCubeMap);
 
     {
         auto box = createEntity();

@@ -10,6 +10,8 @@ namespace engine {
 
 		IndexBuffer(unsigned int count);
 
+		IndexBuffer(const IndexBuffer& other) = delete;
+
 		~IndexBuffer();
 		
 		void pushData(unsigned int* data, unsigned int size);

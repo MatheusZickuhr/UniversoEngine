@@ -1,7 +1,8 @@
 #pragma once
 
-#include "DepthBufferTexture2D.h"
-#include "DepthBufferCubeMap.h"
+#include "Texture.h"
+#include "CubeMap.h"
+#include <memory>
 
 namespace engine {
 
@@ -11,15 +12,17 @@ namespace engine {
 
 		FrameBuffer();
 
+		FrameBuffer(const FrameBuffer& other) = delete;
+
 		~FrameBuffer();
 
 		void bind();
 
 		void unbind();
 
-		void addDepthBufferTexture(DepthBufferTexture2D& texture);
+		void addDepthTexture(std::shared_ptr<Texture> texture);
 
-		void addDepthBufferCubeMap(DepthBufferCubeMap& cubeMap);
+		void addDepthCubeMap(std::shared_ptr<CubeMap> cubeMap);
 		
 		static void bindDefaultFrameBuffer();
 

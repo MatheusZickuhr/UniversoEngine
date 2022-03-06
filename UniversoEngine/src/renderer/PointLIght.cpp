@@ -4,14 +4,14 @@
 namespace engine {
 
 	PointLight::PointLight() : 
-		depthBufferFrameBuffer(std::make_shared<FrameBuffer>()),
-		depthBufferCubeMap(std::make_shared<DepthBufferCubeMap>(2048.0f, 2048.0f)) {
+		depthFrameBuffer(std::make_shared<FrameBuffer>()),
+		depthCubeMap(CubeMap::createDepthCubeMap(2048, 2048)) {
 
-		depthBufferFrameBuffer->addDepthBufferCubeMap(*depthBufferCubeMap.get());
+		depthFrameBuffer->addDepthCubeMap(depthCubeMap);
 	}
 
 	std::array<glm::mat4, 6> PointLight::getViewShadowMatrices() {
-		float aspectRatio = depthBufferCubeMap->getWidth() / depthBufferCubeMap->getHeight();
+		float aspectRatio = (float) depthCubeMap->getWidth() / (float) depthCubeMap->getHeight();
 		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspectRatio, nearPlane, farPlane);
 
 		std::array<glm::mat4, 6> shadowTransforms;
@@ -26,12 +26,12 @@ namespace engine {
 		return shadowTransforms;
 	}
 
-	FrameBuffer* PointLight::getDepthBufferFrameBuffer() {
-		return depthBufferFrameBuffer.get();
+	std::shared_ptr<FrameBuffer> PointLight::getDepthFrameBuffer() {
+		return depthFrameBuffer;
 	}
 
-	DepthBufferCubeMap* PointLight::getDepthBufferCubeMap() const {
-		return depthBufferCubeMap.get();
+	std::shared_ptr<CubeMap> PointLight::getDepthCubeMap() const {
+		return depthCubeMap;
 	}
 
 }

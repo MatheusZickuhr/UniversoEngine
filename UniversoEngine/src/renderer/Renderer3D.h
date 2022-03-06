@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "renderer_api/VertexArray.h"
 #include "renderer_api/VertexBuffer.h"
@@ -50,7 +51,7 @@ namespace engine {
 
         unsigned int getDrawCallsCount();
 
-        void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap);
+        void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap);
 
     private:
 
@@ -121,7 +122,7 @@ namespace engine {
         };
 
         struct SkyBoxData {
-            CubeMap* cubeMap = nullptr;
+            std::shared_ptr<CubeMap> cubeMap = nullptr;
 
             VertexArray vertexArray;
             VertexBuffer vertexBuffer{ sizeof(glm::vec3), 36 };
@@ -165,14 +166,14 @@ namespace engine {
             UniformBuffer currentPointLightUniformBuffer{ sizeof(CurrentPointLightUniformBufferData) };
             UniformBuffer currentDirectionalLightUniformBuffer{ sizeof(CurrentDirectionalLightUniformBufferData) };
 
-            ShaderProgram depthBufferTextureShaderProgram;
-            Shader depthBufferTextureVertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/depthMapVertex.glsl" };
-            Shader depthBufferTextureFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/depthMapFragment.glsl" };
+            ShaderProgram depthTextureShaderProgram;
+            Shader depthTextureVertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/depthMapVertex.glsl" };
+            Shader depthTextureFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/depthMapFragment.glsl" };
 
-            ShaderProgram depthBufferCubeMapShaderProgram;
-            Shader depthBufferCubeMapVertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapVertex.glsl" };
-            Shader depthBufferCubeMapGeometryShader{ ShaderType::GeometryShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapGeometry.glsl" };
-            Shader depthBufferCubeMapFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapFragment.glsl" };
+            ShaderProgram depthCubeMapShaderProgram;
+            Shader depthCubeMapVertexShader{ ShaderType::VertexShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapVertex.glsl" };
+            Shader depthCubeMapGeometryShader{ ShaderType::GeometryShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapGeometry.glsl" };
+            Shader depthCubeMapFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapFragment.glsl" };
         
             unsigned int currentTextureSlot;
             unsigned int currentCubeMapSlot;
@@ -181,10 +182,9 @@ namespace engine {
             const unsigned int initialTextureSlot = 1;
             const unsigned int initialCubeMapSlot = 0;
 
-            std::vector<Texture*> boundTextures;
-            std::vector<Texture*> boundCubeMaps;
+            std::vector<std::shared_ptr<Texture>> boundTextures;
+            std::vector<std::shared_ptr<CubeMap>> boundCubeMaps;
         };
-
 
         const static unsigned int TEXTURE_SLOT = 0;
 
@@ -205,9 +205,9 @@ namespace engine {
 
         void updateLightsDepthBufferTextures();
 
-        void drawStaticMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget = nullptr);
+        void drawStaticMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget = nullptr);
 
-        void drawDynamicMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget = nullptr);
+        void drawDynamicMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget = nullptr);
 
         void drawSkyBox();
 
@@ -215,9 +215,9 @@ namespace engine {
 
         void bindUniformBuffers();
 
-        void bindLightingTexture(Texture* texture);
+        void bindLightingTexture(std::shared_ptr<Texture> texture);
 
-        void bindLightingCubeMap(Texture* texture);
+        void bindLightingCubeMap(std::shared_ptr<CubeMap> cubeMap);
                 
         void updateCameraUniformBuffer(Camera& camera);
 

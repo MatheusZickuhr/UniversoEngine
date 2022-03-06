@@ -2,7 +2,7 @@
 
 void FpsScene::onStart() {
 
-	this->setSkyBoxCubeMap(&this->skyboxCubeMap);
+	this->setSkyBoxCubeMap(this->skyboxCubeMap);
 
 	// create a player entity
 	{

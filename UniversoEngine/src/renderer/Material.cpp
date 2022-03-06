@@ -5,17 +5,15 @@ namespace engine {
 
 	Material::Material()  {}
 
-	Material::Material(const std::string& textureFilePath): texture(new Texture2D(textureFilePath)) {}
-
-	Material::~Material() {
-		if (texture != nullptr) delete this->texture;
-	}
+	Material::Material(const std::string& textureFilePath): 
+		texture(Texture::createTextureFromFile(textureFilePath)) {}
 
 	void Material::setTexture(const std::string& textureFilePath) {
-		if (this->texture != nullptr) delete this->texture;
-		this->texture = new Texture2D(textureFilePath);
+		this->texture = Texture::createTextureFromFile(textureFilePath);
 	}
 
-	Texture2D* Material::getTexture() { return this->texture; }
+	std::shared_ptr<Texture> Material::getTexture() {
+		return this->texture;
+	}
 
 }

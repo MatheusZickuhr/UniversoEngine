@@ -6,7 +6,7 @@
 #include <array>
 
 #include "renderer_api/FrameBuffer.h"
-#include "renderer_api/DepthBufferCubeMap.h"
+#include "renderer_api/CubeMap.h"
 
 
 namespace engine {
@@ -32,14 +32,14 @@ namespace engine {
 
 		std::array<glm::mat4, 6> getViewShadowMatrices();
 
-		FrameBuffer* getDepthBufferFrameBuffer();
+		std::shared_ptr<FrameBuffer> getDepthFrameBuffer();
 
-		DepthBufferCubeMap* getDepthBufferCubeMap() const;
+		std::shared_ptr<CubeMap> getDepthCubeMap() const;
 
 	private:
 
-		std::shared_ptr<FrameBuffer> depthBufferFrameBuffer;
-		std::shared_ptr<DepthBufferCubeMap> depthBufferCubeMap;
+		std::shared_ptr<FrameBuffer> depthFrameBuffer;
+		std::shared_ptr<CubeMap> depthCubeMap;
 	};
 
 }

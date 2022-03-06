@@ -5,9 +5,9 @@ namespace engine {
 
 	DirectionalLight::DirectionalLight() :
 		depthBufferFrameBuffer(std::make_shared<FrameBuffer>()),
-		depthBufferTexture(std::make_shared<DepthBufferTexture2D>(2048.0f, 2048.0f)) {
+		depthTexture(Texture::createDepthTexture(2048, 2048)) {
 
-		depthBufferFrameBuffer->addDepthBufferTexture(*depthBufferTexture.get());
+		depthBufferFrameBuffer->addDepthTexture(depthTexture);
 	}
 
 	glm::mat4 DirectionalLight::getViewProjectionMatrix() {
@@ -19,12 +19,12 @@ namespace engine {
 		return lightSpaceMatrix;
 	}
 
-	FrameBuffer* DirectionalLight::getDepthBufferFrameBuffer() {
-		return depthBufferFrameBuffer.get();
+	std::shared_ptr<FrameBuffer> DirectionalLight::getDepthFrameBuffer() {
+		return depthBufferFrameBuffer;
 	}
 
-	DepthBufferTexture2D* DirectionalLight::getDepthBufferTexture() const {
-		return depthBufferTexture.get();
+	std::shared_ptr<Texture> DirectionalLight::getDepthTexture() const {
+		return depthTexture;
 	}
 
 }

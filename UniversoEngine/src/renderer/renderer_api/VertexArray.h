@@ -10,6 +10,8 @@ namespace engine {
 	public:
 		VertexArray();
 
+		VertexArray(const VertexArray& other) = delete;
+
 		~VertexArray();
 
 		void bind();

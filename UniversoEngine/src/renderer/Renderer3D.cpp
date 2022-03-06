@@ -37,17 +37,17 @@ namespace engine {
 		fragmentShader.addMacroDefinition("MAX_POINT_LIGHTS", std::to_string(PointLight::maxPointLights));
 		fragmentShader.addMacroDefinition("MAX_DIRECTIONAL_LIGHTS", std::to_string(DirectionalLight::maxDirectionalLights));
 		fragmentShader.addMacroDefinition("MAX_TEXTURES", std::to_string(Texture::MAX_TEXTURES));
-		fragmentShader.addMacroDefinition("MAX_CUBE_MAPS", std::to_string(Texture::MAX_CUBEMAPS));
+		fragmentShader.addMacroDefinition("MAX_CUBE_MAPS", std::to_string(CubeMap::MAX_CUBEMAPS));
 
 		shaderProgram.attachShader(vertexShader);
 		shaderProgram.attachShader(fragmentShader);
 
-		lightingData.depthBufferTextureShaderProgram.attachShader(lightingData.depthBufferTextureVertexShader);
-		lightingData.depthBufferTextureShaderProgram.attachShader(lightingData.depthBufferTextureFragmentShader);
+		lightingData.depthTextureShaderProgram.attachShader(lightingData.depthTextureVertexShader);
+		lightingData.depthTextureShaderProgram.attachShader(lightingData.depthTextureFragmentShader);
 
-		lightingData.depthBufferCubeMapShaderProgram.attachShader(lightingData.depthBufferCubeMapVertexShader);
-		lightingData.depthBufferCubeMapShaderProgram.attachShader(lightingData.depthBufferCubeMapGeometryShader);
-		lightingData.depthBufferCubeMapShaderProgram.attachShader(lightingData.depthBufferCubeMapFragmentShader);
+		lightingData.depthCubeMapShaderProgram.attachShader(lightingData.depthCubeMapVertexShader);
+		lightingData.depthCubeMapShaderProgram.attachShader(lightingData.depthCubeMapGeometryShader);
+		lightingData.depthCubeMapShaderProgram.attachShader(lightingData.depthCubeMapFragmentShader);
 
 		// cubemap skybox
 		skyBoxData.vertexArray.addVertexBuffer(skyBoxData.vertexBuffer);
@@ -87,21 +87,21 @@ namespace engine {
 		updateLightsUniformBuffers();
 		updateLightsDepthBufferTextures();
 
-		drawDynamicMeshes(&this->shaderProgram);
-		drawStaticMeshes(&this->shaderProgram);
+		drawDynamicMeshes(this->shaderProgram);
+		drawStaticMeshes(this->shaderProgram);
 		drawSkyBox();
 	}
 
 	void Renderer3D::drawPointLight(const PointLight& pointLight) {
 		ASSERT(lightingData.pointLights.size() + 1 <= PointLight::maxPointLights, "Maximum point lights exceded");
 		lightingData.pointLights.push_back(pointLight);
-		bindLightingCubeMap(pointLight.getDepthBufferCubeMap());
+		bindLightingCubeMap(pointLight.getDepthCubeMap());
 	}
 
 	void Renderer3D::drawDirectionalLight(const DirectionalLight& directionalLight) {
 		ASSERT(lightingData.directionalLights.size() + 1 <= DirectionalLight::maxDirectionalLights, "Maximum directional lights exceded");
 		lightingData.directionalLights.push_back(directionalLight);
-		bindLightingTexture(directionalLight.getDepthBufferTexture());
+		bindLightingTexture(directionalLight.getDepthTexture());
 	}
 
 	void Renderer3D::drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId) {
@@ -170,7 +170,7 @@ namespace engine {
 		return this->drawCallsCount;
 	}
 
-	void Renderer3D::setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) {
+	void Renderer3D::setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) {
 		this->skyBoxData.cubeMap = skyBoxCubeMap;
 	}
 
@@ -182,7 +182,7 @@ namespace engine {
 			CurrentDirectionalLightUniformBufferData lightData{ directionalLight.getViewProjectionMatrix() };
 			lightingData.currentDirectionalLightUniformBuffer.pushData(&lightData, sizeof(CurrentDirectionalLightUniformBufferData));
 
-			auto frameBuffer = directionalLight.getDepthBufferFrameBuffer();
+			auto frameBuffer = directionalLight.getDepthFrameBuffer();
 
 			frameBuffer->bind();
 			DrawApi::clearDepthBuffer();
@@ -191,11 +191,11 @@ namespace engine {
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-			auto depthBufferTexture = directionalLight.getDepthBufferTexture();
+			auto depthBufferTexture = directionalLight.getDepthTexture();
 			DrawApi::setViewPortSize(depthBufferTexture->getWidth(), depthBufferTexture->getHeight());
 
-			drawDynamicMeshes(&lightingData.depthBufferTextureShaderProgram, frameBuffer);
-			drawStaticMeshes(&lightingData.depthBufferTextureShaderProgram, frameBuffer);
+			drawDynamicMeshes(lightingData.depthTextureShaderProgram, frameBuffer);
+			drawStaticMeshes(lightingData.depthTextureShaderProgram, frameBuffer);
 
 			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
@@ -210,7 +210,7 @@ namespace engine {
 
 			lightingData.currentPointLightUniformBuffer.pushData(&lightData, sizeof(CurrentPointLightUniformBufferData));
 
-			auto frameBuffer = pointLight.getDepthBufferFrameBuffer();
+			auto frameBuffer = pointLight.getDepthFrameBuffer();
 
 			frameBuffer->bind();
 			DrawApi::clearDepthBuffer();
@@ -219,20 +219,20 @@ namespace engine {
 			int currentViewPortWidth = DrawApi::getViewPortWidth();
 			int currentViewPortHeight = DrawApi::getViewPortHeight();
 
-			auto depthBufferCubeMap = pointLight.getDepthBufferCubeMap();
+			auto depthBufferCubeMap = pointLight.getDepthCubeMap();
 			DrawApi::setViewPortSize(depthBufferCubeMap->getWidth(), depthBufferCubeMap->getHeight());
 
-			drawDynamicMeshes(&lightingData.depthBufferCubeMapShaderProgram, frameBuffer);
-			drawStaticMeshes(&lightingData.depthBufferCubeMapShaderProgram, frameBuffer);
+			drawDynamicMeshes(lightingData.depthCubeMapShaderProgram, frameBuffer);
+			drawStaticMeshes(lightingData.depthCubeMapShaderProgram, frameBuffer);
 
 			DrawApi::setViewPortSize(currentViewPortWidth, currentViewPortHeight);
 		}
 	}
 
-	void Renderer3D::drawStaticMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget) {
+	void Renderer3D::drawStaticMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget) {
 		bindUniformBuffers();
 
-		targetShaderProgram->bind();
+		targetShaderProgram.bind();
 
 		if (frameBufferTarget != nullptr) {
 			frameBufferTarget->bind();
@@ -252,11 +252,11 @@ namespace engine {
 
 	}
 
-	void Renderer3D::drawDynamicMeshes(ShaderProgram* targetShaderProgram, FrameBuffer* frameBufferTarget) {
+	void Renderer3D::drawDynamicMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget) {
 
 		this->bindUniformBuffers();
 
-		targetShaderProgram->bind();
+		targetShaderProgram.bind();
 
 		dynamicRenderingData.vertexArray.bind();
 
@@ -271,7 +271,7 @@ namespace engine {
 		for (auto& meshData : dynamicRenderingData.meshDataList) {
 			ASSERT(meshData.mesh->getVertexCount() <= dynamicRenderingData.maxVertices, "Mesh does not fit in the drawcall");
 			
-			Texture* texture = meshData.material->getTexture();
+			std::shared_ptr<Texture> texture = meshData.material->getTexture();
 			
 			if (texture != nullptr) {
 				texture->bind(TEXTURE_SLOT);
@@ -324,7 +324,7 @@ namespace engine {
 
 	Vertex Renderer3D::transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, Material* material) {
 	
-		Texture* texture = material->getTexture();
+		std::shared_ptr<Texture> texture = material->getTexture();
 
 		Vertex transformedVertex;
 		transformedVertex.position =transform * glm::vec4(vertex.position, 1.0f);
@@ -346,7 +346,7 @@ namespace engine {
 		lightingData.currentDirectionalLightUniformBuffer.bind(3);
 	}
 
-	void Renderer3D::bindLightingTexture(Texture* texture) {
+	void Renderer3D::bindLightingTexture(std::shared_ptr<Texture> texture) {
 		ASSERT(lightingData.currentTextureSlot < Texture::MAX_TEXTURES, "Maximum texture slot exceded");
 
 		if (texture == nullptr) return;
@@ -361,8 +361,8 @@ namespace engine {
 		}
 	}
 
-	void Renderer3D::bindLightingCubeMap(Texture* cubeMap) {
-		ASSERT(lightingData.currentCubeMapSlot < Texture::MAX_CUBEMAPS, "Maximum cube map slot exceded");
+	void Renderer3D::bindLightingCubeMap(std::shared_ptr<CubeMap> cubeMap) {
+		ASSERT(lightingData.currentCubeMapSlot < CubeMap::MAX_CUBEMAPS, "Maximum cube map slot exceded");
 
 		if (cubeMap == nullptr) return;
 
@@ -408,7 +408,7 @@ namespace engine {
 			pointLightData.linear = lightingData.pointLights[i].linear;
 			pointLightData.quadratic = lightingData.pointLights[i].quadratic;
 			pointLightData.farPlane = lightingData.pointLights[i].farPlane;
-			pointLightData.cubeMapSlotIndex = lightingData.pointLights[i].getDepthBufferCubeMap()->getSlot() - Texture::MAX_TEXTURES;
+			pointLightData.cubeMapSlotIndex = lightingData.pointLights[i].getDepthCubeMap()->getSlot() - Texture::MAX_TEXTURES;
 
 			lightsUniformBufferData.pointLights[i] = pointLightData;
 		}
@@ -421,7 +421,7 @@ namespace engine {
 			directionalLightData.ambient = { directionalLight.ambient, 0.0f };
 			directionalLightData.diffuse = { directionalLight.diffuse, 0.0f };
 			directionalLightData.specular = { directionalLight.specular, 0.0f };
-			directionalLightData.textureSlotIndex = directionalLight.getDepthBufferTexture()->getSlot();
+			directionalLightData.textureSlotIndex = directionalLight.getDepthTexture()->getSlot();
 			directionalLightData.viewProjection = directionalLight.getViewProjectionMatrix();
 
 			lightsUniformBufferData.directionalLights[i] = directionalLightData;

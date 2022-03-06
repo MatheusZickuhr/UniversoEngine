@@ -1,13 +1,14 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include <entt/entt.hpp>
 
 #include "../renderer/Camera.h"
 #include "../renderer/Renderer3D.h"
 #include "../renderer/Renderer2D.h"
-#include "../renderer/renderer_api/Texture2D.h"
+#include "../renderer/renderer_api/CubeMap.h"
 #include "../physics/PhysicsWorld.h"
 #include "../physics/RigidBody.h"
 
@@ -45,7 +46,7 @@ namespace engine {
 
 		void destroyEntity(Entity* entity);
 
-		void setSkyBoxCubeMap(CubeMap* skyBoxCubeMap) { this->renderer3d.setSkyBoxCubeMap(skyBoxCubeMap); }
+		void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) { this->renderer3d.setSkyBoxCubeMap(skyBoxCubeMap); }
 
 	private:
 

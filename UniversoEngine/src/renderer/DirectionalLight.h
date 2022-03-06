@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "renderer_api/FrameBuffer.h"
-#include "renderer_api/DepthBufferTexture2D.h"
+#include "renderer_api/Texture.h"
 
 namespace engine {
 
@@ -24,14 +24,14 @@ namespace engine {
 
 		glm::mat4 getViewProjectionMatrix();
 
-		FrameBuffer* getDepthBufferFrameBuffer();
+		std::shared_ptr<FrameBuffer> getDepthFrameBuffer();
 
-		DepthBufferTexture2D* getDepthBufferTexture() const;
+		std::shared_ptr<Texture> getDepthTexture() const;
 
 	private:
 
 		std::shared_ptr<FrameBuffer> depthBufferFrameBuffer;
-		std::shared_ptr<DepthBufferTexture2D> depthBufferTexture;
+		std::shared_ptr<Texture> depthTexture;
 
 	};
 

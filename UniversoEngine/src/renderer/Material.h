@@ -2,7 +2,8 @@
 
 #include <string>
 #include <glm/glm.hpp>
-#include "renderer_api/Texture2D.h"
+#include "renderer_api/Texture.h"
+#include <memory>
 
 namespace engine {
 
@@ -19,15 +20,13 @@ namespace engine {
 
 		Material(const std::string& textureFilePath);
 
-		~Material();
-
 		void setTexture(const std::string& textureFilePath);
 
-		Texture2D* getTexture();
+		std::shared_ptr<Texture> getTexture();
 
 	private:
 
-		Texture2D* texture = nullptr;
+		std::shared_ptr<Texture> texture;
 
 	};
 }

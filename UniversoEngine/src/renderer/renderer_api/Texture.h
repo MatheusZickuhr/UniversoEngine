@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <string>
+
 namespace engine {
 
     class Texture {
@@ -7,14 +10,16 @@ namespace engine {
     public:
 
         const static unsigned int MAX_TEXTURES = 16;
-        const static unsigned int MAX_CUBEMAPS = 16;
         
+        Texture();
+        
+        Texture(const Texture& other) = delete;
 
         ~Texture();
 
-        virtual void bind(unsigned int slot) = 0;
+        void bind(unsigned int slot);
 
-        virtual void unbind() const = 0;
+        void unbind() const;
 
         unsigned int getSlot();
         
@@ -24,10 +29,15 @@ namespace engine {
 
         int getHeight();
 
-    protected:
+        static std::shared_ptr<Texture> createTextureFromFile(const std::string& filePath);
+        
+        static std::shared_ptr<Texture> createDepthTexture(int width, int height);
+        
+    private:
 
         unsigned int id, slot = 0;
         int width, height = 0;
+
         
     };
 
