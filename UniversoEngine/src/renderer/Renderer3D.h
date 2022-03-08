@@ -41,15 +41,15 @@ namespace engine {
 
         void drawDirectionalLight(const DirectionalLight& light);
 
-        void drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId);
+        void drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId);
 
-        void drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId);
+        void drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId);
 
-        void destroyStaticMesh(const unsigned int& renderId);
+        void destroyStaticMesh(const uint32_t& renderId);
 
         void clearColor(float r, float g, float b, float a);
 
-        unsigned int getDrawCallsCount();
+        uint32_t getDrawCallsCount();
 
         void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap);
 
@@ -59,17 +59,17 @@ namespace engine {
             Mesh* mesh;
             Material* material;
             glm::mat4 transform;
-            unsigned int renderId;
+            uint32_t renderId;
         };
 
         struct StaticMeshData {
             Mesh* mesh;
             Material* material;
             glm::mat4 transform;
-            unsigned int renderId;
+            uint32_t renderId;
 
             std::vector<Vertex> vertices;
-            std::vector<unsigned int> indices;
+            std::vector<uint32_t> indices;
 
             std::shared_ptr<VertexArray> vertexArray;
             std::shared_ptr<VertexBuffer> vertexBuffer;
@@ -92,7 +92,7 @@ namespace engine {
             float linear;
             float quadratic;
             float farPlane;
-            int cubeMapSlotIndex;
+            int32_t cubeMapSlotIndex;
         };
 
         struct alignas(16) DirectionalLightUniformBufferData {
@@ -101,14 +101,14 @@ namespace engine {
             glm::vec4 ambient;
             glm::vec4 diffuse;
             glm::vec4 specular;
-            int textureSlotIndex;
+            int32_t textureSlotIndex;
         };
 
         struct LightsUniformBufferData {
             PointLightUniformBufferData pointLights[PointLight::maxPointLights];
             DirectionalLightUniformBufferData directionalLights[DirectionalLight::maxDirectionalLights];
-            int numberOfPointLights;
-            int numberOfDirectionalLights;
+            int32_t numberOfPointLights;
+            int32_t numberOfDirectionalLights;
         };
 
         struct CurrentPointLightUniformBufferData {
@@ -133,19 +133,19 @@ namespace engine {
         };
 
         struct DynamicRenderingData {
-            const unsigned int maxVertices = 10000;
-            const unsigned int maxIndices  = 20000;
+            const uint32_t maxVertices = 10000;
+            const uint32_t maxIndices  = 20000;
             
             // current frame data (this data will reset on every frame)
             std::vector<DynamicMeshData> meshDataList;
 
             // current batch data (this data will reset on every new batch)
-            unsigned int vertexCount = 0;
-            unsigned int indexCount  = 0;
+            uint32_t vertexCount = 0;
+            uint32_t indexCount  = 0;
 
-            Vertex* vertices;
-            Vertex* verticesBegin;
-            unsigned int* indices;
+            Vertex* vertices = nullptr;
+            Vertex* verticesBegin = nullptr;
+            uint32_t* indices = nullptr;
 
             VertexArray vertexArray;
             VertexBuffer vertexBuffer{ sizeof(Vertex), maxVertices };
@@ -175,22 +175,22 @@ namespace engine {
             Shader depthCubeMapGeometryShader{ ShaderType::GeometryShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapGeometry.glsl" };
             Shader depthCubeMapFragmentShader{ ShaderType::FragmentShader, std::string(ENGINE_ASSET_DIRECTORY) + "shaders/3d/cubeMapDepthMapFragment.glsl" };
         
-            unsigned int currentTextureSlot;
-            unsigned int currentCubeMapSlot;
-
             // starts on slot 1, 0 is reserved to draw meshes 
-            const unsigned int initialTextureSlot = 1;
-            const unsigned int initialCubeMapSlot = 0;
+            const uint32_t initialTextureSlot = 1;
+            const uint32_t initialCubeMapSlot = 0;
+
+            uint32_t currentTextureSlot = initialTextureSlot;
+            uint32_t currentCubeMapSlot = initialCubeMapSlot;
 
             std::vector<std::shared_ptr<Texture>> boundTextures;
             std::vector<std::shared_ptr<CubeMap>> boundCubeMaps;
         };
 
-        const static unsigned int TEXTURE_SLOT = 0;
+        const static uint32_t TEXTURE_SLOT = 0;
 
         const float NO_TEXTURE_SLOT = -1.0f;
 
-        unsigned int drawCallsCount;
+        uint32_t drawCallsCount;
         
         DynamicRenderingData dynamicRenderingData;
         StaticRenderingData staticRenderingData;

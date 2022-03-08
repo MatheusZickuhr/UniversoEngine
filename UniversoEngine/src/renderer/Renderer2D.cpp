@@ -17,10 +17,10 @@ namespace engine {
         this->vertexBuffer.addAttributePointer(AttriuteType::Vec2, offsetof(QuadVertex, textureCoords));
         this->vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(QuadVertex, textureSlot));
 
-        unsigned int* indices = new unsigned int[maxQuadIndices];
-        unsigned int offset = 0;
+        uint32_t* indices = new uint32_t[maxQuadIndices];
+        uint32_t offset = 0;
 
-        for (int i = 0; i < maxQuadIndices; i += 6) {
+        for (uint32_t i = 0; i < maxQuadIndices; i += 6) {
             indices[i + 0] = offset + 0;
             indices[i + 1] = offset + 1;
             indices[i + 2] = offset + 2;
@@ -30,7 +30,7 @@ namespace engine {
             offset += 4;
         }
 
-        this->indexBuffer.pushData(indices, sizeof(unsigned int) * maxQuadIndices);
+        this->indexBuffer.pushData(indices, sizeof(uint32_t) * maxQuadIndices);
 
         delete[] indices;
 
@@ -48,10 +48,10 @@ namespace engine {
         ASSERT(!this->drawingStarted, "You need to call endFrame before calling startFrame angain");
         drawingStarted = true;
 
-        int currentViewPortWidth = DrawApi::getViewPortWidth();
-        int currentViewPortHeight = DrawApi::getViewPortHeight();
+       int32_t currentViewPortWidth = DrawApi::getViewPortWidth();
+       int32_t currentViewPortHeight = DrawApi::getViewPortHeight();
 
-        CameraUniformBufferData cameraUniformBufferData{ camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight) };
+        CameraUniformBufferData cameraUniformBufferData{ camera.getViewProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight) };
 
         this->cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
     }
@@ -77,22 +77,22 @@ namespace engine {
 
         this->vertices->position = transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
         this->vertices->textureCoords = { 0.0f, 0.0f };
-        this->vertices->textureSlot = texture->getSlot();
+        this->vertices->textureSlot = (float) texture->getSlot();
         this->vertices++;
 
         this->vertices->position = transform * glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
         this->vertices->textureCoords = { 1.0f, 0.0f };
-        this->vertices->textureSlot = texture->getSlot();
+        this->vertices->textureSlot = (float) texture->getSlot();
         this->vertices++;
 
         this->vertices->position = transform * glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
         this->vertices->textureCoords = { 1.0f, 1.0f };
-        this->vertices->textureSlot = texture->getSlot();
+        this->vertices->textureSlot = (float) texture->getSlot();
         this->vertices++;
 
         this->vertices->position = transform * glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
         this->vertices->textureCoords = { 0.0f, 1.0f };
-        this->vertices->textureSlot = texture->getSlot();
+        this->vertices->textureSlot = (float) texture->getSlot();
         this->vertices++;
 
 

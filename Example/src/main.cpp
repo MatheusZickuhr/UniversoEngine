@@ -11,7 +11,7 @@ int main() {
 
 	Application app;
 
-	app.initiliaze<ProceduralTerrainScene>(800, 600, "Example");
+	app.initiliaze<DirectionalLightScene>(800, 600, "Example");
 	app.run();
 	
 	return 0;

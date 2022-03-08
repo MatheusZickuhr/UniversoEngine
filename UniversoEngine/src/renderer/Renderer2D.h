@@ -47,13 +47,13 @@ namespace engine {
             glm::mat4 cameraViewProjection;
         };
 
-        const unsigned int maxQuads        = 100;
-        const unsigned int maxQuadVertices = 4 * maxQuads;
-        const unsigned int maxQuadIndices  = 6 * maxQuads;
+        const uint32_t maxQuads        = 100;
+        const uint32_t maxQuadVertices = 4 * maxQuads;
+        const uint32_t maxQuadIndices  = 6 * maxQuads;
 
         std::vector<Texture*> boundTextures;
 
-        unsigned int currentTextureSlot = 0;
+        uint32_t currentTextureSlot = 0;
 
         QuadVertex* verticesBegin;
         QuadVertex* vertices;
@@ -70,8 +70,8 @@ namespace engine {
 
         bool drawingStarted = false;
 
-        unsigned int vertexCount = 0;
-        unsigned int indexCount =  0;
+        uint32_t vertexCount = 0;
+        uint32_t indexCount =  0;
 
         void performDrawcall();
 

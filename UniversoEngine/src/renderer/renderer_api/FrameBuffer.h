@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "CubeMap.h"
 #include <memory>
+#include <stdint.h>
 
 namespace engine {
 
@@ -28,7 +29,7 @@ namespace engine {
 
 	private:
 
-		unsigned int id;
+		uint32_t id;
 	};
 
 }

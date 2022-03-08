@@ -12,7 +12,7 @@ namespace engine {
 
 	public:
 
-		const static int maxDirectionalLights = 2;
+		const static int32_t maxDirectionalLights = 2;
 
 		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 lookAt = { 0.0f, 0.0f, 0.0f };

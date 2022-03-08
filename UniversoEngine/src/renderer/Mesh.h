@@ -13,19 +13,19 @@ namespace engine {
 
 		Mesh(const std::string& filepath, bool useIndices = true);
 
-		int getVertexCount() { return this->vertices.size(); }
+		uint32_t getVertexCount() { return (uint32_t) this->vertices.size(); }
 
 		const std::vector<Vertex>& getVertices() { return this->vertices; }
 
-		int getIndexCount() { return this->indices.size(); }
+		uint32_t getIndexCount() { return (uint32_t) this->indices.size(); }
 
-		const std::vector<int>& getIndices() { return this->indices; }
+		const std::vector<int32_t>& getIndices() { return this->indices; }
 
 	private:
 		std::vector<Vertex> vertices;
-		std::vector<int> indices;
+		std::vector<int32_t> indices;
 
 
-		int findVertexIndex(Vertex vertex);
+		int32_t findVertexIndex(Vertex vertex);
 	};
 }

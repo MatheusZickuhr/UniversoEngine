@@ -3,25 +3,25 @@
 
 namespace engine {
 
-	IndexBuffer::IndexBuffer(unsigned int* data, unsigned int count) {
+	IndexBuffer::IndexBuffer(uint32_t* data, uint32_t count) {
 		this->count = count;
 		glGenBuffers(1, &this->id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), data, GL_STATIC_DRAW);
 	}
 
-	IndexBuffer::IndexBuffer(unsigned int count) {
+	IndexBuffer::IndexBuffer(uint32_t count) {
 		this->count = count;
 		glGenBuffers(1, &this->id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), nullptr, GL_DYNAMIC_DRAW);
 	}
 
 	IndexBuffer::~IndexBuffer() {
 		glDeleteBuffers(1, &this->id);
 	}
 
-	void IndexBuffer::pushData(unsigned int* data, unsigned int size) {
+	void IndexBuffer::pushData(uint32_t* data, uint32_t size) {
 		this->bind();
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
 	}
@@ -34,7 +34,7 @@ namespace engine {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	unsigned int IndexBuffer::getCount() {
+	uint32_t IndexBuffer::getCount() {
 		return this->count;
 	}
 

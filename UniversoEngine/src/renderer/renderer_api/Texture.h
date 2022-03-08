@@ -9,7 +9,7 @@ namespace engine {
 
     public:
 
-        const static unsigned int MAX_TEXTURES = 16;
+        const static uint32_t MAX_TEXTURES = 16;
         
         Texture();
         
@@ -17,26 +17,26 @@ namespace engine {
 
         ~Texture();
 
-        void bind(unsigned int slot);
+        void bind(uint32_t slot);
 
         void unbind() const;
 
-        unsigned int getSlot();
+        uint32_t getSlot();
         
-        unsigned int getId();
+        uint32_t getId();
 
-        int getWidth();
+        int32_t getWidth();
 
-        int getHeight();
+        int32_t getHeight();
 
         static std::shared_ptr<Texture> createTextureFromFile(const std::string& filePath);
         
-        static std::shared_ptr<Texture> createDepthTexture(int width, int height);
+        static std::shared_ptr<Texture> createDepthTexture(int32_t width, int32_t height);
         
     private:
 
-        unsigned int id, slot = 0;
-        int width, height = 0;
+        uint32_t id, slot;
+        int32_t width, height;
 
         
     };

@@ -30,15 +30,15 @@ namespace engine {
 
 		void setFloatUniform(const std::string& uniformName, const float value);
 
-		void setIntUniform(const std::string& uniformName, const int value);
+		void setIntUniform(const std::string& uniformName, const int32_t value);
 
-		void setIntArrayUniform(const std::string& uniformName, int size, int data[]);
+		void setIntArrayUniform(const std::string& uniformName, int32_t size, int32_t data[]);
 
 	private:
 
-		unsigned int id;
+		uint32_t id;
 		bool linked = false;
 
-		int findUniformLocation(const std::string& uniformName);
+		int32_t findUniformLocation(const std::string& uniformName);
 	};
 }

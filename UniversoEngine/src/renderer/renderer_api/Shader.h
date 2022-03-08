@@ -19,7 +19,7 @@ namespace engine {
 
 		Shader(const Shader& other) = delete;
 
-		unsigned int getId() { return this->id; }
+		uint32_t getId() { return this->id; }
 
 		void addMacroDefinition(const std::string& name, const std::string& value);
 		
@@ -32,7 +32,7 @@ namespace engine {
 			const std::string value;
 		};
 
-		unsigned int id;
+		uint32_t id;
 		bool compiled = false;
 		ShaderType shaderType;
 		std::string sourceCode;

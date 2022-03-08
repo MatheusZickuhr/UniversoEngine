@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 namespace engine {
 
@@ -6,19 +7,19 @@ namespace engine {
 
 	public:
 
-		UniformBuffer(unsigned int bufferSize);
+		UniformBuffer(uint32_t bufferSize);
 
 		UniformBuffer(const UniformBuffer& other) = delete;
 
 		~UniformBuffer();
 
-		void bind(unsigned int slot);
+		void bind(uint32_t slot);
 		
-		void pushData(void* data, unsigned int sizeOfData);
+		void pushData(void* data, uint32_t sizeOfData);
 
 	private:
 
-		unsigned int id;
+		uint32_t id;
 	};
 
 }

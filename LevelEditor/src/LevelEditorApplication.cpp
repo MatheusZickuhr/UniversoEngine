@@ -163,7 +163,7 @@ void LevelEditorApplication::rendererSelectedEntityProperties() {
 			}
 
 			if (ImGui::BeginCombo("RigidBody type", currentSelectedRigidBodyAsString)) {
-				for (int i = 0; i < 2; i++) {
+				for (int32_t i = 0; i < 2; i++) {
 
 					bool isSelected = currentSelectedRigidBodyAsString == rigidBodyTypesAsString[i];
 

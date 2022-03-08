@@ -50,7 +50,7 @@ namespace engine {
 		std::string validFileExtensionsStr;
 		auto validFileExtensionsSize = validFileExtensions.size();
 
-		for (int i = 0; i < validFileExtensionsSize; i++) {
+		for (size_t i = 0; i < validFileExtensionsSize; i++) {
 			validFileExtensionsStr += validFileExtensions[i];
 			if (i + 1 < validFileExtensionsSize)
 				validFileExtensionsStr += " ";

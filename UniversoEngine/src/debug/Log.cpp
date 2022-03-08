@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Log.h"
 #include <iostream>
 #include <filesystem>

@@ -19,7 +19,7 @@ namespace engine {
 			
 			glLinkProgram(this->id);
 			
-			int  success;
+			int32_t  success;
 			char infoLog[512];
 
 			glGetProgramiv(this->id, GL_LINK_STATUS, &success);
@@ -61,17 +61,17 @@ namespace engine {
 		glUniform1f(this->findUniformLocation(uniformName), value);
 	}
 
-	void ShaderProgram::setIntUniform(const std::string& uniformName, const int value) {
+	void ShaderProgram::setIntUniform(const std::string& uniformName, const int32_t value) {
 		this->bind();
 		glUniform1i(this->findUniformLocation(uniformName), value);
 	}
 
-	void ShaderProgram::setIntArrayUniform(const std::string& uniformName, int size, int data[]) {
+	void ShaderProgram::setIntArrayUniform(const std::string& uniformName, int32_t size, int32_t data[]) {
 		this->bind();
 		glUniform1iv(this->findUniformLocation(uniformName), size, data);
 	}
 
-	int ShaderProgram::findUniformLocation(const std::string& uniformName) {
+	int32_t ShaderProgram::findUniformLocation(const std::string& uniformName) {
 		auto uniformLocation = glGetUniformLocation(this->id, uniformName.c_str());
 		ASSERT(uniformLocation != -1, "Cannot find uniform `" + uniformName + "`");
 		return uniformLocation;

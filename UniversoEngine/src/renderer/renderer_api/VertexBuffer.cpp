@@ -3,23 +3,23 @@
 
 namespace engine {
 
-	VertexBuffer::VertexBuffer(unsigned int vertexSize, unsigned int count, void* data) {
+	VertexBuffer::VertexBuffer(uint32_t vertexSize, uint32_t count, void* data) {
 		this->stride = vertexSize;
 
 		glGenBuffers(1, &this->id);
 		glBindBuffer(GL_ARRAY_BUFFER, this->id);
 
-		const unsigned int bufferSize = vertexSize * count;
+		const uint32_t bufferSize = vertexSize * count;
 		glBufferData(GL_ARRAY_BUFFER, bufferSize, data, GL_STATIC_DRAW);
 	}
 
-	VertexBuffer::VertexBuffer(unsigned int vertexSize, unsigned int count) {
+	VertexBuffer::VertexBuffer(uint32_t vertexSize, uint32_t count) {
 		this->stride = vertexSize;
 
 		glGenBuffers(1, &this->id);
 		glBindBuffer(GL_ARRAY_BUFFER, this->id);
 
-		const unsigned int bufferSize = vertexSize * count;
+		const uint32_t bufferSize = vertexSize * count;
 		glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, GL_DYNAMIC_DRAW);
 	}
 
@@ -35,7 +35,7 @@ namespace engine {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void VertexBuffer::addAttributePointer(AttriuteType attriuteType, unsigned int offset) {
+	void VertexBuffer::addAttributePointer(AttriuteType attriuteType, uintptr_t offset) {
 		this->bind();
 
 		switch (attriuteType) {
@@ -56,7 +56,7 @@ namespace engine {
 		this->currentLocation++;
 	}
 
-	void VertexBuffer::pushData(void* data, unsigned int size) {
+	void VertexBuffer::pushData(void* data, uint32_t size) {
 		this->bind();
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}

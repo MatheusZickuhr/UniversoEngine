@@ -22,7 +22,7 @@ namespace engine {
 		void run();
 
 		template<typename T>
-		void initiliaze(float width, float height, const char* windowName) {
+		void initiliaze(int32_t width, int32_t height, const char* windowName) {
 			this->windowWidth = width;
 			this->windowHeight = height;
 			this->windowName = windowName;
@@ -51,7 +51,7 @@ namespace engine {
 	protected:
 		
 		const char* windowName;
-		float windowWidth, windowHeight;
+		int32_t windowWidth, windowHeight;
 		GLFWwindow* window;
 		Scene* currentScene;
 

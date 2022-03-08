@@ -10,7 +10,7 @@
 
 namespace engine {
 
-	void framebufferSizeCallback(GLFWwindow* window, int newWindowWidth, int newWindowHeight) {
+	void framebufferSizeCallback(GLFWwindow* window, int32_t newWindowWidth, int32_t newWindowHeight) {
 		DrawApi::setViewPortSize(newWindowWidth, newWindowHeight);
 	}
 
@@ -25,7 +25,7 @@ namespace engine {
 		float accumulator = 0.0f;
 
 		while (this->isRunning()) {
-			float currentTime = glfwGetTime();
+			float currentTime = (float)glfwGetTime();
 			float deltaTime = currentTime - lastTime;
 			lastTime = currentTime;
 

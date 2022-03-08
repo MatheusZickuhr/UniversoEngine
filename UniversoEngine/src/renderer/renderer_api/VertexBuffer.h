@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h> 
 
 namespace engine {
 
@@ -9,10 +10,10 @@ namespace engine {
 	public:
 
 		// use this contructor for a static buffer
-		VertexBuffer(unsigned int vertexSize, unsigned int count, void* data);
+		VertexBuffer(uint32_t vertexSize, uint32_t count, void* data);
 
 		// use this contructor for a dynamic buffer
-		VertexBuffer(unsigned int vertexSize, unsigned int count);
+		VertexBuffer(uint32_t vertexSize, uint32_t count);
 
 		VertexBuffer(const VertexBuffer& other) = delete;
 
@@ -22,15 +23,13 @@ namespace engine {
 		
 		void unbind();
 
-		void addAttributePointer(AttriuteType attributeType, unsigned int offset);
+		void addAttributePointer(AttriuteType attributeType, uintptr_t offset);
 
-		void pushData(void* data, unsigned int size);
+		void pushData(void* data, uint32_t size);
 
 	private:
 
-		unsigned int id;
-		unsigned int stride;
-		unsigned int currentLocation = 0;
+		uint32_t id, stride, currentLocation = 0;
 	};
 
 

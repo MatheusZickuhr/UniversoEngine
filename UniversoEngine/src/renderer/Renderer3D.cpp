@@ -27,7 +27,7 @@ namespace engine {
 
 		dynamicRenderingData.vertices = new Vertex[dynamicRenderingData.maxVertices];
 		dynamicRenderingData.verticesBegin = dynamicRenderingData.vertices;
-		dynamicRenderingData.indices = new unsigned int[dynamicRenderingData.maxIndices];
+		dynamicRenderingData.indices = new uint32_t[dynamicRenderingData.maxIndices];
 
 		dynamicRenderingData.vertexArray.addVertexBuffer(dynamicRenderingData.vertexBuffer);
 		dynamicRenderingData.vertexArray.addIndexBuffer(dynamicRenderingData.indexBuffer);
@@ -59,7 +59,7 @@ namespace engine {
 		Mesh cubeMesh{ std::string(ENGINE_ASSET_DIRECTORY) + "meshes/cube.obj", false };
 		const std::vector<Vertex>& cubeMeshVertices = cubeMesh.getVertices();
 
-		for (int i = 0; i < cubeMeshVertices.size(); i++)
+		for (size_t i = 0; i < cubeMeshVertices.size(); i++)
 			skyboxVertices[i] = cubeMeshVertices[i].position;
 
 		skyBoxData.vertexBuffer.pushData(skyboxVertices, sizeof(skyboxVertices));
@@ -104,7 +104,7 @@ namespace engine {
 		bindLightingTexture(directionalLight.getDepthTexture());
 	}
 
-	void Renderer3D::drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId) {
+	void Renderer3D::drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId) {
 		
 		dynamicRenderingData.meshDataList.push_back({
 			.mesh = mesh,
@@ -113,7 +113,7 @@ namespace engine {
 			.renderId = renderId});
 	}
 
-	void Renderer3D::drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const unsigned int& renderId) {
+	void Renderer3D::drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId) {
 		StaticMeshData meshData { 
 			.mesh = mesh,
 			.material = material,
@@ -125,28 +125,28 @@ namespace engine {
 			meshData.vertices.push_back(transformedVertex);
 		}
 
-		for (int index : meshData.mesh->getIndices()) {
+		for (int32_t index : meshData.mesh->getIndices()) {
 			meshData.indices.push_back(index);
 		}
 		
 		meshData.vertexArray = std::make_shared<VertexArray>();
-		meshData.vertexBuffer = std::make_shared<VertexBuffer>(sizeof(Vertex), meshData.vertices.size());
+		meshData.vertexBuffer = std::make_shared<VertexBuffer>((uint32_t) sizeof(Vertex), (uint32_t)meshData.vertices.size());
 
 		addDefaultVertexAttributePointers(*meshData.vertexBuffer);
 
-		meshData.indexBuffer = std::make_shared<IndexBuffer>(meshData.indices.size());
+		meshData.indexBuffer = std::make_shared<IndexBuffer>((uint32_t)meshData.indices.size());
 
 		meshData.vertexArray->addVertexBuffer(*meshData.vertexBuffer);
 		meshData.vertexArray->addIndexBuffer(*meshData.indexBuffer);
 
-		meshData.vertexBuffer->pushData(meshData.vertices.data(), sizeof(Vertex) * meshData.vertices.size());
-		meshData.indexBuffer->pushData(meshData.indices.data(), sizeof(unsigned int) * meshData.indices.size());
+		meshData.vertexBuffer->pushData(meshData.vertices.data(), (uint32_t) (sizeof(Vertex) * meshData.vertices.size()));
+		meshData.indexBuffer->pushData(meshData.indices.data(), (uint32_t) (sizeof(uint32_t) * meshData.indices.size()));
 		
 		staticRenderingData.meshDataList.push_back(meshData);
 	}
 
-	void Renderer3D::destroyStaticMesh(const unsigned int& renderId) {
-		int meshDataIndex = 0;
+	void Renderer3D::destroyStaticMesh(const uint32_t& renderId) {
+		size_t meshDataIndex = 0;
 		bool meshDataFound = false;
 
 		for (auto& meshData: this->staticRenderingData.meshDataList) {
@@ -166,7 +166,7 @@ namespace engine {
 		DrawApi::clearColor(r, g, b, a);
 	}
 
-	unsigned int Renderer3D::getDrawCallsCount() { 
+	uint32_t Renderer3D::getDrawCallsCount() { 
 		return this->drawCallsCount;
 	}
 
@@ -188,8 +188,8 @@ namespace engine {
 			DrawApi::clearDepthBuffer();
 			frameBuffer->unbind();
 
-			int currentViewPortWidth = DrawApi::getViewPortWidth();
-			int currentViewPortHeight = DrawApi::getViewPortHeight();
+			int32_t currentViewPortWidth = DrawApi::getViewPortWidth();
+			int32_t currentViewPortHeight = DrawApi::getViewPortHeight();
 
 			auto depthBufferTexture = directionalLight.getDepthTexture();
 			DrawApi::setViewPortSize(depthBufferTexture->getWidth(), depthBufferTexture->getHeight());
@@ -202,7 +202,7 @@ namespace engine {
 
 		// update point lights frame buffers
 		for (auto& pointLight : lightingData.pointLights) {
-			CurrentPointLightUniformBufferData lightData;
+			CurrentPointLightUniformBufferData lightData{};
 
 			lightData.lightPosition = { pointLight.position, 0.0f };
 			lightData.farPlane = pointLight.farPlane;
@@ -216,8 +216,8 @@ namespace engine {
 			DrawApi::clearDepthBuffer();
 			frameBuffer->unbind();
 
-			int currentViewPortWidth = DrawApi::getViewPortWidth();
-			int currentViewPortHeight = DrawApi::getViewPortHeight();
+			int32_t currentViewPortWidth = DrawApi::getViewPortWidth();
+			int32_t currentViewPortHeight = DrawApi::getViewPortHeight();
 
 			auto depthBufferCubeMap = pointLight.getDepthCubeMap();
 			DrawApi::setViewPortSize(depthBufferCubeMap->getWidth(), depthBufferCubeMap->getHeight());
@@ -247,7 +247,7 @@ namespace engine {
 				meshData.material->getTexture()->bind(TEXTURE_SLOT);
 			}
 			meshData.vertexArray->bind();
-			DrawApi::drawWithIdexes(meshData.indices.size());
+			DrawApi::drawWithIdexes((uint32_t)meshData.indices.size());
 		}
 
 	}
@@ -285,7 +285,7 @@ namespace engine {
 				dynamicRenderingData.vertices++;
 			}
 
-			for (int index : meshData.mesh->getIndices()) {
+			for (int32_t index : meshData.mesh->getIndices()) {
 				dynamicRenderingData.indices[dynamicRenderingData.indexCount] = index;
 				dynamicRenderingData.indexCount++;
 			}
@@ -294,7 +294,7 @@ namespace engine {
 			
 			// upload the data to vertex/index buffer in the gpu
 			dynamicRenderingData.vertexBuffer.pushData(dynamicRenderingData.verticesBegin, sizeof(Vertex) * dynamicRenderingData.vertexCount);
-			dynamicRenderingData.indexBuffer.pushData(dynamicRenderingData.indices, sizeof(unsigned int) * dynamicRenderingData.indexCount);
+			dynamicRenderingData.indexBuffer.pushData(dynamicRenderingData.indices, sizeof(uint32_t) * dynamicRenderingData.indexCount);
 
 			DrawApi::drawWithIdexes(dynamicRenderingData.indexCount);
 
@@ -378,14 +378,14 @@ namespace engine {
 
 	void Renderer3D::updateCameraUniformBuffer(Camera& camera) {
 
-		int currentViewPortWidth = DrawApi::getViewPortWidth();
-		int currentViewPortHeight = DrawApi::getViewPortHeight();
+		int32_t currentViewPortWidth = DrawApi::getViewPortWidth();
+		int32_t currentViewPortHeight = DrawApi::getViewPortHeight();
 
-		CameraUniformBufferData cameraUniformBufferData;
+		CameraUniformBufferData cameraUniformBufferData{};
 
-		cameraUniformBufferData.viewProjectionMatrix = camera.getViewProjectionMatrix(currentViewPortWidth, currentViewPortHeight);
+		cameraUniformBufferData.viewProjectionMatrix = camera.getViewProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight);
 		cameraUniformBufferData.viewMatrix = camera.getViewMatrix();
-		cameraUniformBufferData.projectionMatrix = camera.getProjectionMatrix(currentViewPortWidth, currentViewPortHeight);
+		cameraUniformBufferData.projectionMatrix = camera.getProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight);
 		cameraUniformBufferData.position = camera.position;
 
 		cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
@@ -393,13 +393,13 @@ namespace engine {
 
 	void Renderer3D::updateLightsUniformBuffers() {
 		// update lights uniform buffer
-		LightsUniformBufferData lightsUniformBufferData;
+		LightsUniformBufferData lightsUniformBufferData{};
 
-		lightsUniformBufferData.numberOfPointLights = lightingData.pointLights.size();
-		lightsUniformBufferData.numberOfDirectionalLights = lightingData.directionalLights.size();
+		lightsUniformBufferData.numberOfPointLights = (int32_t)lightingData.pointLights.size();
+		lightsUniformBufferData.numberOfDirectionalLights = (int32_t)lightingData.directionalLights.size();
 
-		for (int i = 0; i < lightingData.pointLights.size(); i++) {
-			PointLightUniformBufferData pointLightData;
+		for (size_t i = 0; i < lightingData.pointLights.size(); i++) {
+			PointLightUniformBufferData pointLightData{};
 			pointLightData.position = { lightingData.pointLights[i].position, 0.0f };
 			pointLightData.ambient = { lightingData.pointLights[i].ambient, 0.0f };
 			pointLightData.diffuse = { lightingData.pointLights[i].diffuse, 0.0f };
@@ -413,10 +413,10 @@ namespace engine {
 			lightsUniformBufferData.pointLights[i] = pointLightData;
 		}
 
-		for (int i = 0; i < lightingData.directionalLights.size(); i++) {
+		for (size_t i = 0; i < lightingData.directionalLights.size(); i++) {
 			DirectionalLight& directionalLight = lightingData.directionalLights[i];
 
-			DirectionalLightUniformBufferData directionalLightData;
+			DirectionalLightUniformBufferData directionalLightData{};
 			directionalLightData.position = {directionalLight.position, 0.0f};
 			directionalLightData.ambient = { directionalLight.ambient, 0.0f };
 			directionalLightData.diffuse = { directionalLight.diffuse, 0.0f };

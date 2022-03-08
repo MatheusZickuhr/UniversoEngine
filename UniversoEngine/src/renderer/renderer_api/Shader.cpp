@@ -69,7 +69,7 @@ namespace engine {
 		glCompileShader(this->id);
 
 		// check for compile errors
-		int  success;
+		int32_t  success;
 		char infoLog[512];
 		glGetShaderiv(this->id, GL_COMPILE_STATUS, &success);
 

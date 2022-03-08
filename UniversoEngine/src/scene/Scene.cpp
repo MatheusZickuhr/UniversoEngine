@@ -80,7 +80,7 @@ namespace engine {
 						meshComp.mesh,
 						materialComp.material,
 						transComp.transform.getTransformMatrix(),
-						(unsigned int)entity);
+						(uint32_t)entity);
 				}
 			}
 		this->renderer3d.endFrame();
@@ -136,7 +136,7 @@ namespace engine {
 	}
 
 	void Scene::destroyEntity(Entity* toBeDestroyedEntity) {
-		int entityIndex = 0;
+		size_t entityIndex = 0;
 		bool entityFound = false;
 
 		for (Entity* entity : this->entities) {
@@ -163,7 +163,7 @@ namespace engine {
 			meshComp.mesh,
 			materialComp.material,
 			transComp.transform.getTransformMatrix(),
-			(unsigned int)entity);
+			(uint32_t)entity);
 	}
 
 	void Scene::onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity) {
@@ -201,20 +201,20 @@ namespace engine {
 	}
 
 	void Scene::onStaticMeshComponentDestroyed(entt::registry& registry, entt::entity entity) {
-		this->renderer3d.destroyStaticMesh((unsigned int) entity);
+		this->renderer3d.destroyStaticMesh((uint32_t) entity);
 	}
 
 	std::string Scene::generateUuid() {
 		static std::random_device randomDevice;
 		static std::mt19937 mt(randomDevice());
 
-		std::uniform_int_distribution<int> uniformIntDistribution(0, 15);
+		std::uniform_int_distribution<int32_t> uniformIntDistribution(0, 15);
 
 		const char* hexDigits = "0123456789abcdef";
 
 		std::string uuid = "00000000-0000-0000-0000-000000000000";
 
-		for (int i = 0; i < uuid.size(); i++) {
+		for (size_t i = 0; i < uuid.size(); i++) {
 			if (uuid[i] != '-') {
 				uuid[i] = hexDigits[uniformIntDistribution(mt)];
 			}

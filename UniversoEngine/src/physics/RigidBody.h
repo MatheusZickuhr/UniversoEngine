@@ -2,8 +2,9 @@
 
 #include <glm/glm.hpp>
 #include "../math/Transform.h"
+#pragma warning(push, 0)        
 #include <reactphysics3d/reactphysics3d.h>
-
+#pragma warning(pop)
 namespace engine {
 	
 	enum class CollisionShape { Box, Sphere, Capsule };

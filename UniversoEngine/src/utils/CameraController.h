@@ -17,7 +17,7 @@ namespace engine {
 	private:
 
 		Camera& camera;
-		float movementSpeed = 2.5f;
+		float movementSpeed = 20.0f;
 		float mouseSensitivity = 0.1f;
 		float xlast = 0;
 		float ylast = 0;

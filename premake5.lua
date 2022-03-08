@@ -4,6 +4,8 @@ workspace "UniversoEngine"
 
 	flags { "MultiProcessorCompile" }
 
+	linkoptions { "-IGNORE:4099" }
+
 	defines { "ENGINE_ASSET_DIRECTORY=\"UniversoEngine/resources/\"" }
 
 	filter "configurations:Debug"

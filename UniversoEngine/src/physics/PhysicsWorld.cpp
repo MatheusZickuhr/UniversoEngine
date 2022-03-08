@@ -33,7 +33,7 @@ namespace engine {
 	void PhysicsWorld::destroyRigidBody(RigidBody* toBeDestroyedRigidBody) {
 		this->physicsWorld->destroyRigidBody(toBeDestroyedRigidBody->rigidBodyPtr);
 
-		int index = 0;
+		size_t index = 0;
 		bool rigidBodyFound = false;
 
 		for (RigidBody* rigidBody : this->rigidBodies) {

@@ -32,24 +32,24 @@ namespace engine {
 		glDebugMessageCallback(GLDebugMessageCallback, NULL);
 	}
 
-	void DrawApi::drawWithIdexes(unsigned int IndexCount) {
+	void DrawApi::drawWithIdexes(uint32_t IndexCount) {
 		glDrawElements(GL_TRIANGLES, IndexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
-	void DrawApi::draw(unsigned int vertexCount) {
+	void DrawApi::draw(uint32_t vertexCount) {
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 	}
 
-	void DrawApi::setViewPortSize(float width, float height) { glViewport(0, 0, width, height); }
+	void DrawApi::setViewPortSize(int32_t width, int32_t height) { glViewport(0, 0, width, height); }
 
-	int DrawApi::getViewPortWidth() {
+	int32_t DrawApi::getViewPortWidth() {
 		GLint viewport[4];
 
 		glGetIntegerv(GL_VIEWPORT, viewport);
 		return viewport[2];
 	}
 
-	int DrawApi::getViewPortHeight() {
+	int32_t DrawApi::getViewPortHeight() {
 		GLint viewport[4];
 
 		glGetIntegerv(GL_VIEWPORT, viewport);

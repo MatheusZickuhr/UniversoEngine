@@ -4,7 +4,9 @@
 
 // uncomment this for output
 //#define OBJL_CONSOLE_OUTPUT
+#pragma warning(push, 0)        
 #include "OBJ_Loader/OBJ_Loader.h"
+#pragma warning(pop)
 
 #include "../debug/Assert.h"
 
@@ -31,11 +33,11 @@ namespace engine {
 			}
 
 			// add only unique vertices to the vertex list
-			int vertexIndex = this->findVertexIndex(myVertex);
+			int32_t vertexIndex = this->findVertexIndex(myVertex);
 
 			if (vertexIndex == -1) {
 				this->vertices.push_back(myVertex);
-				this->indices.push_back(this->vertices.size() - 1);
+				this->indices.push_back((int32_t)(this->vertices.size() - 1));
 			}
 			else {
 				this->indices.push_back(vertexIndex);
@@ -43,8 +45,8 @@ namespace engine {
 		}
 	}
 
-	int Mesh::findVertexIndex(Vertex vertex) {
-		for (int i = 0; i < vertices.size(); i++) {
+	int32_t Mesh::findVertexIndex(Vertex vertex) {
+		for (int32_t i = 0; i < (int32_t) vertices.size(); i++) {
 			if (vertex.position == vertices[i].position
 				&& vertex.textureCoords == vertices[i].textureCoords
 				&& vertex.normal == vertices[i].normal) {

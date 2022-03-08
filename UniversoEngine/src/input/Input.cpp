@@ -8,8 +8,11 @@ namespace engine {
 		window = windowInstance;
 	}
 
-	void Input::getCursorPos(double* xpos, double* ypos) {
-		glfwGetCursorPos(window, xpos, ypos);
+	void Input::getCursorPos(float* xpos, float* ypos) {
+		double xposAsdouble, yposAsDouble;
+		glfwGetCursorPos(window, &xposAsdouble, &yposAsDouble);
+		*xpos = (float)xposAsdouble;
+		*ypos = (float)yposAsDouble;
 	}
 
 	bool Input::keyPressed(char key) {

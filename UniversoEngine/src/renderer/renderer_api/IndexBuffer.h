@@ -1,30 +1,32 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace engine {
 
 	class IndexBuffer {
 
 	public:
 
-		IndexBuffer(unsigned int* data, unsigned int count);
+		IndexBuffer(uint32_t* data, uint32_t count);
 
-		IndexBuffer(unsigned int count);
+		IndexBuffer(uint32_t count);
 
 		IndexBuffer(const IndexBuffer& other) = delete;
 
 		~IndexBuffer();
 		
-		void pushData(unsigned int* data, unsigned int size);
+		void pushData(uint32_t* data, uint32_t size);
 
 		void bind();
 
 		void unbind();
 
-		unsigned int getCount();
+		uint32_t getCount();
 
 	private:
 
-		unsigned int id;
-		unsigned int count;
+		uint32_t id;
+		uint32_t count;
 	};
 }

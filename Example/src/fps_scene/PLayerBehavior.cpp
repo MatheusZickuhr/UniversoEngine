@@ -41,7 +41,7 @@ void PlayerBehavior::processKeybordInput(float deltaTime) {
 }
 
 void PlayerBehavior::processMouseInput() {
-    double xpos, ypos;
+    float xpos, ypos;
     Input::getCursorPos(&xpos, &ypos);
 
     if (firstMouse) {

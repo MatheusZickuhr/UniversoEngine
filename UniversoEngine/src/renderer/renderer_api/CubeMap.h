@@ -9,7 +9,7 @@ namespace engine {
 
 	public:
 
-		const static unsigned int MAX_CUBEMAPS = 16;
+		const static uint32_t MAX_CUBEMAPS = 16;
 
 		CubeMap();
 
@@ -17,26 +17,26 @@ namespace engine {
 
 		~CubeMap();
 
-		void bind(unsigned int slot);
+		void bind(uint32_t slot);
 
 		void unbind() const;
 
-		unsigned int getId();
+		uint32_t getId();
 
-		int getWidth();
+		int32_t getWidth();
 
-		int getHeight();
+		int32_t getHeight();
 
-		unsigned int getSlot();
+		uint32_t getSlot();
 
 		static std::shared_ptr<CubeMap> createCubeMapFromFile(const std::vector<std::string>& filepaths);
 		
-		static std::shared_ptr<CubeMap> createDepthCubeMap(int width, int height);
+		static std::shared_ptr<CubeMap> createDepthCubeMap(int32_t width, int32_t height);
 
 	private:
 
-		unsigned int id, slot = 0;
-		int width, height = 0;
+		uint32_t id, slot = 0;
+		int32_t width, height = 0;
 
 	};
 }

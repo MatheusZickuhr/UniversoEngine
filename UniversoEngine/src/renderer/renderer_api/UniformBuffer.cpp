@@ -4,7 +4,7 @@
 
 namespace engine {
 
-	UniformBuffer::UniformBuffer(unsigned int bufferSize) {
+	UniformBuffer::UniformBuffer(uint32_t bufferSize) {
 		glGenBuffers(1, &this->id);
 		glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 		glBufferData(GL_UNIFORM_BUFFER, bufferSize, NULL, GL_DYNAMIC_DRAW);
@@ -15,11 +15,11 @@ namespace engine {
 		glDeleteBuffers(1, &this->id);
 	}
 
-	void UniformBuffer::bind(unsigned int slot) {
+	void UniformBuffer::bind(uint32_t slot) {
 		glBindBufferBase(GL_UNIFORM_BUFFER, slot, this->id);
 	}
 
-	void UniformBuffer::pushData(void* data, unsigned int sizeOfData) {
+	void UniformBuffer::pushData(void* data, uint32_t sizeOfData) {
 		glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 		// offset, size, data
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeOfData, data);

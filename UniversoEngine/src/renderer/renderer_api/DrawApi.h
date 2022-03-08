@@ -13,15 +13,15 @@ namespace engine {
 
 		static void initDebugMode();
 
-		static void drawWithIdexes(unsigned int IndexCount);
+		static void drawWithIdexes(uint32_t IndexCount);
 
-		static void draw(unsigned int vertexCount);
+		static void draw(uint32_t vertexCount);
 
-		static void setViewPortSize(float width, float height);
+		static void setViewPortSize(int32_t width, int32_t height);
 
-		static int getViewPortWidth();
+		static int32_t getViewPortWidth();
 		
-		static int getViewPortHeight();
+		static int32_t getViewPortHeight();
 
 		static void clearColor(float r, float g, float b, float a);
 

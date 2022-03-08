@@ -17,7 +17,7 @@ namespace engine {
 
 		static void init(GLFWwindow* windowInstance);
 
-		static void getCursorPos(double* xpos, double* ypos);
+		static void getCursorPos(float* xpos, float* ypos);
 
 		static bool keyPressed(char key);
 

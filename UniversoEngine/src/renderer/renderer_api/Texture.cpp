@@ -5,7 +5,7 @@
 #include "../../debug/Assert.h"
 
 namespace engine {
-	Texture::Texture() {
+	Texture::Texture() : id(0), slot(0), width(0), height(0) {
 	}
 
 	Texture::~Texture() {
@@ -18,8 +18,8 @@ namespace engine {
 
 		stbi_set_flip_vertically_on_load(1);
 
-		int width, height, channelsInFile = 0;
-		unsigned int textureId = 0;
+		int32_t width, height, channelsInFile = 0;
+		uint32_t textureId = 0;
 
 		unsigned char* localBuffer = stbi_load(filePath.c_str(), &width, &height, &channelsInFile, 4);
 
@@ -45,8 +45,8 @@ namespace engine {
 		return texture;
 	}
 
-	std::shared_ptr<Texture> Texture::createDepthTexture(int width, int height) {
-		unsigned int textureId = 0;
+	std::shared_ptr<Texture> Texture::createDepthTexture(int32_t width, int32_t height) {
+		uint32_t textureId = 0;
 
 		glGenTextures(1, &textureId);
 		glBindTexture(GL_TEXTURE_2D, textureId);
@@ -68,7 +68,7 @@ namespace engine {
 		return texture;
 	}
 	
-	void Texture::bind(unsigned int slot) {
+	void Texture::bind(uint32_t slot) {
 		this->slot = slot;
 		glActiveTexture(GL_TEXTURE0 + this->slot);
 		glBindTexture(GL_TEXTURE_2D, this->id);
@@ -78,19 +78,19 @@ namespace engine {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	unsigned int Texture::getSlot() {
+	uint32_t Texture::getSlot() {
 		return this->slot;
 	}
 
-	unsigned int Texture::getId() {
+	uint32_t Texture::getId() {
 		return this->id;
 	}
 
-	int Texture::getWidth() {
+	int32_t Texture::getWidth() {
 		return width;
 	}
 
-	int Texture::getHeight() {
+	int32_t Texture::getHeight() {
 		return height;
 	}
 

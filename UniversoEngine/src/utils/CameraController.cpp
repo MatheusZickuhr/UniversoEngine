@@ -28,7 +28,7 @@ namespace engine {
 	}
 
 	void CameraController::processMouseInput() {
-		double xcurrent, ycurrent;
+		float xcurrent, ycurrent;
 		Input::getCursorPos(&xcurrent, &ycurrent);
 
 		if (isFirstMouseMovement) {
