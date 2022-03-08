@@ -125,7 +125,7 @@ namespace engine {
 			meshData.vertices.push_back(transformedVertex);
 		}
 
-		for (int32_t index : meshData.mesh->getIndices()) {
+		for (uint32_t index : meshData.mesh->getIndices()) {
 			meshData.indices.push_back(index);
 		}
 		
@@ -285,7 +285,7 @@ namespace engine {
 				dynamicRenderingData.vertices++;
 			}
 
-			for (int32_t index : meshData.mesh->getIndices()) {
+			for (uint32_t index : meshData.mesh->getIndices()) {
 				dynamicRenderingData.indices[dynamicRenderingData.indexCount] = index;
 				dynamicRenderingData.indexCount++;
 			}

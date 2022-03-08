@@ -19,13 +19,13 @@ namespace engine {
 
 		uint32_t getIndexCount() { return (uint32_t) this->indices.size(); }
 
-		const std::vector<int32_t>& getIndices() { return this->indices; }
+		const std::vector<uint32_t>& getIndices() { return this->indices; }
 
 	private:
 		std::vector<Vertex> vertices;
-		std::vector<int32_t> indices;
+		std::vector<uint32_t> indices;
 
 
-		int32_t findVertexIndex(Vertex vertex);
+		uint32_t findVertexIndex(Vertex vertex);
 	};
 }

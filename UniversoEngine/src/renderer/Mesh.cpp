@@ -33,27 +33,26 @@ namespace engine {
 			}
 
 			// add only unique vertices to the vertex list
-			int32_t vertexIndex = this->findVertexIndex(myVertex);
+			uint32_t vertexIndex = this->findVertexIndex(myVertex);
 
-			if (vertexIndex == -1) {
+			// if is a new vertex
+			if (vertexIndex == (uint32_t)vertices.size()) {
 				this->vertices.push_back(myVertex);
-				this->indices.push_back((int32_t)(this->vertices.size() - 1));
 			}
-			else {
-				this->indices.push_back(vertexIndex);
-			}
+
+			this->indices.push_back(vertexIndex);	
 		}
 	}
 
-	int32_t Mesh::findVertexIndex(Vertex vertex) {
-		for (int32_t i = 0; i < (int32_t) vertices.size(); i++) {
+	uint32_t Mesh::findVertexIndex(Vertex vertex) {
+		for (uint32_t i = 0; i < (uint32_t) vertices.size(); i++) {
 			if (vertex.position == vertices[i].position
 				&& vertex.textureCoords == vertices[i].textureCoords
 				&& vertex.normal == vertices[i].normal) {
 				return i;
 			}
 		}
-		return -1;
+		return (uint32_t) vertices.size();
 	}
 
 }
