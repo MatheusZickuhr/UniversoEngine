@@ -2,13 +2,13 @@
 
 
 void PlayerBehavior::onStart() {
-    camera = &entity->getScene()->getCamera();
+    camera = &entity.getScene()->getCamera();
     this->movementSpeed = 500.0f;
     this->mouseSensitivity = 0.1f;
 }
 
 void PlayerBehavior::onUpdate(float deltaTime) {
-    auto& transformComponent = entity->getComponent<TransformComponent>();
+    auto& transformComponent = entity.getComponent<TransformComponent>();
     this->camera->position = transformComponent.transform.position;
     this->camera->position.y += 2;
 
@@ -17,25 +17,25 @@ void PlayerBehavior::onUpdate(float deltaTime) {
 }
 
 void PlayerBehavior::processKeybordInput(float deltaTime) {
-    auto& rigidBodyComponent = entity->getComponent<RigidBodyComponent>();
+    auto& rigidBodyComponent = entity.getComponent<RigidBodyComponent>();
 
     glm::vec3 frontDirection = this->movementSpeed * deltaTime * camera->front;
     frontDirection.y = 0;
     glm::vec3 rightDirection = this->movementSpeed * deltaTime * camera->right;
     rightDirection.y = 0;
 
-    if (Input::keyPressed('W'))
+    if (Input::keyPressed(Input::KEY_W))
         rigidBodyComponent.rigidBody->apllyForce(frontDirection);
-    if (Input::keyPressed('S'))
+    if (Input::keyPressed(Input::KEY_S))
         rigidBodyComponent.rigidBody->apllyForce(-frontDirection);
-    if (Input::keyPressed('D'))
+    if (Input::keyPressed(Input::KEY_D))
         rigidBodyComponent.rigidBody->apllyForce(rightDirection);
-    if (Input::keyPressed('A'))
+    if (Input::keyPressed(Input::KEY_A))
         rigidBodyComponent.rigidBody->apllyForce(-rightDirection);
 
 
     glm::vec3 jumpForce = {0.0f, 15.0f, 0.0f};
-    if (Input::keyPressed('F')){
+    if (Input::keyPressed(Input::KEY_F)){
         rigidBodyComponent.rigidBody->apllyForce(jumpForce);
     }
 }

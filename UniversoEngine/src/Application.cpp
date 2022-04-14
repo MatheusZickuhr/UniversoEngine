@@ -106,7 +106,7 @@ namespace engine {
 		glfwMakeContextCurrent(this->window);
 		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 
 		const bool gladLoaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		

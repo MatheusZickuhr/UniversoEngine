@@ -6,6 +6,9 @@ namespace engine {
 	class Math {
 
 	public:
+
+		const static float PI;
+
 		static double perlinNoise2D(double x, double y);
 
 		static void reseedPerlinNoise(std::uint32_t seed);

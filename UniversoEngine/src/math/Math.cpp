@@ -3,6 +3,8 @@
 
 namespace engine {
 	
+	const float Math::PI = 3.1415926f;
+
 	static siv::PerlinNoise perlin;
 	
 	double Math::perlinNoise2D(double x, double y) {

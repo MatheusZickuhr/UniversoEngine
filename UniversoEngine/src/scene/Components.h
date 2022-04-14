@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "../physics/RigidBody.h"
+#include "../physics/CollisionBody.h"
 
 #include "../renderer/renderer_api/Texture.h"
 #include "../renderer/Material.h"
@@ -46,18 +47,29 @@ namespace engine {
         RigidBody* rigidBody;
     };
 
+    struct CollisionBodyComponent {
+        CollisionBody* collisionBody;
+    };
+
     struct TransformComponent {
         Transform transform;
     };
 
     struct BehaviorComponent {
-        Entity* entity;
+        Entity entity;
+        Scene* scene;
         Behavior* behavior;
 
         template<typename T>
         void bindBehavior() {
-            behavior = new T(entity);
+            behavior = new T(entity, scene);
         }
+
+        template<typename T>
+        T* getBehaviorInstance() {
+            return static_cast<T*>(behavior);
+        }
+
 
         // free the allocated memory
         void destroy() {

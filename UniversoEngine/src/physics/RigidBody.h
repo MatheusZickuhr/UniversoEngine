@@ -5,10 +5,11 @@
 #pragma warning(push, 0)        
 #include <reactphysics3d/reactphysics3d.h>
 #pragma warning(pop)
+
+#include "CollisionShape.h"
+
 namespace engine {
 	
-	enum class CollisionShape { Box, Sphere, Capsule };
-
 	enum class RigidBodyType { Dynamic , Static, Kinematic };
 
 	class RigidBody {
@@ -16,6 +17,8 @@ namespace engine {
 		friend class PhysicsWorld;
 
 	private:
+
+		RigidBodyType rigidBodyType;
 
 		reactphysics3d::PhysicsCommon* physicsCommon;
 		reactphysics3d::RigidBody* rigidBodyPtr;
@@ -33,7 +36,11 @@ namespace engine {
 
 		void setRigidBodyType(RigidBodyType rigidBodyType);
 
-		void apllyForce(glm::vec3 force);
+		void apllyForce(const glm::vec3& force);
+		
+		void setTransform(const Transform& transform);
+
+		RigidBodyType getRigidBodyType() { return this->rigidBodyType;  }
 
 	};
 

@@ -41,9 +41,9 @@ void ProceduralTerrainScene::onStart() {
     // sun light
     {
         auto directionalLight = createEntity();
-        directionalLight->addComponent<DirectionalLightComponent>();
-        directionalLight->addComponent<TransformComponent>();
-        auto& transComp = directionalLight->getComponent<TransformComponent>();
+        directionalLight.addComponent<DirectionalLightComponent>();
+        directionalLight.addComponent<TransformComponent>();
+        auto& transComp = directionalLight.getComponent<TransformComponent>();
         transComp.transform.position = { -1.0f, 4.0f, -1.0f };
     }
 }
@@ -83,12 +83,12 @@ void ProceduralTerrainScene::spawnChunk(Chunk& chunk) {
 
             // create the box entity
             auto box = createEntity();
-            box->addComponent<MaterialComponent>(&boxMaterial);
-            box->addComponent<TransformComponent>();
-            auto& boxTransformComponent = box->getComponent<TransformComponent>();
+            box.addComponent<MaterialComponent>(&boxMaterial);
+            box.addComponent<TransformComponent>();
+            auto& boxTransformComponent = box.getComponent<TransformComponent>();
             float y = Math::map(Math::perlinNoise2D(x / 200.0f, z / 200.0f), 0.0f, 1.0f, -15.0f, 15.0f);
             boxTransformComponent.transform.position = { x, round(y) * 2.0f, z };
-            box->addComponent<StaticMeshComponent>(&boxMesh);
+            box.addComponent<StaticMeshComponent>(&boxMesh);
 
             // add to the chunk
             chunk.entities.push_back(box);
@@ -97,7 +97,7 @@ void ProceduralTerrainScene::spawnChunk(Chunk& chunk) {
 }
 
 void ProceduralTerrainScene::despawnChunk(Chunk& chunk) {
-    for (Entity* entity : chunk.entities) {
+    for (Entity& entity : chunk.entities) {
         destroyEntity(entity);
     }
     chunk.entities.clear();

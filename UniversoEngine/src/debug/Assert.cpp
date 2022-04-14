@@ -14,6 +14,7 @@ namespace engine {
 			std::cerr << std::format("Attempted to use a non existing file {} in {} line {}",
 				filePath, file, line) << std::endl;
 
+			__debugbreak();
 			std::terminate();
 		}
 	}
@@ -29,6 +30,7 @@ namespace engine {
 			std::cerr << std::format("Assertion `{}` failed with error messege `{}` in {} line {}",
 				conditionStr, message, file, line) << std::endl;
 
+			__debugbreak();
 			std::terminate();
 		}
 	}
@@ -41,7 +43,7 @@ namespace engine {
 
 		std::string fileExtension = std::filesystem::path(filePath).extension().string();
 
-		for (auto validFileExtension : validFileExtensions) {
+		for (auto& validFileExtension : validFileExtensions) {
 			if (fileExtension == validFileExtension) {
 				return;
 			}
@@ -60,8 +62,8 @@ namespace engine {
 			"Attempted to use file {} in {} line {} with an invalid extension {}, the valid extensions are {}",
 			filePath, file, line, fileExtension, validFileExtensionsStr) << std::endl;
 
+		__debugbreak();
 		std::terminate();
-
 	}
 
 #endif

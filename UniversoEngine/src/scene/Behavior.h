@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "Scene.h"
 
 namespace engine {
 
@@ -7,14 +8,18 @@ namespace engine {
     private:
         bool initialized;
     protected:
-        Entity* entity;
+        Entity entity;
+        Scene* scene;
+
 
     public:
-        Behavior(Entity* entity) : entity(entity), initialized(false) {}
+        Behavior(Entity entity, Scene* scene) : entity(entity), scene(scene), initialized(false) {}
         
         void initialize();
 
         bool isInitialized();
+
+        virtual void onCollision(Entity other) {}
 
         virtual void onUpdate(float deltaTime) = 0;
 

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <optional>
 
 #include <entt/entt.hpp>
 
@@ -37,14 +38,14 @@ namespace engine {
 		Camera& getCamera();
 
 		entt::registry& getRegistry();
+		
+		Entity createEntity();
 
+		void destroyEntity(Entity& entity);
+	
 	protected:
 
 		Camera camera;
-
-		Entity* createEntity();
-
-		void destroyEntity(Entity* entity);
 
 		void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) { this->renderer3d.setSkyBoxCubeMap(skyBoxCubeMap); }
 
@@ -54,13 +55,18 @@ namespace engine {
 		Renderer3D renderer3d;
 		Renderer2D renderer2d;
 		entt::registry registry;
-		std::vector<Entity*> entities;
+
+		std::optional<Entity> findEntityByCollisionBody(CollisionBody* collisionBody);
 
 		void onStaticMeshComponentCreated(entt::registry& registry, entt::entity entity);
 
 		void onRigidBodyComponentCreated(entt::registry& registry, entt::entity entity);
 
 		void onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity);
+
+		void onCollisionBodyComponentCreated(entt::registry& registry, entt::entity entity);
+
+		void onCollisionBodyComponentDestroyed(entt::registry& registry, entt::entity entity);
 
 		void onBehaviorComponentDestroyed(entt::registry& registry, entt::entity entity);
 

@@ -19,6 +19,12 @@ namespace engine {
 		this->registry.on_destroy<RigidBodyComponent>()
 			.connect<&Scene::onRigidBodyComponentDestroyed>(this);
 
+		this->registry.on_construct<CollisionBodyComponent>()
+			.connect<&Scene::onCollisionBodyComponentCreated>(this);
+
+		this->registry.on_destroy<CollisionBodyComponent>()
+			.connect<&Scene::onCollisionBodyComponentDestroyed>(this);
+
 		this->registry.on_destroy<BehaviorComponent>()
 			.connect<&Scene::onBehaviorComponentDestroyed>(this);
 
@@ -28,11 +34,6 @@ namespace engine {
 
 	Scene::~Scene() {
 		delete this->physicsWorld;
-
-		for (Entity* entity : entities) {
-			delete entity;
-		}
-		entities.clear();
 	}
 
 	void Scene::onStartCallBack() {
@@ -108,16 +109,54 @@ namespace engine {
 
 	void Scene::updatePhysics(float timeInterpolationFactor) {
 
-		auto view = this->registry.view<RigidBodyComponent, TransformComponent>();
-		
-		for (auto [entity, rbComp, transComp] : view.each()) {
-			// perform transform interpolation
-			Transform interpolatedTransform = rbComp.rigidBody->getInterpolatedTranform(timeInterpolationFactor);
+		// handle CollisionBodies
+		{
 
-			// update the transform component
-			transComp.transform.position = interpolatedTransform.position;
-			transComp.transform.rotation = interpolatedTransform.rotation;
+			auto view = this->registry.view<CollisionBodyComponent, TransformComponent>();
+			for (auto [entity, cbComp, transComp] : view.each()) {
+				cbComp.collisionBody->setTransform(transComp.transform);
+
+				std::optional<Entity> entityOptional = findEntityByCollisionBody(cbComp.collisionBody);
+				
+				if (!entityOptional.has_value()) {
+					continue;
+				}
+
+				std::vector<CollisionBody*> collidingRigidBodies = physicsWorld->getCollidingBodies(cbComp.collisionBody);
+
+				for (CollisionBody* collisionBody : collidingRigidBodies) {
+					std::optional<Entity> otherEntityOptional = findEntityByCollisionBody(collisionBody);
+
+					if (entityOptional.value().hasComponent<BehaviorComponent>()) {
+						entityOptional.value().getComponent<BehaviorComponent>().behavior->onCollision(otherEntityOptional.value());
+					}
+
+				}
+			}
+
+		} 
+		
+		// handle RigidBodies
+		{
+
+			auto view = this->registry.view<RigidBodyComponent, TransformComponent>();
+
+			for (auto [entity, rbComp, transComp] : view.each()) {
+				if (rbComp.rigidBody->getRigidBodyType() == RigidBodyType::Static) {
+					rbComp.rigidBody->setTransform(transComp.transform);
+				}
+				else {
+					// perform transform interpolation
+					Transform interpolatedTransform = rbComp.rigidBody->getInterpolatedTranform(timeInterpolationFactor);
+
+					// update the transform component
+					transComp.transform.position = interpolatedTransform.position;
+					transComp.transform.rotation = interpolatedTransform.rotation;
+				}
+			}
+		
 		}
+
 	}
 
 	Camera& Scene::getCamera() {
@@ -128,29 +167,25 @@ namespace engine {
 		return this->registry;
 	} 
 
-	Entity* Scene::createEntity() {
+	Entity Scene::createEntity() {
 		entt::entity enttEntity = this->registry.create();
-		Entity* entity = new Entity{ enttEntity, this };
-		this->entities.push_back(entity);
+		Entity entity { enttEntity, this };
 		return entity;
 	}
 
-	void Scene::destroyEntity(Entity* toBeDestroyedEntity) {
-		size_t entityIndex = 0;
-		bool entityFound = false;
+	void Scene::destroyEntity(Entity& toBeDestroyedEntity) {
+		this->registry.destroy(toBeDestroyedEntity.enttEntity);
+	}
 
-		for (Entity* entity : this->entities) {
-			if (toBeDestroyedEntity == entity) {
-				entityFound = true;
-				break;
+	std::optional<Entity> Scene::findEntityByCollisionBody(CollisionBody* collisionBody) {
+		auto view = this->registry.view<CollisionBodyComponent>();
+		for (auto [entity, collisionBodyComponent] : view.each()) {
+			if (collisionBodyComponent.collisionBody == collisionBody) {
+				return { Entity{ entity, this } };
 			}
-			entityIndex++;
 		}
-
-		if (entityFound) {
-			this->entities.erase(this->entities.begin() + entityIndex);
-			this->registry.destroy(toBeDestroyedEntity->enttEntity);
-		}
+		
+		return std::nullopt;
 	}
 
 	void Scene::onStaticMeshComponentCreated(entt::registry& registry, entt::entity entity) {
@@ -193,6 +228,33 @@ namespace engine {
 		auto& rigidBodyComp = registry.get<RigidBodyComponent>(entity);
 		
 		physicsWorld->destroyRigidBody(rigidBodyComp.rigidBody);
+	}
+
+	void Scene::onCollisionBodyComponentCreated(entt::registry& registry, entt::entity entity) {
+
+		ASSERT(registry.has<TransformComponent>(entity),
+			"Entiy must have a transform component to have a rigid body component");
+		ASSERT(registry.has<CollisionShapeComponent>(entity),
+			"Entiy must have a collision shape component to have a rigid body component");
+
+		auto& transform = registry.get<TransformComponent>(entity).transform;
+		auto& collisionShape = registry.get<CollisionShapeComponent>(entity).collisionShape;
+		auto& collisionBodyComponent = registry.get<CollisionBodyComponent>(entity);
+
+		//create the CollisionBody
+		CollisionBody* collisionBody = this->physicsWorld->createCollisionBody(transform.position, transform.rotation);
+
+		// Create the collisionShape for the CollisionBody
+		collisionBody->addCollisionShape(transform.scale, collisionShape);
+
+		// update the RigidBodyComponent with the created CollisionBody
+		collisionBodyComponent.collisionBody = collisionBody;
+
+	}
+
+	void Scene::onCollisionBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
+		auto& collisionBodyComp = registry.get<CollisionBodyComponent>(entity);
+		physicsWorld->destroyCollisionBody(collisionBodyComp.collisionBody);
 	}
 
 	void Scene::onBehaviorComponentDestroyed(entt::registry& registry, entt::entity entity) {

@@ -15,11 +15,11 @@ namespace engine {
 		*ypos = (float)yposAsDouble;
 	}
 
-	bool Input::keyPressed(char key) {
+	bool Input::keyPressed(int32_t key) {
 		return glfwGetKey(window, key) == GLFW_PRESS;
 	}
 
-	bool Input::mouseButtonPressed(char key) {
+	bool Input::mouseButtonPressed(int32_t key) {
 		return glfwGetMouseButton(window, key) == GLFW_PRESS;
 	}
 

@@ -54,6 +54,8 @@ namespace engine {
 	}
 
 	void RigidBody::setRigidBodyType(RigidBodyType rigidBodyType) {
+		this->rigidBodyType = rigidBodyType;
+		
 		switch (rigidBodyType) {
 		case RigidBodyType::Dynamic: {
 			this->rigidBodyPtr->setType(reactphysics3d::BodyType::DYNAMIC);
@@ -70,7 +72,13 @@ namespace engine {
 		}
 	}
 
-	void RigidBody::apllyForce(glm::vec3 force) {
+	void RigidBody::apllyForce(const glm::vec3& force) {
 		rigidBodyPtr->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(force.x, force.y, force.z));
+	}
+
+	void RigidBody::setTransform(const Transform& transform) {
+		auto rotationAsQuaternion = reactphysics3d::Quaternion::fromEulerAngles({ transform.rotation.x, transform.rotation.y, transform.rotation.z });
+		reactphysics3d::Transform rigidBodyTransform({ transform.position.x, transform.position.y, transform.position.z }, rotationAsQuaternion);
+		this->rigidBodyPtr->setTransform(rigidBodyTransform);
 	}
 }

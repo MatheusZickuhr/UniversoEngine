@@ -28,16 +28,7 @@ private:
 	Material terrainMaterial { };
 	Mesh cubeMesh { "Example/resources/models/cube/cube.obj" };
 
-	std::shared_ptr<CubeMap> skyboxCubeMap = CubeMap::createCubeMapFromFile(
-		{
-			"Example/resources/textures/exampleSkyBox/right.jpg",
-			"Example/resources/textures/exampleSkyBox/left.jpg",
-			"Example/resources/textures/exampleSkyBox/top.jpg",
-			"Example/resources/textures/exampleSkyBox/bottom.jpg",
-			"Example/resources/textures/exampleSkyBox/front.jpg",
-			"Example/resources/textures/exampleSkyBox/back.jpg"
-		}
-	);
+	std::shared_ptr<CubeMap> skyboxCubeMap;
 
 public:
 

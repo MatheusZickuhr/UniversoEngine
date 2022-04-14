@@ -11,7 +11,7 @@ class ProceduralTerrainScene : public Scene {
 private:
 
     struct Chunk {
-        std::vector<Entity*> entities;
+        std::vector<Entity> entities;
 
         float minX;
         float maxX;
