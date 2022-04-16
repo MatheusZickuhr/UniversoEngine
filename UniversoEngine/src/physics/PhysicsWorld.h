@@ -14,28 +14,7 @@
 namespace engine {
 
 
-	class CollisionCallback : public reactphysics3d::OverlapCallback {
 
-	public:
-
-		CollisionCallback(std::vector<CollisionBody*>& physicsWorldCollisionBodies, reactphysics3d::CollisionBody* targetCollisionBody)
-			: physicsWorldCollisionBodies(physicsWorldCollisionBodies), targetCollisionBody(targetCollisionBody) {
-
-		}
-
-		virtual void onOverlap(reactphysics3d::OverlapCallback::CallbackData& callbackData) override;
-
-		std::vector<CollisionBody*> getCollidingRigidBodies() {
-			return collidingCollisionBodies;
-		}
-
-	private:
-		std::vector<CollisionBody*> collidingCollisionBodies;
-		std::vector<CollisionBody*>& physicsWorldCollisionBodies;
-
-		reactphysics3d::CollisionBody* targetCollisionBody;
-
-	};
 
 	class PhysicsWorld {
 	
@@ -44,8 +23,8 @@ namespace engine {
 
 		reactphysics3d::PhysicsCommon physicsCommon;
 		reactphysics3d::PhysicsWorld* physicsWorld;
-		std::vector<RigidBody*> rigidBodies;
-		std::vector<CollisionBody*> collisionBodies;
+		std::vector<std::shared_ptr<RigidBody>> rigidBodies;
+		std::vector<std::shared_ptr<CollisionBody>> collisionBodies;
 
 	public:
 
@@ -55,15 +34,15 @@ namespace engine {
 
 		void update(float deltaTime);
 
-		RigidBody* createRigidBody(const glm::vec3& position, const glm::vec3& rotation);
+		std::shared_ptr<RigidBody> createRigidBody(const Transform& transform);
 
-		CollisionBody* createCollisionBody(const glm::vec3& position, const glm::vec3& rotation);
+		std::shared_ptr<CollisionBody> createCollisionBody(const Transform& transform);
 
-		void destroyRigidBody(RigidBody* rigidBody);
+		void destroyRigidBody(std::shared_ptr<RigidBody> rigidBody);
 
-		void destroyCollisionBody(CollisionBody* rigidBody);
+		void destroyCollisionBody(std::shared_ptr<CollisionBody> rigidBody);
 
-		std::vector<CollisionBody*> getCollidingBodies(CollisionBody* rigidBody);
+		std::vector<std::shared_ptr<CollisionBody>> getCollidingCollisionBodies(std::shared_ptr<CollisionBody> rigidBody);
 	};
 
 }

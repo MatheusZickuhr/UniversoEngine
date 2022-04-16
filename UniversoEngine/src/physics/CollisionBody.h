@@ -10,25 +10,27 @@
 
 namespace engine {
 
-class CollisionBody {
-	friend class PhysicsWorld;
-	friend class CollisionCallback;
+	class CollisionBody {
+	
+		friend class PhysicsWorld;
+		friend class CollisionCallback;
 
-private:
 
-	reactphysics3d::PhysicsCommon* physicsCommon;
-	reactphysics3d::CollisionBody* collisionBodyPtr;
-	reactphysics3d::Transform prevTransform;
+	public:
 
-	CollisionBody();
+		void addCollisionShape(const Transform& transform, CollisionShape collisionShape);
 
-	CollisionBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::CollisionBody* collisionBody);
+		void setTransform(const Transform& transform);
 
-public:
+		CollisionBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::CollisionBody* collisionBody);
+	
+	protected:
 
-	void addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape);
+		reactphysics3d::PhysicsCommon* physicsCommon;
 
-	void setTransform(const Transform& transform);
-};
+	private:
+
+		reactphysics3d::CollisionBody* reactphysics3CollisionBody;
+	};
 
 }

@@ -7,41 +7,34 @@
 #pragma warning(pop)
 
 #include "CollisionShape.h"
+#include "CollisionBody.h"
 
 namespace engine {
 	
 	enum class RigidBodyType { Dynamic , Static, Kinematic };
 
-	class RigidBody {
+	class RigidBody : public CollisionBody {
 
 		friend class PhysicsWorld;
-
-	private:
-
-		RigidBodyType rigidBodyType;
-
-		reactphysics3d::PhysicsCommon* physicsCommon;
-		reactphysics3d::RigidBody* rigidBodyPtr;
-		reactphysics3d::Transform prevTransform;
-
-		RigidBody();
-
-		RigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody);
 	
 	public:
 
-		void addCollisionShape(const glm::vec3& scale, CollisionShape collisionShape);
+		RigidBody(reactphysics3d::PhysicsCommon* physicsCommon, reactphysics3d::RigidBody* rigidBody);
 
 		Transform getInterpolatedTranform(float timeInterpolationFactor);
 
 		void setRigidBodyType(RigidBodyType rigidBodyType);
 
 		void apllyForce(const glm::vec3& force);
-		
-		void setTransform(const Transform& transform);
 
-		RigidBodyType getRigidBodyType() { return this->rigidBodyType;  }
+		RigidBodyType getRigidBodyType() { return this->rigidBodyType; }
 
+
+	private:
+
+		RigidBodyType rigidBodyType;
+		reactphysics3d::Transform prevTransform;
+		reactphysics3d::RigidBody* reactphysics3dRigidBody;
 	};
 
 }

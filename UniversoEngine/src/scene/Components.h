@@ -44,11 +44,11 @@ namespace engine {
 
     struct RigidBodyComponent {
         RigidBodyType type = RigidBodyType::Dynamic;
-        RigidBody* rigidBody;
+        std::shared_ptr<RigidBody> rigidBody;
     };
 
     struct CollisionBodyComponent {
-        CollisionBody* collisionBody;
+        std::shared_ptr<CollisionBody> collisionBody;
     };
 
     struct TransformComponent {

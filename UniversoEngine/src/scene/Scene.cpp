@@ -122,9 +122,9 @@ namespace engine {
 					continue;
 				}
 
-				std::vector<CollisionBody*> collidingRigidBodies = physicsWorld->getCollidingBodies(cbComp.collisionBody);
+				auto collidingRigidBodies = physicsWorld->getCollidingCollisionBodies(cbComp.collisionBody);
 
-				for (CollisionBody* collisionBody : collidingRigidBodies) {
+				for (auto collisionBody : collidingRigidBodies) {
 					std::optional<Entity> otherEntityOptional = findEntityByCollisionBody(collisionBody);
 
 					if (entityOptional.value().hasComponent<BehaviorComponent>()) {
@@ -177,7 +177,7 @@ namespace engine {
 		this->registry.destroy(toBeDestroyedEntity.enttEntity);
 	}
 
-	std::optional<Entity> Scene::findEntityByCollisionBody(CollisionBody* collisionBody) {
+	std::optional<Entity> Scene::findEntityByCollisionBody(std::shared_ptr<CollisionBody> collisionBody) {
 		auto view = this->registry.view<CollisionBodyComponent>();
 		for (auto [entity, collisionBodyComponent] : view.each()) {
 			if (collisionBodyComponent.collisionBody == collisionBody) {
@@ -211,16 +211,10 @@ namespace engine {
 		auto& collisionShape = registry.get<CollisionShapeComponent>(entity).collisionShape;
 		auto& rigidBodyComponent = registry.get<RigidBodyComponent>(entity);
 
-		//create the RigidBody
-		RigidBody* rigidBody = this->physicsWorld->createRigidBody(transform.position, transform.rotation);
-
-		// Create the collisionShape for the RigidBody
-		rigidBody->addCollisionShape(transform.scale, collisionShape);
-
-		// set the RigidBody type
+		auto rigidBody = this->physicsWorld->createRigidBody(transform);
+		rigidBody->addCollisionShape(transform, collisionShape);
 		rigidBody->setRigidBodyType(rigidBodyComponent.type);
 
-		// update the RigidBodyComponent with the created RigidBody
 		rigidBodyComponent.rigidBody = rigidBody;
 	}
 
@@ -241,13 +235,9 @@ namespace engine {
 		auto& collisionShape = registry.get<CollisionShapeComponent>(entity).collisionShape;
 		auto& collisionBodyComponent = registry.get<CollisionBodyComponent>(entity);
 
-		//create the CollisionBody
-		CollisionBody* collisionBody = this->physicsWorld->createCollisionBody(transform.position, transform.rotation);
+		auto collisionBody = this->physicsWorld->createCollisionBody(transform);
+		collisionBody->addCollisionShape(transform, collisionShape);
 
-		// Create the collisionShape for the CollisionBody
-		collisionBody->addCollisionShape(transform.scale, collisionShape);
-
-		// update the RigidBodyComponent with the created CollisionBody
 		collisionBodyComponent.collisionBody = collisionBody;
 
 	}

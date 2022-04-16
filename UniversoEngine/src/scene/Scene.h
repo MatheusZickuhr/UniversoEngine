@@ -56,7 +56,7 @@ namespace engine {
 		Renderer2D renderer2d;
 		entt::registry registry;
 
-		std::optional<Entity> findEntityByCollisionBody(CollisionBody* collisionBody);
+		std::optional<Entity> findEntityByCollisionBody(std::shared_ptr<CollisionBody> collisionBody);
 
 		void onStaticMeshComponentCreated(entt::registry& registry, entt::entity entity);
 
