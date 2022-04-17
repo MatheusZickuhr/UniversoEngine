@@ -27,15 +27,15 @@ namespace engine {
     };
 
     struct DynamicMeshComponent {
-        Mesh* mesh;
+        std::shared_ptr<Mesh> mesh;
     };
 
     struct StaticMeshComponent {
-        Mesh* mesh;
+        std::shared_ptr<Mesh> mesh;
     };
 
     struct MaterialComponent {
-        Material* material;
+        std::shared_ptr<Material> material;
     };
 
     struct CollisionShapeComponent {

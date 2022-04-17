@@ -104,7 +104,7 @@ namespace engine {
 		bindLightingTexture(directionalLight.getDepthTexture());
 	}
 
-	void Renderer3D::drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId) {
+	void Renderer3D::drawDynamicMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId) {
 		
 		dynamicRenderingData.meshDataList.push_back({
 			.mesh = mesh,
@@ -113,7 +113,7 @@ namespace engine {
 			.renderId = renderId});
 	}
 
-	void Renderer3D::drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId) {
+	void Renderer3D::drawStaticMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId) {
 		StaticMeshData meshData { 
 			.mesh = mesh,
 			.material = material,
@@ -322,7 +322,7 @@ namespace engine {
 		}
 	}
 
-	Vertex Renderer3D::transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, Material* material) {
+	Vertex Renderer3D::transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, std::shared_ptr<Material> material) {
 	
 		std::shared_ptr<Texture> texture = material->getTexture();
 

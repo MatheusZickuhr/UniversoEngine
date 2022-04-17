@@ -8,15 +8,14 @@ using namespace engine;
 class AsteroidsCloneScene : public Scene {
 
 private:
-	CameraController* cameraInput;
 
-	Material coneMaterial {};
-	Mesh coneMesh { "Example/resources/models/cone/cone.obj" };
+	std::shared_ptr<Material> coneMaterial = std::make_shared<Material>();
+	std::shared_ptr<Mesh> coneMesh = std::make_shared<Mesh>("Example/resources/models/cone/cone.obj");
 
 	std::shared_ptr<CubeMap> skyboxCubeMap;
 
-	Material cubeMaterial{};
-	Mesh cubeMesh{ "Example/resources/models/cube/cube.obj" };
+	std::shared_ptr<Material> cubeMaterial = std::make_shared<Material>();
+	std::shared_ptr<Mesh> cubeMesh = std::make_shared<Mesh>("Example/resources/models/cube/cube.obj");
 
 	Random random{};
 

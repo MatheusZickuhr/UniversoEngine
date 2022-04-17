@@ -41,9 +41,9 @@ namespace engine {
 
         void drawDirectionalLight(const DirectionalLight& light);
 
-        void drawDynamicMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId);
+        void drawDynamicMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId);
 
-        void drawStaticMesh(Mesh* mesh, Material* material, const glm::mat4& transform, const uint32_t& renderId);
+        void drawStaticMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId);
 
         void destroyStaticMesh(const uint32_t& renderId);
 
@@ -56,15 +56,15 @@ namespace engine {
     private:
 
         struct DynamicMeshData {
-            Mesh* mesh;
-            Material* material;
+            std::shared_ptr<Mesh> mesh;
+            std::shared_ptr<Material> material;
             glm::mat4 transform;
             uint32_t renderId;
         };
 
         struct StaticMeshData {
-            Mesh* mesh;
-            Material* material;
+            std::shared_ptr<Mesh> mesh;
+            std::shared_ptr<Material> material;
             glm::mat4 transform;
             uint32_t renderId;
 
@@ -211,7 +211,7 @@ namespace engine {
 
         void drawSkyBox();
 
-        Vertex transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, Material* material);
+        Vertex transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, std::shared_ptr<Material> material);
 
         void bindUniformBuffers();
 

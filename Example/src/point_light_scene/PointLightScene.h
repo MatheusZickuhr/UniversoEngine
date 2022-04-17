@@ -10,9 +10,9 @@ class PointLightScene : public Scene {
 private:
     CameraController* cameraInput;
 
-    Material boxMaterial{ "Example/resources/textures/crate/crate.jpg" };
-    Mesh boxMesh{ "Example/resources/models/crate/crate.obj" };
-
+    std::shared_ptr<Material> boxMaterial = std::make_shared<Material>("Example/resources/textures/crate/crate.jpg");
+    std::shared_ptr<Mesh> boxMesh = std::make_shared<Mesh>("Example/resources/models/crate/crate.obj");
+    
     std::shared_ptr<CubeMap> skyboxCubeMap = CubeMap::createCubeMapFromFile(
         {
             "Example/resources/textures/exampleSkyBox/right.jpg",

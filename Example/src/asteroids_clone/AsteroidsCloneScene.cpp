@@ -10,7 +10,6 @@ AsteroidsCloneScene::~AsteroidsCloneScene() {
 
 void AsteroidsCloneScene::onStart() {
 	this->camera.position = { 0.0f, 0.0f, 20.0f };
-	//cameraInput = new CameraController(this->camera);
 
 	skyboxCubeMap = CubeMap::createCubeMapFromFile(
 		{
@@ -30,9 +29,9 @@ void AsteroidsCloneScene::onStart() {
 	{
 		playerOptional = { createEntity() };
 		auto& player = playerOptional.value();
-		player.addComponent<MaterialComponent>(&coneMaterial);
+		player.addComponent<MaterialComponent>(coneMaterial);
 		player.addComponent<TransformComponent>();
-		player.addComponent<DynamicMeshComponent>(&coneMesh);
+		player.addComponent<DynamicMeshComponent>(coneMesh);
 		player.addComponent<BehaviorComponent>().bindBehavior<ShipBehavior>();
 		player.addComponent<CollisionShapeComponent>(CollisionShape::Box);
 		player.addComponent<CollisionBodyComponent>();
@@ -81,7 +80,7 @@ void AsteroidsCloneScene::createProjectileEntity() {
 
 	Entity projectile = createEntity();
 
-	projectile.addComponent<MaterialComponent>(&cubeMaterial);
+	projectile.addComponent<MaterialComponent>(cubeMaterial);
 	projectile.addComponent<TransformComponent>();
 
 	auto& projectileTransformComponent = projectile.getComponent<TransformComponent>();
@@ -91,7 +90,7 @@ void AsteroidsCloneScene::createProjectileEntity() {
 	projectile.addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	projectile.addComponent<CollisionBodyComponent>();
 
-	projectile.addComponent<DynamicMeshComponent>(&cubeMesh);
+	projectile.addComponent<DynamicMeshComponent>(cubeMesh);
 	projectile.addComponent<BehaviorComponent>().bindBehavior<ProjectileBehavior>();
 
 	float zRotation = playerTransformComponent.transform.rotation.z + (Math::PI / 2.0f);
@@ -108,13 +107,13 @@ void AsteroidsCloneScene::createAsteroidEntity() {
 	LOG("Asteroiod spawned");
 
 	auto asteroid = createEntity();
-	asteroid.addComponent<MaterialComponent>(&cubeMaterial);
+	asteroid.addComponent<MaterialComponent>(cubeMaterial);
 
 	float yPos = random.random() > 0.5f ? -10.0f : 10.0f;
 	float xPos = Math::map(random.random() * 10.f, 0.0f, 10.0f, -10.0f, 10.0f);
 
 	asteroid.addComponent<TransformComponent>().transform.position = { xPos, yPos, 0.0f };
-	asteroid.addComponent<DynamicMeshComponent>(&cubeMesh);
+	asteroid.addComponent<DynamicMeshComponent>(cubeMesh);
 	asteroid.addComponent<NameComponent>("asteroid");
 	asteroid.addComponent<CollisionShapeComponent>(CollisionShape::Box);
 	asteroid.addComponent<CollisionBodyComponent>();
