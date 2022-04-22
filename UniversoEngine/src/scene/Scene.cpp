@@ -8,7 +8,10 @@
 namespace engine {
 
 	Scene::Scene() :
-		physicsWorld(new PhysicsWorld()) {
+		physicsWorld(nullptr),
+		renderer3d(nullptr),
+		renderer2d(nullptr),
+		initialized(false) {
 	
 		this->registry.on_construct<StaticMeshComponent>()
 			.connect<&Scene::onStaticMeshComponentCreated>(this);
@@ -33,14 +36,23 @@ namespace engine {
 	}
 
 	Scene::~Scene() {
-		delete this->physicsWorld;
+		registry.clear();
 	}
 
-	void Scene::onStartCallBack() {
+	void Scene::initialize(
+		std::shared_ptr<PhysicsWorld> physicsWorld,
+		std::shared_ptr<Renderer3D> renderer3d,
+		std::shared_ptr<Renderer2D> renderer2d) {
+		
+		initialized = true;
 
-		this->onStart();
+		this->physicsWorld = physicsWorld;
+		this->renderer3d = renderer3d;
+		this->renderer2d = renderer2d;
 
-		auto view = this->registry.view<BehaviorComponent>();
+		onStart();
+
+		auto view = registry.view<BehaviorComponent>();
 		for (auto [entity, behaviorComp] : view.each()) {
 			behaviorComp.behavior->initialize();
 			behaviorComp.behavior->onStart();
@@ -49,16 +61,16 @@ namespace engine {
 
 	void Scene::render() {
 
-		this->renderer3d.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		this->renderer3d.beginFrame(camera);
+		renderer3d->beginFrame(camera);
 			// draw/ update lights
 			{
 				auto view = this->registry.view<PointLightComponent, TransformComponent>();
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
 					lightComp.pointLight.position = transComp.transform.getTransformMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-					this->renderer3d.drawPointLight(lightComp.pointLight);
+					renderer3d->drawPointLight(lightComp.pointLight);
 				}
 			}
 
@@ -67,7 +79,7 @@ namespace engine {
 
 				for (auto [entity, lightComp, transComp] : view.each()) {
 					lightComp.directionalLight.position = transComp.transform.getTransformMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-					this->renderer3d.drawDirectionalLight(lightComp.directionalLight);
+					renderer3d->drawDirectionalLight(lightComp.directionalLight);
 				}
 			}
 
@@ -77,14 +89,14 @@ namespace engine {
 
 				for (auto [entity, meshComp, materialComp, transComp] : view.each()) {
 				
-					this->renderer3d.drawDynamicMesh(
+					renderer3d->drawDynamicMesh(
 						meshComp.mesh,
 						materialComp.material,
 						transComp.transform.getTransformMatrix(),
 						(uint32_t)entity);
 				}
 			}
-		this->renderer3d.endFrame();
+		renderer3d->endFrame();
 	}
 
 	void Scene::onUpdateCallBack(float deltaTime) {
@@ -124,7 +136,7 @@ namespace engine {
 
 				auto collidingRigidBodies = physicsWorld->getCollidingCollisionBodies(cbComp.collisionBody);
 
-				for (auto collisionBody : collidingRigidBodies) {
+				for (auto& collisionBody : collidingRigidBodies) {
 					std::optional<Entity> otherEntityOptional = findEntityByCollisionBody(collisionBody);
 
 					if (entityOptional.value().hasComponent<BehaviorComponent>()) {
@@ -194,7 +206,7 @@ namespace engine {
 		auto& materialComp = registry.get<MaterialComponent>(entity);
 		auto& transComp = registry.get<TransformComponent>(entity);
 
-		this->renderer3d.drawStaticMesh(
+		renderer3d->drawStaticMesh(
 			meshComp.mesh,
 			materialComp.material,
 			transComp.transform.getTransformMatrix(),
@@ -219,6 +231,7 @@ namespace engine {
 	}
 
 	void Scene::onRigidBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
+		LOG("RigidBody destroyed");
 		auto& rigidBodyComp = registry.get<RigidBodyComponent>(entity);
 		
 		physicsWorld->destroyRigidBody(rigidBodyComp.rigidBody);
@@ -243,17 +256,20 @@ namespace engine {
 	}
 
 	void Scene::onCollisionBodyComponentDestroyed(entt::registry& registry, entt::entity entity) {
+		LOG("CollisionBody destroyed");
 		auto& collisionBodyComp = registry.get<CollisionBodyComponent>(entity);
 		physicsWorld->destroyCollisionBody(collisionBodyComp.collisionBody);
 	}
 
 	void Scene::onBehaviorComponentDestroyed(entt::registry& registry, entt::entity entity) {
+		LOG("Behavior destroyed");
 		auto& behaviorComponent = registry.get<BehaviorComponent>(entity);
 		behaviorComponent.destroy();
 	}
 
 	void Scene::onStaticMeshComponentDestroyed(entt::registry& registry, entt::entity entity) {
-		this->renderer3d.destroyStaticMesh((uint32_t) entity);
+		LOG("StaticMesh destroyed");
+		renderer3d->destroyStaticMesh((uint32_t) entity);
 	}
 
 	std::string Scene::generateUuid() {

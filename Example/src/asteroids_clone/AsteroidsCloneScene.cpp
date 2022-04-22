@@ -5,11 +5,16 @@
 
 AsteroidsCloneScene::~AsteroidsCloneScene() {
 
-	//delete cameraInput;
 }
 
 void AsteroidsCloneScene::onStart() {
 	this->camera.position = { 0.0f, 0.0f, 20.0f };
+
+
+	coneMaterial = std::make_shared<Material>();
+	cubeMaterial = std::make_shared<Material>();
+	coneMesh = std::make_shared<Mesh>("Example/resources/models/cone/cone.obj");
+	cubeMesh = std::make_shared<Mesh>("Example/resources/models/cube/cube.obj");
 
 	skyboxCubeMap = CubeMap::createCubeMapFromFile(
 		{
@@ -58,8 +63,8 @@ void AsteroidsCloneScene::onUpdate(float deltaTime) {
 	}
 
 	handlePlayerShooting(deltaTime);
-
 }
+
 void AsteroidsCloneScene::handlePlayerShooting(float deltaTime) {
 	if (Input::keyPressed(Input::KEY_SPACE) && timeElapsedFromLastShot > timeBetweenShots) {
 		timeElapsedFromLastShot = 0.0f;

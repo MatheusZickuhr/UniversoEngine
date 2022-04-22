@@ -13,8 +13,11 @@
 #include "../physics/PhysicsWorld.h"
 #include "../physics/RigidBody.h"
 
-namespace engine {
 
+namespace engine {
+	
+
+	class Application;
 	class Entity;
 
 	class Scene {
@@ -23,9 +26,11 @@ namespace engine {
 
 		Scene();
 
-		~Scene();
+		virtual ~Scene();
 
-		void onStartCallBack();
+		void initialize(std::shared_ptr<PhysicsWorld> physicsWorld,
+			std::shared_ptr<Renderer3D> renderer3d,
+			std::shared_ptr<Renderer2D> renderer2d);
 
 		void onUpdateCallBack(float deltaTime);
 
@@ -42,18 +47,23 @@ namespace engine {
 		Entity createEntity();
 
 		void destroyEntity(Entity& entity);
+
+		bool isInitialized() { return initialized; }
 	
 	protected:
 
 		Camera camera;
 
-		void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) { this->renderer3d.setSkyBoxCubeMap(skyBoxCubeMap); }
+		void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) { renderer3d->setSkyBoxCubeMap(skyBoxCubeMap); }
 
 	private:
 
-		PhysicsWorld* physicsWorld;
-		Renderer3D renderer3d;
-		Renderer2D renderer2d;
+		bool initialized;
+
+		std::shared_ptr<PhysicsWorld> physicsWorld;
+		std::shared_ptr<Renderer3D> renderer3d;
+		std::shared_ptr<Renderer2D> renderer2d;
+
 		entt::registry registry;
 
 		std::optional<Entity> findEntityByCollisionBody(std::shared_ptr<CollisionBody> collisionBody);

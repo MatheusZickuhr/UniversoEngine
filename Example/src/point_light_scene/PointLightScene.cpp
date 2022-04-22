@@ -1,15 +1,27 @@
 #include "PointLightScene.h"
 
 PointLightScene::~PointLightScene() {
-
-    delete cameraInput;
 }
 
 void PointLightScene::onStart() {
 
     this->camera.position = { 0.0f, 0.0f, 5.0f };
 
-    cameraInput = new CameraController(this->camera);
+    cameraController = std::make_unique<CameraController>(this->camera);
+
+    boxMaterial = std::make_shared<Material>("Example/resources/textures/crate/crate.jpg");
+    boxMesh = std::make_shared<Mesh>("Example/resources/models/crate/crate.obj");
+
+    skyboxCubeMap = CubeMap::createCubeMapFromFile(
+        {
+            "Example/resources/textures/exampleSkyBox/right.jpg",
+            "Example/resources/textures/exampleSkyBox/left.jpg",
+            "Example/resources/textures/exampleSkyBox/top.jpg",
+            "Example/resources/textures/exampleSkyBox/bottom.jpg",
+            "Example/resources/textures/exampleSkyBox/front.jpg",
+            "Example/resources/textures/exampleSkyBox/back.jpg"
+        }
+    );
 
     this->setSkyBoxCubeMap(this->skyboxCubeMap);
 
@@ -73,5 +85,5 @@ void PointLightScene::onStart() {
 }
 
 void PointLightScene::onUpdate(float deltaTime) {
-    cameraInput->update(deltaTime);
+    cameraController->update(deltaTime);
 }

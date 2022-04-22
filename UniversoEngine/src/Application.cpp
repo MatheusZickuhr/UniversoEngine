@@ -7,6 +7,7 @@
 #include <imgui_internal.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <algorithm>
 
 namespace engine {
 
@@ -19,6 +20,8 @@ namespace engine {
 
 	void Application::run() {
 		constexpr float fixedDeltaTime = 1.0f / 60.0f;
+		// the simulation will run slower after this framerate/deltatime limit 
+		constexpr float maxDeltaTime = 1.0f / 10.0f;
 		
 		float lastTime = 0.0f;
 
@@ -28,6 +31,14 @@ namespace engine {
 			float currentTime = (float)glfwGetTime();
 			float deltaTime = currentTime - lastTime;
 			lastTime = currentTime;
+
+			// check if the scene changed during runtime
+			if (nextScene) {
+				currentScene = std::move(nextScene);
+				currentScene->initialize(physicsWorld, renderer3d, renderer2d);
+			}
+
+			deltaTime = std::min(deltaTime, maxDeltaTime);
 
 			// update the physics world
 			accumulator += deltaTime;
@@ -72,7 +83,6 @@ namespace engine {
 			glfwPollEvents();
 		}
 
-		delete this->currentScene;
 		glfwTerminate();
 	}
 

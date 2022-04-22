@@ -1,13 +1,32 @@
 #include "DirectionalLightScene.h"
 
+
 DirectionalLightScene::~DirectionalLightScene() {
 
-	delete cameraInput;
 }
 
 void DirectionalLightScene::onStart() {
 	this->camera.position = { -2.0f, 3.0f, 10.0f };
-	cameraInput = new CameraController(this->camera);
+	cameraController = std::make_unique<CameraController>(this->camera);
+
+	boxMaterial = std::make_shared<Material>("Example/resources/textures/crate/crate.jpg");
+	boxMesh = std::make_shared<Mesh>("Example/resources/models/crate/crate.obj");
+	
+	lowPolyTree1Material = std::make_shared<Material>("Example/resources/textures/lowPolyTree1/lowPolyTree1.png");
+	lowPolyTree1Mesh = std::make_shared<Mesh >("Example/resources/models/lowPolyTree1/lowPolyTree1.obj");
+	
+	lowPolyTree2Material = std::make_shared<Material>("Example/resources/textures/lowPolyTree2/lowPolyTree2.png");
+	lowPolyTree2Mesh = std::make_shared<Mesh>("Example/resources/models/lowPolyTree2/lowPolyTree2.obj");
+	
+	lowPolyTree3Material = std::make_shared<Material>("Example/resources/textures/lowPolyTree3/lowPolyTree3.png");
+	lowPolyTree3Mesh = std::make_shared<Mesh>("Example/resources/models/lowPolyTree3/lowPolyTree3.obj");
+	
+	lowPolyTree4Material = std::make_shared<Material>("Example/resources/textures/lowPolyTree4/lowPolyTree4.png");
+	lowPolyTree4Mesh = std::make_shared<Mesh>("Example/resources/models/lowPolyTree4/lowPolyTree4.obj");
+	
+	terrainMaterial = std::make_shared<Material>();
+
+	cubeMesh = std::make_shared<Mesh>("Example/resources/models/cube/cube.obj");
 
 	this->skyboxCubeMap = CubeMap::createCubeMapFromFile(
 		{
@@ -111,5 +130,5 @@ void DirectionalLightScene::onStart() {
 }
 
 void DirectionalLightScene::onUpdate(float deltaTime) {
-	cameraInput->update(deltaTime);
+	cameraController->update(deltaTime);
 }

@@ -13,11 +13,12 @@ namespace engine {
 
 	public:
 
-		Application();
-
 		Application(Application const&) = delete;
 
-		void operator=(Application const&) = delete;
+		static Application& getInstance() {
+			static Application instance;
+			return instance;
+		}
 
 		void run();
 
@@ -37,6 +38,10 @@ namespace engine {
 
 			Input::init(this->window);
 
+			physicsWorld = std::make_shared<PhysicsWorld>();
+			renderer3d = std::make_shared<Renderer3D>();
+			renderer2d = std::make_shared<Renderer2D>();
+			
 			this->setScene<T>();
 
 			this->onInitialize();
@@ -44,8 +49,7 @@ namespace engine {
 
 		template<typename T>
 		void setScene() {
-			this->currentScene = new T();
-			this->currentScene->onStartCallBack();
+			this->nextScene = std::make_unique<T>();
 		}
 
 	protected:
@@ -53,7 +57,12 @@ namespace engine {
 		const char* windowName;
 		int32_t windowWidth, windowHeight;
 		GLFWwindow* window;
-		Scene* currentScene;
+		std::unique_ptr<Scene> currentScene;
+		std::unique_ptr<Scene> nextScene;
+
+		std::shared_ptr<PhysicsWorld> physicsWorld;
+		std::shared_ptr<Renderer3D> renderer3d;
+		std::shared_ptr<Renderer2D> renderer2d;
 
 		virtual void onImGuiRender();
 
@@ -62,6 +71,8 @@ namespace engine {
 		virtual void onInitialize();
 
 	private:
+
+		Application();
 		
 		bool isRunning();
 

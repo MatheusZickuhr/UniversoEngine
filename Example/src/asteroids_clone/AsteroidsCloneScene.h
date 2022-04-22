@@ -7,25 +7,21 @@ using namespace engine;
 
 class AsteroidsCloneScene : public Scene {
 
-private:
-
-	std::shared_ptr<Material> coneMaterial = std::make_shared<Material>();
-	std::shared_ptr<Mesh> coneMesh = std::make_shared<Mesh>("Example/resources/models/cone/cone.obj");
-
-	std::shared_ptr<CubeMap> skyboxCubeMap;
-
-	std::shared_ptr<Material> cubeMaterial = std::make_shared<Material>();
-	std::shared_ptr<Mesh> cubeMesh = std::make_shared<Mesh>("Example/resources/models/cube/cube.obj");
-
-	Random random{};
-
-	std::optional<Entity> playerOptional;
-
 public:
 
 	~AsteroidsCloneScene();
 
 private:
+
+	std::shared_ptr<CubeMap> skyboxCubeMap;
+	std::shared_ptr<Material> coneMaterial;
+	std::shared_ptr<Material> cubeMaterial;
+	std::shared_ptr<Mesh> coneMesh;
+	std::shared_ptr<Mesh> cubeMesh;
+
+	Random random{};
+
+	std::optional<Entity> playerOptional;
 
 	float timeElapsedFromLastAsteroidCreated = 0.0f;
 
