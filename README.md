@@ -2,18 +2,15 @@
 
 C++ 3D Engine, currently in (early) development.
 
-## Software requirements for building
+## Requirements for building
 
-- [Python3](https://www.python.org/)
-- [Vulkan sdk 1.2.170.0](https://www.lunarg.com/vulkan-sdk/)
-- [Premake5](https://premake.github.io/)
+- [Vulkan sdk](https://www.lunarg.com/vulkan-sdk/)
 
-## How to download and build (Windows 10 or Ubuntu)
+## How to download and build (Windows 10/11)
 
 ```
 git clone --recurse-submodules https://github.com/MatheusZickuhr/UniversoEngine.git
-cd UniversoEngine/Scripts
-python build.py
+premake5.exe vs2022
 ```
 
 ## Credits

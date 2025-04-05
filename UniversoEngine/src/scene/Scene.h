@@ -13,6 +13,10 @@
 #include "../physics/PhysicsWorld.h"
 #include "../physics/RigidBody.h"
 
+#include "NewSceneListener.h"
+
+#include "../Window.h"
+
 
 namespace engine {
 	
@@ -28,7 +32,9 @@ namespace engine {
 
 		virtual ~Scene();
 
-		void initialize(std::shared_ptr<PhysicsWorld> physicsWorld,
+		void initialize(
+			std::shared_ptr<Window> window,
+			std::shared_ptr<PhysicsWorld> physicsWorld,
 			std::shared_ptr<Renderer3D> renderer3d,
 			std::shared_ptr<Renderer2D> renderer2d);
 
@@ -49,12 +55,20 @@ namespace engine {
 		void destroyEntity(Entity& entity);
 
 		bool isInitialized() { return initialized; }
+
+		std::shared_ptr<Window> getWindow();
+
+		void setNewSceneListener(NewSceneListener* newSceneListener);
 	
 	protected:
 
 		Camera camera;
 
+		std::shared_ptr<Window> window;
+
 		void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) { renderer3d->setSkyBoxCubeMap(skyBoxCubeMap); }
+
+		void loadNewScene(std::unique_ptr<Scene> scene);
 
 	private:
 
@@ -65,6 +79,8 @@ namespace engine {
 		std::shared_ptr<Renderer2D> renderer2d;
 
 		entt::registry registry;
+
+		NewSceneListener* newSceneListener = nullptr;
 
 		std::optional<Entity> findEntityByCollisionBody(std::shared_ptr<CollisionBody> collisionBody);
 

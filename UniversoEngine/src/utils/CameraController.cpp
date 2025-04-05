@@ -1,9 +1,10 @@
 #include "CameraController.h"
-
+#include "../Application.h"
+#include "../Window.h"
 
 namespace engine {
 
-	CameraController::CameraController(Camera& camera) : camera(camera) {}
+	CameraController::CameraController(std::shared_ptr<Window> window, Camera& camera) : window(window), camera(camera) {}
 
 	void CameraController::update(float deltaTime) {
 		this->processKeybordInput(deltaTime);
@@ -13,23 +14,25 @@ namespace engine {
 	void CameraController::processKeybordInput(float deltaTime) {
 		float velocity = this->movementSpeed * deltaTime;
 
-		if (Input::keyPressed('W'))
+		
+		if (window->keyPressed('W'))
 			this->camera.position += this->camera.front * velocity;
 
-		if (Input::keyPressed('S'))
+		if (window->keyPressed('S'))
 			this->camera.position -= this->camera.front * velocity;
 
-		if (Input::keyPressed('A'))
+		if (window->keyPressed('A'))
 			this->camera.position -= this->camera.right * velocity;
 
-		if (Input::keyPressed('D'))
+		if (window->keyPressed('D'))
 			this->camera.position += this->camera.right * velocity;
 
 	}
 
 	void CameraController::processMouseInput() {
+
 		float xcurrent, ycurrent;
-		Input::getCursorPos(&xcurrent, &ycurrent);
+		window->getCursorPos(&xcurrent, &ycurrent);
 
 		if (isFirstMouseMovement) {
 			xlast = xcurrent;

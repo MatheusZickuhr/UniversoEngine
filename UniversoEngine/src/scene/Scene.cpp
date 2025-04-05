@@ -40,12 +40,13 @@ namespace engine {
 	}
 
 	void Scene::initialize(
+		std::shared_ptr<Window> window,
 		std::shared_ptr<PhysicsWorld> physicsWorld,
 		std::shared_ptr<Renderer3D> renderer3d,
 		std::shared_ptr<Renderer2D> renderer2d) {
 		
 		initialized = true;
-
+		this->window = window;
 		this->physicsWorld = physicsWorld;
 		this->renderer3d = renderer3d;
 		this->renderer2d = renderer2d;
@@ -187,6 +188,21 @@ namespace engine {
 
 	void Scene::destroyEntity(Entity& toBeDestroyedEntity) {
 		this->registry.destroy(toBeDestroyedEntity.enttEntity);
+	}
+
+	std::shared_ptr<Window> Scene::getWindow() {
+		return window;
+	}
+
+	void Scene::setNewSceneListener(NewSceneListener* newSceneListener) {
+		this->newSceneListener = newSceneListener;
+	}
+
+	void Scene::loadNewScene(std::unique_ptr<Scene> scene) {
+		if (this->newSceneListener == nullptr) {
+			return;
+		}
+		this->newSceneListener->onNewScene(std::move(scene));
 	}
 
 	std::optional<Entity> Scene::findEntityByCollisionBody(std::shared_ptr<CollisionBody> collisionBody) {

@@ -174,11 +174,10 @@ namespace engine {
 		}
 
 
-		LOG(std::format("OpenGL error {}: {} of {} severity, raised from {}: {}",
-				id, _type, _severity, _source, msg));
+		LOG(std::format("OpenGL message of type {} and severity {}: {}", _type, _severity, msg));
 	
 #ifdef _DEBUG
-		__debugbreak();
+		//__debugbreak();
 #endif
 
 	}

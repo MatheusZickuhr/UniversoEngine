@@ -8,10 +8,16 @@
 int main() {	
 	using namespace engine;
 
+	std::unique_ptr<DirectionalLightScene> scene = std::make_unique<DirectionalLightScene>();
 
-	auto& app = Application::getInstance();
-	app.initiliaze<AsteroidsCloneScene>(800, 600, "Example");
+	WindowSettings windowSettings;
+	windowSettings.name = "Example";
+	windowSettings.width = 800;
+	windowSettings.height = 600;
+
+	Application app{ std::move(scene), windowSettings };
 	app.run();
-	
+
+
 	return 0;
 }

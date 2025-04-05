@@ -1,5 +1,7 @@
 #include "PointLightScene.h"
 
+#include "../directional_light_scene/DirectionalLightScene.h"
+
 PointLightScene::~PointLightScene() {
 }
 
@@ -7,7 +9,7 @@ void PointLightScene::onStart() {
 
     this->camera.position = { 0.0f, 0.0f, 5.0f };
 
-    cameraController = std::make_unique<CameraController>(this->camera);
+    cameraController = std::make_unique<CameraController>(this->window, this->camera);
 
     boxMaterial = std::make_shared<Material>("Example/resources/textures/crate/crate.jpg");
     boxMesh = std::make_shared<Mesh>("Example/resources/models/crate/crate.obj");
@@ -86,4 +88,10 @@ void PointLightScene::onStart() {
 
 void PointLightScene::onUpdate(float deltaTime) {
     cameraController->update(deltaTime);
+
+    if (window->keyPressed(Window::KEY_L)) {
+        std::unique_ptr<DirectionalLightScene> scene = std::make_unique<DirectionalLightScene>();
+        loadNewScene(std::move(scene));
+    }
+
 }

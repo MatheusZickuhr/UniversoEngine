@@ -1,6 +1,6 @@
 function librariesLinks()
 	
-	libdirs { "../Libraries/VulkanDebugSdk/Lib/", "%{VULKAN_SDK_DIR}/lib" }
+	libdirs { "%{VULKAN_SDK_DIR}/lib" }
 
 	links { 
 		"GLFW",
@@ -12,7 +12,6 @@ function librariesLinks()
 		"entt",
 		"reactphysics3d",
 		"hash-library",
-		"VkLayer_utils",
 		"PerlinNoise"
 	}
 

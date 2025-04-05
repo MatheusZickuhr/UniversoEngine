@@ -15,11 +15,14 @@ void ShipBehavior::handleRotationMovement(float deltaTime, TransformComponent& p
 
 	float rotationSpeed = 7.0f;
 
+
+	auto window = scene->getWindow();
+
 	// handle rotation
-	if (Input::keyPressed(Input::KEY_N)) {
+	if (window->keyPressed(Window::KEY_N)) {
 		playerTransformComponent.transform.rotation.z += rotationSpeed * deltaTime;
 	}
-	else if (Input::keyPressed(Input::KEY_M)) {
+	else if (window->keyPressed(Window::KEY_M)) {
 		playerTransformComponent.transform.rotation.z -= rotationSpeed * deltaTime;
 	}
 }
@@ -27,16 +30,18 @@ void ShipBehavior::handleRotationMovement(float deltaTime, TransformComponent& p
 void ShipBehavior::handleMovement(float deltaTime, TransformComponent& playerTransformComponent) {
 	float movementSpeed = 10.0f;
 
-	if (Input::keyPressed(Input::KEY_A)) {
+	auto window = scene->getWindow();
+
+	if (window->keyPressed(Window::KEY_A)) {
 		playerTransformComponent.transform.position.x -= movementSpeed * deltaTime;
 	}
-	else if (Input::keyPressed(Input::KEY_D)) {
+	else if (window->keyPressed(Window::KEY_D)) {
 		playerTransformComponent.transform.position.x += movementSpeed * deltaTime;
 	}
-	else if (Input::keyPressed(Input::KEY_S)) {
+	else if (window->keyPressed(Window::KEY_S)) {
 		playerTransformComponent.transform.position.y -= movementSpeed * deltaTime;
 	}
-	else if (Input::keyPressed(Input::KEY_W)) {
+	else if (window->keyPressed(Window::KEY_W)) {
 		playerTransformComponent.transform.position.y += movementSpeed * deltaTime;
 	}
 }

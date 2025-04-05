@@ -66,7 +66,8 @@ void AsteroidsCloneScene::onUpdate(float deltaTime) {
 }
 
 void AsteroidsCloneScene::handlePlayerShooting(float deltaTime) {
-	if (Input::keyPressed(Input::KEY_SPACE) && timeElapsedFromLastShot > timeBetweenShots) {
+	
+	if (window->keyPressed(Window::KEY_SPACE) && timeElapsedFromLastShot > timeBetweenShots) {
 		timeElapsedFromLastShot = 0.0f;
 		createProjectileEntity();
 	}

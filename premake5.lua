@@ -26,7 +26,6 @@ workspace "UniversoEngine"
 VULKAN_SDK_DIR = os.getenv("VULKAN_SDK")
 
 include "UniversoEngine/universoEngine.lua"
-include "LevelEditor/levelEditor.lua"
 include "Example/example.lua"
 
 group "Libraries"

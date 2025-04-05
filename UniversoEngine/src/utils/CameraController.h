@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "../renderer/Camera.h"
-#include "../input/Input.h"
+#include "../Window.h"
 
 namespace engine {
 
@@ -10,12 +10,12 @@ namespace engine {
 
 	public:
 
-		CameraController(Camera& camera);
+		CameraController(std::shared_ptr<Window> window, Camera& camera);
 
 		void update(float deltaTime);
 
 	private:
-
+		std::shared_ptr<Window> window;
 		Camera& camera;
 		float movementSpeed = 20.0f;
 		float mouseSensitivity = 0.1f;

@@ -1,22 +1,35 @@
 #include "Application.h"
 #include "Application.h"
+#include "utils/Time.h"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <algorithm>
+
 #include <imgui.h>
-#include <imgui_internal.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-#include <algorithm>
 
 namespace engine {
 
-	void framebufferSizeCallback(GLFWwindow* window, int32_t newWindowWidth, int32_t newWindowHeight) {
-		DrawApi::setViewPortSize(newWindowWidth, newWindowHeight);
-	}
 
-	Application::Application() : windowWidth(800), windowHeight(600), windowName("Universo Application"),
-		window(nullptr), currentScene(nullptr) {}
+	Application::Application(std::unique_ptr<Scene> scene, WindowSettings windowSettings)  {
+	
+		this->window = std::make_shared<Window>(windowSettings.name, windowSettings.width, windowSettings.height);
+
+		DrawApi::init();
+
+#ifdef DEBUG
+		DrawApi::initDebugMode();
+#endif
+
+		physicsWorld = std::make_shared<PhysicsWorld>();
+		renderer3d = std::make_shared<Renderer3D>();
+		renderer2d = std::make_shared<Renderer2D>();
+
+		setCurrentScene(std::move(scene));
+		
+
+		this->onInitialize();
+	}
 
 	void Application::run() {
 		constexpr float fixedDeltaTime = 1.0f / 60.0f;
@@ -27,15 +40,14 @@ namespace engine {
 
 		float accumulator = 0.0f;
 
-		while (this->isRunning()) {
-			float currentTime = (float)glfwGetTime();
+		while (window->isRunning()) {
+			float currentTime = (float) getCurrentTime();
 			float deltaTime = currentTime - lastTime;
 			lastTime = currentTime;
 
 			// check if the scene changed during runtime
 			if (nextScene) {
-				currentScene = std::move(nextScene);
-				currentScene->initialize(physicsWorld, renderer3d, renderer2d);
+				setCurrentScene(std::move(nextScene));
 			}
 
 			deltaTime = std::min(deltaTime, maxDeltaTime);
@@ -60,34 +72,41 @@ namespace engine {
 			this->currentScene->render();
 			this->onRender();
 
-			// imgui rendering
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+			renderImGui();
 
-			this->onImGuiRender();
+			if (window->keyPressed(Window::KEY_ESCAPE)) {
+				window->close();
+			}
 
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			// enable viewports
-			//GLFWwindow* backup_current_context = glfwGetCurrentContext();
-			//ImGui::UpdatePlatformWindows();
-			//ImGui::RenderPlatformWindowsDefault();
-			//glfwMakeContextCurrent(backup_current_context);
-
-			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-				glfwSetWindowShouldClose(window, true);
-
-			glfwSwapBuffers(this->window);
-			glfwPollEvents();
+			window->swapBuffers();
+			window->pollEvents();
 		}
+	}
 
-		glfwTerminate();
+	void Application::onNewScene(std::unique_ptr<Scene> scene) {
+		nextScene = std::move(scene);
+	}
+
+	void Application::renderImGui() {
+		// imgui rendering
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		this->onImGuiRender();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void Application::setCurrentScene(std::unique_ptr<Scene> scene) {
+		currentScene = std::move(scene);
+		currentScene->setNewSceneListener(this);
+		currentScene->initialize(window, physicsWorld, renderer3d, renderer2d);
 	}
 
 	void Application::onImGuiRender() {
-
+		
 	}
 
 	void Application::onRender() {
@@ -95,60 +114,4 @@ namespace engine {
 
 	void Application::onInitialize() {
 	}
-
-	bool Application::isRunning() {
-		return !glfwWindowShouldClose(this->window);
-	}
-
-	void Application::initializeGlfwWindow() {
-		glfwInit();
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef DEBUG
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif
-		this->window = glfwCreateWindow(this->windowWidth, this->windowHeight, this->windowName, NULL, NULL);
-
-		ASSERT(this->window != NULL, "Failed to create GLFW window");
-		
-		glfwMakeContextCurrent(this->window);
-		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSwapInterval(1);
-
-		const bool gladLoaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		
-		ASSERT(gladLoaded, "Failed to initialize GLAD");
-	}
-
-	void Application::initializeImGui() {
-		// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsClassic();
-
-		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
-
-		// Setup Platform/Renderer backends
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		
-		ImGui_ImplOpenGL3_Init("#version 440 core");
-
-	}
-
 }
