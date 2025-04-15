@@ -49,8 +49,8 @@ namespace engine {
 		std::unique_ptr<Scene> nextScene;
 
 		std::shared_ptr<PhysicsWorld> physicsWorld;
-		std::shared_ptr<Renderer3D> renderer3d;
-		std::shared_ptr<Renderer2D> renderer2d;
+		std::shared_ptr<Renderer3d> renderer3d;
+		std::shared_ptr<Renderer2d> renderer2d;
 
 		void renderImGui();
 

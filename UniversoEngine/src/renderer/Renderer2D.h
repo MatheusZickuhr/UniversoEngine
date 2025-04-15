@@ -17,17 +17,17 @@
 
 namespace engine {
 
-    class Renderer2D {
+    class Renderer2d {
 
     public:
 
-        Renderer2D();
+        Renderer2d();
 
-        Renderer2D(Renderer2D const& other) = delete;
+        Renderer2d(Renderer2d const& other) = delete;
 
-        ~Renderer2D();
+        ~Renderer2d();
 
-        void startFrame(Camera& camera);
+        void startFrame(std::shared_ptr<Camera> camera);
 
         void endFrame();
 

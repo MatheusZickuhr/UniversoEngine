@@ -1,4 +1,4 @@
-#include "Renderer3D.h"
+#include "Renderer3d.h"
 
 #include <algorithm>
 #include <cstring>
@@ -19,7 +19,7 @@ namespace engine {
 		vertexBuffer.addAttributePointer(AttriuteType::Float, offsetof(Vertex, textureSlotIndex));
 	}
 
-	Renderer3D::Renderer3D() {
+	Renderer3d::Renderer3d() {
 		drawCallsCount = 0;
 
 		lightingData.currentTextureSlot = lightingData.initialTextureSlot;
@@ -68,12 +68,12 @@ namespace engine {
 		skyBoxData.shaderProgram.attachShader(skyBoxData.fragmentShader);
 	}
 
-	Renderer3D::~Renderer3D() {
+	Renderer3d::~Renderer3d() {
 		delete[] this->dynamicRenderingData.verticesBegin;
 		delete[] this->dynamicRenderingData.indices;
 	}
 
-	void Renderer3D::beginFrame(Camera& camera) {
+	void Renderer3d::beginFrame(std::shared_ptr<Camera> camera) {
 		this->drawCallsCount = 0;
 		
 		updateCameraUniformBuffer(camera);
@@ -83,7 +83,7 @@ namespace engine {
 		clearDynamicMeshes();
 	}
 
-	void Renderer3D::endFrame() {
+	void Renderer3d::endFrame() {
 		updateLightsUniformBuffers();
 		updateLightsDepthBufferTextures();
 
@@ -92,19 +92,19 @@ namespace engine {
 		drawSkyBox();
 	}
 
-	void Renderer3D::drawPointLight(const PointLight& pointLight) {
+	void Renderer3d::drawPointLight(const PointLight& pointLight) {
 		ASSERT(lightingData.pointLights.size() + 1 <= PointLight::maxPointLights, "Maximum point lights exceded");
 		lightingData.pointLights.push_back(pointLight);
 		bindLightingCubeMap(pointLight.getDepthCubeMap());
 	}
 
-	void Renderer3D::drawDirectionalLight(const DirectionalLight& directionalLight) {
+	void Renderer3d::drawDirectionalLight(const DirectionalLight& directionalLight) {
 		ASSERT(lightingData.directionalLights.size() + 1 <= DirectionalLight::maxDirectionalLights, "Maximum directional lights exceded");
 		lightingData.directionalLights.push_back(directionalLight);
 		bindLightingTexture(directionalLight.getDepthTexture());
 	}
 
-	void Renderer3D::drawDynamicMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId) {
+	void Renderer3d::drawDynamicMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId) {
 		
 		dynamicRenderingData.meshDataList.push_back({
 			.mesh = mesh,
@@ -113,7 +113,7 @@ namespace engine {
 			.renderId = renderId});
 	}
 
-	void Renderer3D::drawStaticMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId) {
+	void Renderer3d::drawStaticMesh(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform, const uint32_t& renderId) {
 		StaticMeshData meshData { 
 			.mesh = mesh,
 			.material = material,
@@ -145,7 +145,7 @@ namespace engine {
 		staticRenderingData.meshDataList.push_back(meshData);
 	}
 
-	void Renderer3D::destroyStaticMesh(const uint32_t& renderId) {
+	void Renderer3d::destroyStaticMesh(const uint32_t& renderId) {
 		size_t meshDataIndex = 0;
 		bool meshDataFound = false;
 
@@ -162,19 +162,19 @@ namespace engine {
 		}
 	}
 
-	void Renderer3D::clearColor(float r, float g, float b, float a) { 
+	void Renderer3d::clearColor(float r, float g, float b, float a) { 
 		DrawApi::clearColor(r, g, b, a);
 	}
 
-	uint32_t Renderer3D::getDrawCallsCount() { 
+	uint32_t Renderer3d::getDrawCallsCount() { 
 		return this->drawCallsCount;
 	}
 
-	void Renderer3D::setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) {
+	void Renderer3d::setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) {
 		this->skyBoxData.cubeMap = skyBoxCubeMap;
 	}
 
-	void Renderer3D::updateLightsDepthBufferTextures() {
+	void Renderer3d::updateLightsDepthBufferTextures() {
 
 		// update directional lights frame buffers
 		for (DirectionalLight& directionalLight : lightingData.directionalLights) {
@@ -229,7 +229,7 @@ namespace engine {
 		}
 	}
 
-	void Renderer3D::drawStaticMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget) {
+	void Renderer3d::drawStaticMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget) {
 		bindUniformBuffers();
 
 		targetShaderProgram.bind();
@@ -252,7 +252,7 @@ namespace engine {
 
 	}
 
-	void Renderer3D::drawDynamicMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget) {
+	void Renderer3d::drawDynamicMeshes(ShaderProgram& targetShaderProgram, std::shared_ptr<FrameBuffer> frameBufferTarget) {
 
 		this->bindUniformBuffers();
 
@@ -307,7 +307,7 @@ namespace engine {
 
 	}
 
-	void Renderer3D::drawSkyBox() {
+	void Renderer3d::drawSkyBox() {
 		// draw the sky box
 		if (this->skyBoxData.cubeMap != nullptr) {
 			DrawApi::setDepthFunctionToLessOrEqual();
@@ -322,7 +322,7 @@ namespace engine {
 		}
 	}
 
-	Vertex Renderer3D::transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, std::shared_ptr<Material> material) {
+	Vertex Renderer3d::transformAndApplyMateriaToVertex(const Vertex& vertex, glm::mat4& transform, std::shared_ptr<Material> material) {
 	
 		std::shared_ptr<Texture> texture = material->getTexture();
 
@@ -339,14 +339,14 @@ namespace engine {
 		return transformedVertex;
 	}
 
-	void Renderer3D::bindUniformBuffers() {
+	void Renderer3d::bindUniformBuffers() {
 		cameraUniformBuffer.bind(0);
 		lightingData.lightsUniformBuffer.bind(1);
 		lightingData.currentPointLightUniformBuffer.bind(2);
 		lightingData.currentDirectionalLightUniformBuffer.bind(3);
 	}
 
-	void Renderer3D::bindLightingTexture(std::shared_ptr<Texture> texture) {
+	void Renderer3d::bindLightingTexture(std::shared_ptr<Texture> texture) {
 		ASSERT(lightingData.currentTextureSlot < Texture::MAX_TEXTURES, "Maximum texture slot exceded");
 
 		if (texture == nullptr) return;
@@ -361,7 +361,7 @@ namespace engine {
 		}
 	}
 
-	void Renderer3D::bindLightingCubeMap(std::shared_ptr<CubeMap> cubeMap) {
+	void Renderer3d::bindLightingCubeMap(std::shared_ptr<CubeMap> cubeMap) {
 		ASSERT(lightingData.currentCubeMapSlot < CubeMap::MAX_CUBEMAPS, "Maximum cube map slot exceded");
 
 		if (cubeMap == nullptr) return;
@@ -376,22 +376,22 @@ namespace engine {
 		}
 	}
 
-	void Renderer3D::updateCameraUniformBuffer(Camera& camera) {
+	void Renderer3d::updateCameraUniformBuffer(std::shared_ptr<Camera> camera) {
 
 		int32_t currentViewPortWidth = DrawApi::getViewPortWidth();
 		int32_t currentViewPortHeight = DrawApi::getViewPortHeight();
 
 		CameraUniformBufferData cameraUniformBufferData{};
 
-		cameraUniformBufferData.viewProjectionMatrix = camera.getViewProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight);
-		cameraUniformBufferData.viewMatrix = camera.getViewMatrix();
-		cameraUniformBufferData.projectionMatrix = camera.getProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight);
-		cameraUniformBufferData.position = camera.position;
+		cameraUniformBufferData.viewProjectionMatrix = camera->getViewProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight);
+		cameraUniformBufferData.viewMatrix = camera->getViewMatrix();
+		cameraUniformBufferData.projectionMatrix = camera->getProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight);
+		cameraUniformBufferData.position = camera->getPosition();
 
 		cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
 	}
 
-	void Renderer3D::updateLightsUniformBuffers() {
+	void Renderer3d::updateLightsUniformBuffers() {
 		// update lights uniform buffer
 		LightsUniformBufferData lightsUniformBufferData{};
 
@@ -430,13 +430,13 @@ namespace engine {
 		lightingData.lightsUniformBuffer.pushData(&lightsUniformBufferData, sizeof(LightsUniformBufferData));
 	}
 
-	void Renderer3D::clearLights() {
+	void Renderer3d::clearLights() {
 		// clear the lights vectors
 		lightingData.pointLights.clear();
 		lightingData.directionalLights.clear();
 	}
 
-	void Renderer3D::clearLightingBoundTextures() {
+	void Renderer3d::clearLightingBoundTextures() {
 		lightingData.boundTextures.clear();
 		lightingData.currentTextureSlot = lightingData.initialTextureSlot;
 
@@ -444,7 +444,7 @@ namespace engine {
 		lightingData.currentCubeMapSlot = lightingData.initialCubeMapSlot;
 	}
 
-	void Renderer3D::clearDynamicMeshes() {
+	void Renderer3d::clearDynamicMeshes() {
 		dynamicRenderingData.meshDataList.clear();
 	}
 

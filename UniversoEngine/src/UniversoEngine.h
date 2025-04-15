@@ -19,6 +19,6 @@
 #include "scene/Behavior.h"
 #include "scene/Components.h"
 
-#include "utils/CameraController.h"
+#include "utils/Camera3dController.h"
 
 #include "Application.h"

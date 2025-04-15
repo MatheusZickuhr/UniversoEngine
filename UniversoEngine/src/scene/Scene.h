@@ -6,9 +6,10 @@
 
 #include <entt/entt.hpp>
 
-#include "../renderer/Camera.h"
-#include "../renderer/Renderer3D.h"
-#include "../renderer/Renderer2D.h"
+#include "../renderer/Camera3d.h"
+#include "../renderer/Camera2d.h"
+#include "../renderer/Renderer3d.h"
+#include "../renderer/Renderer2d.h"
 #include "../renderer/renderer_api/CubeMap.h"
 #include "../physics/PhysicsWorld.h"
 #include "../physics/RigidBody.h"
@@ -35,8 +36,8 @@ namespace engine {
 		void initialize(
 			std::shared_ptr<Window> window,
 			std::shared_ptr<PhysicsWorld> physicsWorld,
-			std::shared_ptr<Renderer3D> renderer3d,
-			std::shared_ptr<Renderer2D> renderer2d);
+			std::shared_ptr<Renderer3d> renderer3d,
+			std::shared_ptr<Renderer2d> renderer2d);
 
 		void onUpdateCallBack(float deltaTime);
 
@@ -46,7 +47,7 @@ namespace engine {
 		
 		void updatePhysics(float timeInterpolationFactor);
 
-		Camera& getCamera();
+		std::shared_ptr<Camera3d> getCamera3d();
 
 		entt::registry& getRegistry();
 		
@@ -62,8 +63,8 @@ namespace engine {
 	
 	protected:
 
-		Camera camera;
-
+		std::shared_ptr<Camera3d> camera3d;
+		std::shared_ptr<Camera2d> camera2d;
 		std::shared_ptr<Window> window;
 
 		void setSkyBoxCubeMap(std::shared_ptr<CubeMap> skyBoxCubeMap) { renderer3d->setSkyBoxCubeMap(skyBoxCubeMap); }
@@ -75,8 +76,8 @@ namespace engine {
 		bool initialized;
 
 		std::shared_ptr<PhysicsWorld> physicsWorld;
-		std::shared_ptr<Renderer3D> renderer3d;
-		std::shared_ptr<Renderer2D> renderer2d;
+		std::shared_ptr<Renderer3d> renderer3d;
+		std::shared_ptr<Renderer2d> renderer2d;
 
 		entt::registry registry;
 

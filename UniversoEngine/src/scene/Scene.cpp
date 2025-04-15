@@ -11,6 +11,8 @@ namespace engine {
 		physicsWorld(nullptr),
 		renderer3d(nullptr),
 		renderer2d(nullptr),
+		camera3d(std::make_shared<Camera3d>()),
+		camera2d(std::make_shared<Camera2d>()),
 		initialized(false) {
 	
 		this->registry.on_construct<StaticMeshComponent>()
@@ -42,8 +44,8 @@ namespace engine {
 	void Scene::initialize(
 		std::shared_ptr<Window> window,
 		std::shared_ptr<PhysicsWorld> physicsWorld,
-		std::shared_ptr<Renderer3D> renderer3d,
-		std::shared_ptr<Renderer2D> renderer2d) {
+		std::shared_ptr<Renderer3d> renderer3d,
+		std::shared_ptr<Renderer2d> renderer2d) {
 		
 		initialized = true;
 		this->window = window;
@@ -64,7 +66,7 @@ namespace engine {
 
 		renderer3d->clearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		renderer3d->beginFrame(camera);
+		renderer3d->beginFrame(camera3d);
 			// draw/ update lights
 			{
 				auto view = this->registry.view<PointLightComponent, TransformComponent>();
@@ -98,6 +100,19 @@ namespace engine {
 				}
 			}
 		renderer3d->endFrame();
+
+		renderer2d->startFrame(camera2d);
+		{
+			auto view = this->registry.view<SpriteComponent, TransformComponent>();
+
+			for (auto [entity, spriteComp, transComp] : view.each()) {
+				renderer2d->addQuad(
+					spriteComp.texture.get(),
+					transComp.transform.getTransformMatrix()
+				);
+			}
+		}
+		renderer2d->endFrame();
 	}
 
 	void Scene::onUpdateCallBack(float deltaTime) {
@@ -172,8 +187,8 @@ namespace engine {
 
 	}
 
-	Camera& Scene::getCamera() {
-		return this->camera;
+	std::shared_ptr<Camera3d> Scene::getCamera3d() {
+		return this->camera3d;
 	}
 
 	entt::registry& Scene::getRegistry() {

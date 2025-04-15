@@ -18,6 +18,10 @@
 
 namespace engine {
 
+    struct SpriteComponent {
+        std::shared_ptr<Texture> texture;
+    };
+
     struct PointLightComponent {
         PointLight pointLight;
     };

@@ -3,44 +3,21 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-/*camera implementation based on https://learnopengl.com/Getting-started/Camera */
-
 namespace engine {
 	
     class Camera {
 
     public:
 
-        glm::vec3 position = { 0.0f, 0.0f, 0.0f };
-        glm::vec3 up       = { 0.0f, 0.0f, 0.0f };
-        glm::vec3 right    = { 0.0f, 0.0f, 0.0f };
-        glm::vec3 front    = { 0.0f, 0.0f, -1.0f };
-        glm::vec3 worldUp  = { 0.0f, 1.0f, 0.0f };
+		virtual ~Camera() = default;
 
-        //clipping values
-        float nearClippingDistance = 0.1f;
-        float farClippingDistance = 1000.0f;
+        virtual glm::mat4 getViewMatrix() = 0;
 
-        // euler Angles
-        float yaw   = -90.0f;
-        float pitch = 0.0f;
+        virtual glm::mat4 getProjectionMatrix(float width, float height) = 0;
 
-        float fov = 45.0f;
+        virtual glm::mat4 getViewProjectionMatrix(float width, float height) = 0;
 
-        Camera();
-
-        Camera(glm::vec3 position);
-
-
-        glm::mat4 getViewMatrix();
-
-        glm::mat4 getProjectionMatrix(float width, float height);
-
-        glm::mat4 getViewProjectionMatrix(float width, float height);
-
-    private:
-
-        void updateVectors();
+        virtual glm::vec3 getPosition() = 0;
 
     };
 }

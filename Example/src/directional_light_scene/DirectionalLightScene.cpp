@@ -6,8 +6,8 @@ DirectionalLightScene::~DirectionalLightScene() {
 }
 
 void DirectionalLightScene::onStart() {
-	this->camera.position = { -2.0f, 3.0f, 10.0f };
-	cameraController = std::make_unique<CameraController>(this->window, this->camera);
+	this->camera3d->position = { -2.0f, 3.0f, 10.0f };
+	cameraController = std::make_unique<Camera3dController>(this->window, this->camera3d);
 
 	boxMaterial = std::make_shared<Material>("Example/resources/textures/crate/crate.jpg");
 	boxMesh = std::make_shared<Mesh>("Example/resources/models/crate/crate.obj");

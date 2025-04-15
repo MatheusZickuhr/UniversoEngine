@@ -22,8 +22,8 @@ namespace engine {
 #endif
 
 		physicsWorld = std::make_shared<PhysicsWorld>();
-		renderer3d = std::make_shared<Renderer3D>();
-		renderer2d = std::make_shared<Renderer2D>();
+		renderer3d = std::make_shared<Renderer3d>();
+		renderer2d = std::make_shared<Renderer2d>();
 
 		setCurrentScene(std::move(scene));
 		

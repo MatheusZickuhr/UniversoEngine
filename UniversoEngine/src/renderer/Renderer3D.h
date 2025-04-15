@@ -23,17 +23,17 @@
 
 namespace engine {
 
-    class Renderer3D {
+    class Renderer3d {
 
     public:
 
-        Renderer3D();
+        Renderer3d();
 
-        Renderer3D(Renderer3D const& other) = delete;
+        Renderer3d(Renderer3d const& other) = delete;
 
-        ~Renderer3D();
+        ~Renderer3d();
 
-        void beginFrame(Camera& camera);
+        void beginFrame(std::shared_ptr<Camera> camera);
 
         void endFrame();
 
@@ -219,7 +219,7 @@ namespace engine {
 
         void bindLightingCubeMap(std::shared_ptr<CubeMap> cubeMap);
                 
-        void updateCameraUniformBuffer(Camera& camera);
+        void updateCameraUniformBuffer(std::shared_ptr<Camera> camera);
 
         void updateLightsUniformBuffers();
 

@@ -7,9 +7,9 @@ PointLightScene::~PointLightScene() {
 
 void PointLightScene::onStart() {
 
-    this->camera.position = { 0.0f, 0.0f, 5.0f };
+    this->camera3d->position = { 0.0f, 0.0f, 5.0f };
 
-    cameraController = std::make_unique<CameraController>(this->window, this->camera);
+    cameraController = std::make_unique<Camera3dController>(this->window, this->camera3d);
 
     boxMaterial = std::make_shared<Material>("Example/resources/textures/crate/crate.jpg");
     boxMesh = std::make_shared<Mesh>("Example/resources/models/crate/crate.obj");

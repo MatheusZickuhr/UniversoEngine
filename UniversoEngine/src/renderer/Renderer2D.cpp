@@ -1,4 +1,4 @@
-#include "Renderer2D.h"
+#include "Renderer2d.h"
 
 #include <algorithm>
 
@@ -6,7 +6,7 @@
 
 namespace engine {
 
-    Renderer2D::Renderer2D() {
+    Renderer2d::Renderer2d() {
         this->verticesBegin = new QuadVertex[maxQuadVertices];
         this->vertices = this->verticesBegin;
 
@@ -40,23 +40,23 @@ namespace engine {
 
     }
 
-    Renderer2D::~Renderer2D() {
+    Renderer2d::~Renderer2d() {
         delete[] this->verticesBegin;
     }
 
-    void Renderer2D::startFrame(Camera& camera) {
+    void Renderer2d::startFrame(std::shared_ptr<Camera> camera) {
         ASSERT(!this->drawingStarted, "You need to call endFrame before calling startFrame angain");
         drawingStarted = true;
 
-       int32_t currentViewPortWidth = DrawApi::getViewPortWidth();
-       int32_t currentViewPortHeight = DrawApi::getViewPortHeight();
+       float width = (float) DrawApi::getViewPortWidth();
+       float height = (float) DrawApi::getViewPortHeight();
 
-        CameraUniformBufferData cameraUniformBufferData{ camera.getViewProjectionMatrix((float)currentViewPortWidth, (float)currentViewPortHeight) };
+        CameraUniformBufferData cameraUniformBufferData{ camera->getViewProjectionMatrix(width, height) };
 
         this->cameraUniformBuffer.pushData(&cameraUniformBufferData, sizeof(CameraUniformBufferData));
     }
 
-    void Renderer2D::endFrame() {
+    void Renderer2d::endFrame() {
         ASSERT(this->drawingStarted, "You need to call startFrame before calling endFrame");
 
         drawingStarted = false;
@@ -67,7 +67,7 @@ namespace engine {
         this->currentTextureSlot = 0;
     }
 
-    void Renderer2D::addQuad(Texture* texture, glm::mat4 transform) {
+    void Renderer2d::addQuad(Texture* texture, glm::mat4 transform) {
         ASSERT(this->drawingStarted, "You need to call startFrame before calling addQuad");
 
         if (this->vertexCount + 4 > maxQuadVertices)
@@ -100,7 +100,7 @@ namespace engine {
         this->indexCount += 6;
     }
 
-    void Renderer2D::performDrawcall() {
+    void Renderer2d::performDrawcall() {
         this->cameraUniformBuffer.bind(0);
         this->shaderProgram.bind();
         this->vertexArray.bind();
@@ -113,7 +113,7 @@ namespace engine {
         this->indexCount = 0;
     }
 
-    void Renderer2D::bindTexture(Texture* texture) {
+    void Renderer2d::bindTexture(Texture* texture) {
         ASSERT(currentTextureSlot + 1 < Texture::MAX_TEXTURES, "Maximum texture slot exceded");
 
         if (texture == nullptr) return;

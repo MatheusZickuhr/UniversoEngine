@@ -13,7 +13,7 @@ public:
 
 private:
 
-	std::unique_ptr<CameraController> cameraController;
+	std::unique_ptr<Camera3dController> cameraController;
 
 	std::shared_ptr<Material> boxMaterial;
 	std::shared_ptr<Mesh> boxMesh;

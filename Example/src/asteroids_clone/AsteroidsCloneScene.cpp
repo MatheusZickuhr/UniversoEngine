@@ -8,7 +8,7 @@ AsteroidsCloneScene::~AsteroidsCloneScene() {
 }
 
 void AsteroidsCloneScene::onStart() {
-	this->camera.position = { 0.0f, 0.0f, 20.0f };
+	this->camera3d->position = { 0.0f, 0.0f, 20.0f };
 
 
 	coneMaterial = std::make_shared<Material>();

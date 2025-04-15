@@ -4,11 +4,12 @@
 #include "point_light_scene/PointLightScene.h"
 #include "directional_light_scene/DirectionalLightScene.h"
 #include "asteroids_clone/AsteroidsCloneScene.h"
+#include "pong/PongScene.h"
 
 int main() {	
 	using namespace engine;
 
-	std::unique_ptr<DirectionalLightScene> scene = std::make_unique<DirectionalLightScene>();
+	std::unique_ptr<PointLightScene> scene = std::make_unique<PointLightScene>();
 
 	WindowSettings windowSettings;
 	windowSettings.name = "Example";
